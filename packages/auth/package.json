@@ -1,0 +1,27 @@
+{
+  "name": "@dir/auth",
+  "version": "0.1.0",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "scripts": {
+    "clean": "rm -rf .turbo node_modules",
+    "lint": "eslint",
+    "type-check": "tsc --noEmit",
+    "test": "vitest",
+    "coverage": "vitest run --coverage"
+  },
+  "dependencies": {
+    "b64-lite": "^1.4.0",
+    "cookie": "^0.5.0",
+    "nanoid": "^3.2.0"
+  },
+  "devDependencies": {
+    "@types/b64-lite": "^1.4.0",
+    "@types/cookie": "^0.5.1",
+    "@types/node": "^18.0.0",
+    "@vitest/coverage-v8": "^0.33.0",
+    "next": "13.4.20-canary.15",
+    "typescript": "5.1.6",
+    "vitest": "^0.33.0"
+  }
+}

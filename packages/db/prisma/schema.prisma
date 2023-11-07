@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// If you're using sqlite, make sure to use the following flags for the user role.
+// enum Role {
+//   USER
+//   ADMIN
+// }
+
+model User {
+  id             String      @id @default(cuid())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  email          String   @unique
+  hashedPassword String?
+  role           String   @default("USER")
+  tokens   Token[]
+  sessions Session[]
+
+  verified Boolean @default(false)
+}
+
+model Session {
+  id                 String      @id @default(cuid())
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  expiresAt          DateTime?
+  hashedSessionToken String?
+  csrfToken          String?
+  data               String?
+  user   User? @relation(fields: [userId], references: [id])
+  userId String?
+}
+
+// If you're using sqlite, make sure to use the following flags for the token types.
+// enum TokenTypes {
+//   RESET_PASSWORD
+//   INVITE_TOKEN
+//   API_KEY
+// }
+
+model Token {
+  id          String      @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  hashedToken String
+  type        String
+  expiresAt   DateTime
+  sentTo      String
+
+  user   User @relation(fields: [userId], references: [id])
+  userId String
+
+
+  lastFour String?
+
+  @@unique([hashedToken, type])
+}
+
