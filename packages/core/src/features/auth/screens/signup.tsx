@@ -26,20 +26,13 @@ export function SignupPage({searchParams}: SignupPageProps) {
           className="absolute inset-0 bg-cover"
           style={{
             backgroundImage:
-              "url(https://images.unsplash.com/photo-1590069261209-f8e9b8642343?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1376&q=80)",
+              "url(https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2344&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)",
           }}
         />
         <div className="relative z-20 flex items-center text-lg font-medium">
           {process.env.NEXT_PUBLIC_APP_NAME}
         </div>
-        <div className="relative z-20 mt-auto">
-          <blockquote className="space-y-2">
-            <p className="text-lg">
-              &ldquo;The greatest SaaS boilerplate!&rdquo;
-            </p>
-            <footer className="text-sm">Steve Jobs</footer>
-          </blockquote>
-        </div>
+
       </div>
       <div className="py-16 lg:p-8">
         <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">

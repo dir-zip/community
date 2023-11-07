@@ -2,7 +2,9 @@
 
 import { FORM_ERROR, Form, TextField } from "@/components/Forms";
 import { ForgotPasswordSchema } from "../schemas";
-import Link from "../../../components/ui/Link";
+import Link from "next/link";
+import { buttonVariants } from "@/components/ui/Button";
+import { cn } from "@/lib/utils";
 import {forgotPasswordAction} from '../actions'
 
 
@@ -21,9 +23,12 @@ export default function ForgotPasswordForm() {
         }
       }}>
         <TextField label="Email" name="email" type="text" />
-        <p className="text-right text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           <Link
             href="/login"
+            className={cn(
+              buttonVariants({ variant: "ghost", size: "sm" })
+            )}
           >
             Go back to login
           </Link>

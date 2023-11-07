@@ -35,11 +35,6 @@ import { guards } from '../../guards';
 export const loginAction = createAction(async ({createSession}, { email, password }) => {
   const user = await prisma.user.findUnique({
     where: { email },
-    include: {
-      memberships: {
-        include: { workspace: true },
-      },
-    },
   });
 
   if (!user) {
@@ -302,11 +297,6 @@ export const handleOauth = async ({email, auth}: {email: string, auth: AuthInit<
      * So we make a db call to get the updated version.  */
     const getNewUser = await prisma.user.findUnique({
       where: { id: user.id },
-      include: {
-        memberships: {
-          include: { workspace: true },
-        },
-      },
     });
 
     return getNewUser;
