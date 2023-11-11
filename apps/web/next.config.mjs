@@ -2,8 +2,8 @@
 const config = {
   reactStrictMode: true,
   transpilePackages: [
-    "@1upsaas/core",
-    "@1upsaas/db"
+    "@dir/core",
+    "@dir/db"
   ],
   experimental: {
     serverActions: true,

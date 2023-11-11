@@ -1,7 +1,7 @@
 "use client"
 
 import { Form, TextField } from "../../../../../components/Forms"
-import { type Token } from "@1upsaas/db"
+import { type Token } from "@dir/db"
 
 const TokenForm = ({token}: {token: Token}) => {
 

@@ -15,7 +15,7 @@
     "db:generate": "turbo db:generate",
     "db:push": "turbo db:push db:generate",
     "db:reset": "turbo db:reset",
-    "dev": "turbo dev --parallel",
+    "dev": "turbo dev",
     "minio": "minio server ./minio-data/",
     "dev:tunnel": "ssh -o ServerAliveInterval=60 -R 80:localhost:3000 localhost.run",
     "stripe:dev": "stripe listen --forward-to http://localhost:3000/api/webhooks/billing",

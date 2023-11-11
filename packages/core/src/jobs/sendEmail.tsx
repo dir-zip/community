@@ -1,5 +1,5 @@
 import { createJob } from '../lib/jobs'
-import {createMailer} from '@1upsaas/mailer'
+import {createMailer} from '@dir/mailer'
 import ActivateAccount from "../mail_templates/activate-account"
 import {render} from "@react-email/render"
 import * as React from 'react'

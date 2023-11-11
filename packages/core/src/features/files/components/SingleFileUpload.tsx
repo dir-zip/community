@@ -2,7 +2,7 @@
 
 import React, { type PropsWithoutRef } from "react";
 import { useFormContext, Controller } from "react-hook-form";
-import {SingleFileUploadField as SingleFileUpload} from '@1upsaas/files/src/components/SingleFileUpload'
+import {SingleFileUploadField as SingleFileUpload} from '@dir/files/src/components/SingleFileUpload'
 import { remove } from "../actions";
 
 export interface SingleFileUploadProps

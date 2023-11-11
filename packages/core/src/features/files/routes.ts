@@ -1,5 +1,5 @@
 import { type NextRequest } from 'next/server';
-import {FileUploader} from "@1upsaas/files"
+import {FileUploader} from "@dir/files"
 
 export const UploadFileRoute = async (request: NextRequest) => {
 

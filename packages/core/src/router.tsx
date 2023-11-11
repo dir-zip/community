@@ -28,6 +28,8 @@ import ToastProvider from "./components/ui/Toaster";
 import { OAuthLogin, VerifyUser } from "./features/auth/webhooks";
 import { UploadFileRoute } from "./features/files/routes";
 import { AllResourcePage, SingleResourcePage } from "./features/admin/screens/resources/page";
+import { AllPosts } from "./features/posts/screens";
+import { AllCategoriesPage, NewCategoryPage, SingleCategoryPage } from "./features/admin/screens/categories/page";
 
 
 
@@ -122,6 +124,33 @@ export async function PageInit<T>({
     );
   })
 
+  router.createLayout("/*", async ({children}) => {
+    return (
+      <div className="min-h-screen flex">
+        <Sidebar 
+          adminSidebarComponent={false} 
+          root={`/`} 
+          sidebarLinks={sidebarLinks}
+          resources={resources}
+        />
+  
+        <main className="flex-1 min-w-0 overflow-auto p-8 pt-6">
+          <div className="pb-12 md:pb-6">
+            <Breadcrumbs
+              ignore={[{ href: "/workspace", breadcrumb: "Workspace" }]}
+            />
+          </div>
+          {children}
+          <ToastProvider />
+        </main>
+      </div>
+    );
+  })
+
+  router.addRoute("/", async() => {
+    return <AllPosts />
+  })
+
 
   router.addRoute("/login", async() => {
     return <LoginPage auth={auth}/>
@@ -142,6 +171,18 @@ export async function PageInit<T>({
   router.addRoute("/admin", async () => {
     return <Admin />;
   });
+
+  router.addRoute('/admin/categories', async() => {
+    return <AllCategoriesPage />
+  })
+
+  router.addRoute('/admin/categories/new', async() => {
+    return <NewCategoryPage />
+  })
+
+  router.addRoute('/admin/categories/:id', async({id}) => {
+    return <SingleCategoryPage id={id} />
+  })
 
 
   router.addRoute('/admin/users', async() => {

@@ -1,11 +1,9 @@
-import {Init1up} from '@1upsaas/core';
-import HomeIcon from '../components/Icons/HomeIcon';
+import {Init1up} from '@dir/core';
 
 
-export type ExtendedSessionData = {
-}
 
-export const {createAction, createApiEndpoint, createJob, PageInit, LayoutInit, ApiRouteInit, auth, global} = Init1up<ExtendedSessionData>({
+
+export const {createAction, createApiEndpoint, createJob, PageInit, LayoutInit, ApiRouteInit, auth, global} = Init1up({
 
   auth: {
     guards: async({sessionData}) => {
@@ -24,11 +22,6 @@ export const {createAction, createApiEndpoint, createJob, PageInit, LayoutInit, 
       },
       baseUrl: process.env.NEXT_PUBLIC_APP_URL!,
     }
-  },
-  sidebar: {
-    links: [
-      {text: 'Home', url: '/', icon: HomeIcon}
-    ]
   }
 })
 .build()

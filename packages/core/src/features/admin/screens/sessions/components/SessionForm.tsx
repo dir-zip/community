@@ -1,7 +1,7 @@
 "use client"
 
 import { Form, TextField } from "../../../../../components/Forms"
-import { type Session } from "@1upsaas/db"
+import { type Session } from "@dir/db"
 
 
 const SessionForm = ({session}: {session: Session}) => {

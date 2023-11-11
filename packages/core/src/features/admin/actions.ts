@@ -1,7 +1,7 @@
 "use server";
 import 'server-only'
 
-import { prisma } from "@1upsaas/db";
+import { prisma } from "@dir/db";
 import { z } from "zod";
 
 

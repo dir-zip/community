@@ -12,7 +12,7 @@ const MainNav = ({root}: {root?: string}) => {
     <div className="flex flex-col">
       <ul className="flex flex-col py-2 space-y-4">
         <li>
-          <Link href={root || "/"}>Home</Link>
+          <Link href={root || "/"}>Posts</Link>
         </li>
       </ul>
     </div>
@@ -27,16 +27,13 @@ const AdminNav = ({resources}: {resources?: Resources}) => {
           <Link href={"/admin"}>Admin Dashboard</Link>
         </li>
         <li>
-          <Link href={"/admin/workspaces"}>Workspaces</Link>
+          <Link href={"/admin/categories"}>Categories</Link>
         </li>
         <li>
           <Link href={"/admin/users"}>Users</Link>
         </li>
         <li>
           <Link href={"/admin/sessions"}>Sessions</Link>
-        </li>
-        <li>
-          <Link href={"/admin/memberships"}>Memberships</Link>
         </li>
         <li>
           <Link href={"/admin/tokens"}>Tokens</Link>
@@ -86,11 +83,11 @@ const Sidebar = ({
 
   return (
     <>
-      <div className="hidden md:flex md:flex-col p-2 border-r-slate-200 border-r">
+      <div className="hidden w-[200px] md:flex md:flex-col p-2 border-r-slate-200 border-r">
         <div className="space-y-4">
 
           {adminSidebarComponent && <AdminNav resources={resources}/>}
-          {sidebarLinks ? <div className="flex flex-col">
+          {sidebarLinks && sidebarLinks.length ? <div className="flex flex-col">
             <ul className="flex flex-col py-2 space-y-4">
               {sidebarLinks.map((link, index) => {
                 const Icon = link.icon

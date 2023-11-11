@@ -1,6 +1,6 @@
 import {
   AuthInit, Driver, TCreateGuard
-} from "@1upsaas/auth";
+} from "@dir/auth";
 
 
 

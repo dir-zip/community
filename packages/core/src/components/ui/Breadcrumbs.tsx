@@ -50,59 +50,61 @@ export const Breadcrumbs = ({ ignore }: BreadcrumbsProps) => {
       <li>
         <Link href={"/"}>
           <HomeIcon
-            className="h-5 w-5 text-gray-400 hover:text-gray-500"
+            className={pathname === "/" ? "h-5 w-5 text-slate-900" : "h-5 w-5 text-slate-400 hover:text-gray-500"}
             aria-hidden="true"
           />
         </Link>
       </li>
-      {breadcrumbs?.length ? (
-        breadcrumbs.map((breadcrumb, i) => {
-          return (
-            <li key={i}>
-              {pathname === breadcrumb.href ? (
-                <div className="flex items-center">
-                  <svg
-                    className="text-gray-400 mr-2 w-4 h-4"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                  >
-                    <path
-                      d="M10.5858 6.34317L12 4.92896L19.0711 12L12 19.0711L10.5858 17.6569L16.2427 12L10.5858 6.34317Z"
-                      fill="currentColor"
-                    />
-                  </svg>
-
-                  <span className="text-sm font-medium text-gray-800">
-                    {breadcrumb.breadcrumb.charAt(0).toUpperCase() +
-                      breadcrumb.breadcrumb.slice(1)}
-                  </span>
-                </div>
-              ) : (
-                <div className="flex items-center">
-                  <svg
-                    className="text-gray-400 mr-2 w-4 h-4"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                  >
-                    <path
-                      d="M10.5858 6.34317L12 4.92896L19.0711 12L12 19.0711L10.5858 17.6569L16.2427 12L10.5858 6.34317Z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                  <Link
-                    href={breadcrumb.href}
-                    className="text-sm font-medium text-gray-500 hover:text-gray-700"
-                  >
-                    {breadcrumb.breadcrumb.charAt(0).toUpperCase() +
-                      breadcrumb.breadcrumb.slice(1)}
-                  </Link>
-                </div>
-              )}
-            </li>
-          );
-        })
-      ) : (
-        <Skeleton className="w-3/12 h-4" />
+      {pathname === "/" ? null : (
+        breadcrumbs?.length ? (
+          breadcrumbs.map((breadcrumb, i) => {
+            return (
+              <li key={i}>
+                {pathname === breadcrumb.href ? (
+                  <div className="flex items-center">
+                    <svg
+                      className="text-gray-400 mr-2 w-4 h-4"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                    >
+                      <path
+                        d="M10.5858 6.34317L12 4.92896L19.0711 12L12 19.0711L10.5858 17.6569L16.2427 12L10.5858 6.34317Z"
+                        fill="currentColor"
+                      />
+                    </svg>
+  
+                    <span className="text-sm font-medium text-gray-800">
+                      {breadcrumb.breadcrumb.charAt(0).toUpperCase() +
+                        breadcrumb.breadcrumb.slice(1)}
+                    </span>
+                  </div>
+                ) : (
+                  <div className="flex items-center">
+                    <svg
+                      className="text-gray-400 mr-2 w-4 h-4"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                    >
+                      <path
+                        d="M10.5858 6.34317L12 4.92896L19.0711 12L12 19.0711L10.5858 17.6569L16.2427 12L10.5858 6.34317Z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                    <Link
+                      href={breadcrumb.href}
+                      className="text-sm font-medium text-gray-500 hover:text-gray-700"
+                    >
+                      {breadcrumb.breadcrumb.charAt(0).toUpperCase() +
+                        breadcrumb.breadcrumb.slice(1)}
+                    </Link>
+                  </div>
+                )}
+              </li>
+            );
+          })
+        ) : (
+          <Skeleton className="w-3/12 h-4" />
+        )
       )}
     </ul>
   );

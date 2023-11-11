@@ -1,5 +1,5 @@
-import type { SessionModel } from "@1upsaas/auth";
-import { prisma } from "@1upsaas/db";
+import type { SessionModel } from "@dir/auth";
+import { prisma } from "@dir/db";
 import { BaseSessionData } from ".";
 
 export const storeSession = async (session: SessionModel<BaseSessionData>) => {

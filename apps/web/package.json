@@ -13,8 +13,8 @@
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
-    "@1upsaas/core": "workspace:*",
-    "@1upsaas/db": "workspace:*",
+    "@dir/core": "workspace:*",
+    "@dir/db": "workspace:*",
     "@hookform/error-message": "^2.0.1",
     "@hookform/resolvers": "^3.1.0",
     "@radix-ui/react-dialog": "^1.0.4",

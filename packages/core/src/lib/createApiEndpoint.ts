@@ -1,6 +1,6 @@
-import { PasswordHandler } from '@1upsaas/auth';
+import { PasswordHandler } from '@dir/auth';
 import { type NextRequest, type NextResponse } from 'next/server';
-import { prisma } from '@1upsaas/db';
+import { prisma } from '@dir/db';
 
 type ApiHandler = (request: NextRequest) => Promise<NextResponse>
 
@@ -18,14 +18,7 @@ const createApiEndpoint = (handler: ApiHandler) => {
         AND: {
           type: "API_KEY",
         },
-      },
-      include: {
-        workspace: {
-          include: {
-            members: true,
-          },
-        },
-      },
+      }
     });
 
     if (!findApiKey) {

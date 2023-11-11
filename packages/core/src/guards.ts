@@ -1,5 +1,5 @@
-import { TCreateGuard } from "@1upsaas/auth";
-import { prisma } from "@1upsaas/db";
+import { TCreateGuard } from "@dir/auth";
+import { prisma } from "@dir/db";
 import { BaseSessionData } from ".";
 
 export const createGuards = <T>({guards, internal}: {guards: TCreateGuard<T & BaseSessionData>,internal: TCreateGuard<BaseSessionData>}) => {

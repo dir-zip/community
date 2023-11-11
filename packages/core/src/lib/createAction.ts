@@ -7,7 +7,7 @@ import {
   Provider,
   Data,
   AuthInit
-} from "@1upsaas/auth";
+} from "@dir/auth";
 import { type z } from "zod";
 import { redirect } from "next/navigation";
 import { authInit } from "./auth";

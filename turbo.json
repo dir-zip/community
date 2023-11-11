@@ -13,8 +13,12 @@
       "inputs": ["prisma/schema.prisma"],
       "cache": false
     },
+    "build:tailwind": {
+      "outputs": ["dist/output.css"],
+      "cache": false
+    },
     "dev": {
-      "dependsOn": ["^db:generate"],
+      "dependsOn": ["^db:generate", "^build:tailwind"],
       "cache": false
     },
     "build": {

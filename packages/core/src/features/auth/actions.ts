@@ -9,9 +9,9 @@ import {
   CrudTypesArray,
   type Provider,
   AuthInit,
-} from "@1upsaas/auth";
+} from "@dir/auth";
 
-import { prisma } from "@1upsaas/db";
+import { prisma } from "@dir/db";
 import sendEmail from '../../jobs/sendEmail'
 import { cookies } from "next/headers";
 

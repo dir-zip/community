@@ -4,11 +4,11 @@ import createApiEndpoint from './lib/createApiEndpoint';
 import { authInit } from './lib/auth';
 import { PageInit, LayoutInit, ApiRouteInit } from './router';
 import '../dist/output.css'
-import {  type User } from '@1upsaas/db';
+import {  type User } from '@dir/db';
 
 import authDriver from './authDriver';
 export {PageInit, LayoutInit} from './router'
-import { AuthInit, Provider, TCreateGuard } from "@1upsaas/auth";
+import { AuthInit, Provider, TCreateGuard } from "@dir/auth";
 import {createGuards, guards} from './guards';
 import { forgotPasswordAction, handleOauth, loginAction, logoutAction, resetPasswordAction, signUpAction } from './features/auth/actions';
 import { JSXElementConstructor, ReactElement } from 'react';

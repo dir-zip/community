@@ -44,10 +44,10 @@ importers:
 
   apps/web:
     dependencies:
-      '@1upsaas/core':
+      '@dir/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@1upsaas/db':
+      '@dir/db':
         specifier: workspace:*
         version: link:../../packages/db
       '@hookform/error-message':
@@ -190,16 +190,16 @@ importers:
       '@1upsaas/1uprouter':
         specifier: ^0.2.1
         version: 0.2.1
-      '@1upsaas/auth':
+      '@dir/auth':
         specifier: workspace:*
         version: link:../auth
-      '@1upsaas/db':
+      '@dir/db':
         specifier: workspace:*
         version: link:../db
-      '@1upsaas/files':
+      '@dir/files':
         specifier: workspace:*
         version: link:../files
-      '@1upsaas/mailer':
+      '@dir/mailer':
         specifier: workspace:*
         version: link:../mailer
       '@hookform/error-message':
@@ -321,15 +321,15 @@ importers:
   packages/db:
     dependencies:
       '@prisma/client':
-        specifier: ^4.8.0
-        version: 4.8.0(prisma@4.8.0)
+        specifier: ^5.5.2
+        version: 5.5.2(prisma@5.5.2)
     devDependencies:
       dotenv-cli:
         specifier: ^6.0.0
         version: 6.0.0
       prisma:
-        specifier: ^4.8.0
-        version: 4.8.0
+        specifier: ^5.5.2
+        version: 5.5.2
       typescript:
         specifier: 5.1.6
         version: 5.1.6
@@ -2007,9 +2007,9 @@ packages:
     dev: false
     optional: true
 
-  /@prisma/client@4.8.0(prisma@4.8.0):
-    resolution: {integrity: sha512-Y1riB0p2W52kh3zgssP/YAhln3RjBFcJy3uwEiyjmU+TQYh6QTZDRFBo3JtBWuq2FyMOl1Rye8jxzUP+n0l5Cg==}
-    engines: {node: '>=14.17'}
+  /@prisma/client@5.5.2(prisma@5.5.2):
+    resolution: {integrity: sha512-54XkqR8M+fxbzYqe+bIXimYnkkcGqgOh0dn0yWtIk6CQT4IUCAvNFNcQZwk2KqaLU+/1PHTSWrcHtx4XjluR5w==}
+    engines: {node: '>=16.13'}
     requiresBuild: true
     peerDependencies:
       prisma: '*'
@@ -2017,16 +2017,16 @@ packages:
       prisma:
         optional: true
     dependencies:
-      '@prisma/engines-version': 4.8.0-61.d6e67a83f971b175a593ccc12e15c4a757f93ffe
-      prisma: 4.8.0
+      '@prisma/engines-version': 5.5.1-1.aebc046ce8b88ebbcb45efe31cbe7d06fd6abc0a
+      prisma: 5.5.2
     dev: false
 
-  /@prisma/engines-version@4.8.0-61.d6e67a83f971b175a593ccc12e15c4a757f93ffe:
-    resolution: {integrity: sha512-MHSOSexomRMom8QN4t7bu87wPPD+pa+hW9+71JnVcF3DqyyO/ycCLhRL1we3EojRpZxKvuyGho2REQsMCvxcJw==}
+  /@prisma/engines-version@5.5.1-1.aebc046ce8b88ebbcb45efe31cbe7d06fd6abc0a:
+    resolution: {integrity: sha512-O+qHFnZvAyOFk1tUco2/VdiqS0ym42a3+6CYLScllmnpbyiTplgyLt2rK/B9BTjYkSHjrgMhkG47S0oqzdIckA==}
     dev: false
 
-  /@prisma/engines@4.8.0:
-    resolution: {integrity: sha512-A1Asn2rxZMlLAj1HTyfaCv0VQrLUv034jVay05QlqZg1qiHPeA3/pGTfNMijbsMYCsGVxfWEJuaZZuNxXGMCrA==}
+  /@prisma/engines@5.5.2:
+    resolution: {integrity: sha512-Be5hoNF8k+lkB3uEMiCHbhbfF6aj1GnrTBnn5iYFT7GEr3TsOEp1soviEcBR0tYCgHbxjcIxJMhdbvxALJhAqg==}
     requiresBuild: true
 
   /@radix-ui/number@1.0.1:
@@ -6884,13 +6884,13 @@ packages:
       js-beautify: 1.14.11
     dev: false
 
-  /prisma@4.8.0:
-    resolution: {integrity: sha512-DWIhxvxt8f4h6MDd35mz7BJff+fu7HItW3WPDIEpCR3RzcOWyiHBbLQW5/DOgmf+pRLTjwXQob7kuTZVYUAw5w==}
-    engines: {node: '>=14.17'}
+  /prisma@5.5.2:
+    resolution: {integrity: sha512-WQtG6fevOL053yoPl6dbHV+IWgKo25IRN4/pwAGqcWmg7CrtoCzvbDbN9fXUc7QS2KK0LimHIqLsaCOX/vHl8w==}
+    engines: {node: '>=16.13'}
     hasBin: true
     requiresBuild: true
     dependencies:
-      '@prisma/engines': 4.8.0
+      '@prisma/engines': 5.5.2
 
   /process-nextick-args@2.0.1:
     resolution: {integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==}
