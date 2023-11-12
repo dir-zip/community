@@ -4,6 +4,7 @@ export const PasswordSchema = z.string().min(8).transform((value) => value.trim(
 
 export const SignupSchema = z.object({
   email: z.string().email(),
+  username: z.string(),
   password: PasswordSchema,
   confirm_password: PasswordSchema,
 }).refine((data) => data.password === data.confirm_password, {

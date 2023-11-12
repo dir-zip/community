@@ -60,11 +60,12 @@ export const loginAction = createAction(async ({createSession}, { email, passwor
   return user
 }, LoginSchema, {authed: false})
 
-export const signUpAction = createAction(async ({createSession}, { email, password }) => {
+export const signUpAction = createAction(async ({createSession}, { email, password, username }) => {
   const hashedPassword = await PasswordHandler.hash(password);
   const user = await prisma.user.create({
     data: {
       email,
+      username,
       hashedPassword: hashedPassword,
     },
   });
@@ -279,6 +280,7 @@ export const handleOauth = async ({email, auth}: {email: string, auth: AuthInit<
     const user = await prisma.user.create({
       data: {
         email,
+        username: email,
         role: "USER",
       },
     });

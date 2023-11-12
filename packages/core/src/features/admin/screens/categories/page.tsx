@@ -4,12 +4,18 @@ import CategoryForm from './components/Form'
 import Link from 'next/link'
 import { CategoryTable } from './components/CategoryTable'
 import { getSingleCategory } from './actions'
+import { cn } from '@/lib/utils'
+import { buttonVariants } from '@/components/ui/Button'
 
 export const AllCategoriesPage = async () => {
   return (
     <div>
-      <h3 className="text-xl font-bold pb-4">Categories</h3>
-      <Link href="/admin/categories/new">New</Link>
+      <div className="flex justify-between items-center pb-4">
+        <h3 className="text-xl font-bold">Categories</h3>
+        <Link className={cn(
+          buttonVariants({ variant: "default", size: "sm" })
+        )} href="/admin/categories/new">New</Link>
+      </div>
       <Suspense>
         <CategoryTable />
       </Suspense>

@@ -1,7 +1,7 @@
 import { createJob } from '../lib/jobs'
 import {createMailer} from '@dir/mailer'
 import ActivateAccount from "../mail_templates/activate-account"
-import {render} from "@react-email/render"
+import {renderAsync} from "@react-email/render"
 import * as React from 'react'
 import ForgotPassword from '../mail_templates/forgot-password'
 
@@ -22,13 +22,13 @@ const job = createJob<SendEmailData>("sendEmail", async (job) => {
     case "ACTIVATE_ACCOUNT": 
       email = {
         subject: "Activate Your Account",
-        template: render(<ActivateAccount email={job.data.email} url={job.data.url || ""} />)
+        template: await renderAsync(<ActivateAccount email={job.data.email} url={job.data.url || ""} />)
       }
       break
     case "FORGOT_PASSWORD":
       email = {
         subject: "Reset Your Password",
-        template: render(<ForgotPassword email={job.data.email} url={job.data.url || ""} />)
+        template: await renderAsync(<ForgotPassword email={job.data.email} url={job.data.url || ""} />)
       }
       break
     default:

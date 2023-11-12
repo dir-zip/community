@@ -30,6 +30,8 @@ import { UploadFileRoute } from "./features/files/routes";
 import { AllResourcePage, SingleResourcePage } from "./features/admin/screens/resources/page";
 import { AllPosts } from "./features/posts/screens";
 import { AllCategoriesPage, NewCategoryPage, SingleCategoryPage } from "./features/admin/screens/categories/page";
+import { NewPost } from "./features/posts/screens/new";
+import { SinglePost } from "./features/posts/screens/single";
 
 
 
@@ -137,7 +139,7 @@ export async function PageInit<T>({
         <main className="flex-1 min-w-0 overflow-auto p-8 pt-6">
           <div className="pb-12 md:pb-6">
             <Breadcrumbs
-              ignore={[{ href: "/workspace", breadcrumb: "Workspace" }]}
+              ignore={[{ href: "/posts", breadcrumb: "Posts" }]}
             />
           </div>
           {children}
@@ -149,6 +151,10 @@ export async function PageInit<T>({
 
   router.addRoute("/", async() => {
     return <AllPosts />
+  })
+
+  router.addRoute("/posts/:slug", async({slug}) => {
+    return <SinglePost slug={slug}/>
   })
 
 
@@ -166,6 +172,11 @@ export async function PageInit<T>({
 
   router.addRoute('/reset-password', async () => {
     return <ResetPasswordPage />
+  })
+  
+
+  router.addRoute('/posts/new', async() => {
+    return <NewPost />
   })
 
   router.addRoute("/admin", async () => {

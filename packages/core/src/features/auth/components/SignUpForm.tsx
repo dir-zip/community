@@ -13,7 +13,7 @@ export default function SignUpForm({nextUrl}: {nextUrl: string}) {
       schema={SignupSchema}
       onSubmit={async (data) => {
         try {
-          await signUpAction({ email: data.email, password: data.password, confirm_password: data.confirm_password });
+          await signUpAction({ email: data.email, username: data.username, password: data.password, confirm_password: data.confirm_password });
           router.push(nextUrl);
         } catch (err: any) {
           console.log(err);
@@ -22,6 +22,7 @@ export default function SignUpForm({nextUrl}: {nextUrl: string}) {
       }}
     >
       <TextField label="Email" name="email" type="text" />
+      <TextField label="Username" name="username" type="text" />
       <TextField label="Password" name="password" type="password" />
       <TextField
         label="Confirm Password"

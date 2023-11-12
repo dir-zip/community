@@ -135,7 +135,7 @@ const Sidebar = ({
 
             <div className="max-h-[500px] overflow-y-auto space-y-4">
               {adminSidebarComponent && <AdminNav resources={resources} />}
-              {sidebarLinks ? <div className="flex flex-col">
+              {sidebarLinks && sidebarLinks.length ? <div className="flex flex-col">
             <ul className="flex flex-col py-2 space-y-4">
               {sidebarLinks.map((link, index) => {
                 const Icon = link.icon

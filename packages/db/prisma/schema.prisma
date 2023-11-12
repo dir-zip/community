@@ -21,6 +21,7 @@ model User {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   email          String   @unique
+  username       String @unique
   hashedPassword String?
   role           String   @default("USER")
   tokens   Token[]
@@ -159,7 +160,8 @@ model Tag {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   title       String
-  posts Post[]
+  slug        String @unique
+  posts       Post[]
 }
 
 model Category {
