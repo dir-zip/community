@@ -25,7 +25,7 @@ export const AllPosts = async () => {
                 return (
                   <div key={i}>
                     <Link href={`/posts/${p.slug}`}><p>{p.title}</p></Link>
-                    <p>{p.user.username}</p>
+                    <Link href={`/profile/${p.user.username}`}><p>{p.user.username}</p></Link>
                     <p>{p.createdAt.toDateString()}</p>
                   </div>
                 )

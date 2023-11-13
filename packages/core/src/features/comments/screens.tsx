@@ -12,7 +12,7 @@ const Comment = async ({ comment, postSlug }: {comment: Comment & {user?: User, 
     <div>
       <Link href={`/posts/${postSlug}/comments/${comment.id}`}><p>{comment.body}</p></Link>
       <p>{comment.createdAt.toDateString()}</p>
-      <p>{comment.user?.username}</p>
+      <Link href={`/profile/${comment.user?.username}`}><p>{comment.user?.username}</p></Link>
       <div className="pl-6">
         {comment.replies?.map((reply) => (
           <Comment key={reply.id} comment={reply} postSlug={postSlug}  />
@@ -36,7 +36,7 @@ export const SingleCommentScreen = async({postSlug, commentId}: {postSlug:string
             <p>"{comment.parent?.body}"</p>
           </Link>
           <p>{comment.createdAt.toDateString()}</p>
-          <p>{comment.user.username}</p>
+          <Link href={`/profile/${comment.user.username}`}><p>{comment.user.username}</p></Link>
         </div> : null 
       }
       <p>{comment.body}</p>
@@ -48,7 +48,7 @@ export const SingleCommentScreen = async({postSlug, commentId}: {postSlug:string
           <div key={reply.id}>
             <Link href={`/posts/${postSlug}/comments/${reply.id}`}><p>{reply.body}</p></Link>
             <p>{reply.createdAt.toDateString()}</p>
-            <p>{comment.user.username}</p>
+            <Link href={`/profile/${comment.user.username}`}><p>{comment.user.username}</p></Link>
           </div>
         )
       })}

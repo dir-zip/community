@@ -41,7 +41,7 @@ type BaseExportedPlugins<T> = {
   createJob: typeof createJob;
   auth: {
     login: ({email, password}: {email: string, password: string}) => Promise<User>
-    signup: ({email, password}: {email: string, password: string}) => Promise<void>
+    signup: ({email, password, username}: {username: string, email: string, password: string}) => Promise<void>
     logout: () => Promise<void>
     forgotPassword: ({email}: {email: string}) => Promise<void>
     resetPassword: ({password, token}: {email: string, password: string, token: string}) => Promise<User>
@@ -227,8 +227,8 @@ export function Init1up<S>({ auth, sidebar}: {
           const user = await loginAction({email, password})
           return user
         },
-        signup: async ({ email, password }) => {
-          await signUpAction({email, password, confirm_password: password})
+        signup: async ({ email, password, username }) => {
+          await signUpAction({email, password, username, confirm_password: password})
         },
         logout: async() => {
           await logoutAction()

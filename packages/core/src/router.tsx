@@ -33,6 +33,7 @@ import { AllCategoriesPage, NewCategoryPage, SingleCategoryPage } from "./featur
 import { NewPost } from "./features/posts/screens/new";
 import { SinglePost } from "./features/posts/screens/single";
 import { SingleCommentScreen } from "./features/comments/screens";
+import { ProfileScreen } from "./features/profile/screens";
 
 
 
@@ -163,6 +164,10 @@ export async function PageInit<T>({
 
   router.addRoute("/posts/:slug/comments/:commentId", async({slug, commentId}) => {
     return <SingleCommentScreen commentId={commentId} postSlug={slug}/>
+  })
+
+  router.addRoute("/profile/:username", async({username}) => {
+    return <ProfileScreen username={username} />
   })
 
 
