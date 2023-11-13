@@ -1,12 +1,12 @@
 "use client";
 
 import { Form, TextField } from "@/components/Forms";
-import { createComment } from "../../actions";
-import { CommentSchema } from "../../schemas";
+import { createComment } from "../../posts/actions";
+import { CommentSchema } from "../schemas";
 
 
 
-export const CommentForm = ({postId}: {postId: string}) => {
+export const CommentForm = ({postSlug, parentId}: {postSlug: string, parentId: string | null}) => {
   return (
     <div>
       <Form
@@ -14,7 +14,7 @@ export const CommentForm = ({postId}: {postId: string}) => {
         schema={CommentSchema}
         onSubmit={async (data) => {
           try {
-            await createComment({ postId, body: data.body });
+            await createComment({ postSlug, body: data.body, parentId });
           } catch (err: any) {
             console.log(err);
           }

@@ -12,26 +12,34 @@ type BreadcrumbsProps = {
 export const Breadcrumbs = ({ ignore }: BreadcrumbsProps) => {
   const pathname = usePathname();
 
+
   const [breadcrumbs, setBreadcrumbs] = React.useState<
     { breadcrumb: string; href: string }[] | undefined
   >([]);
 
-  const buildBreadcrumbs = async () => {
+  const buildBreadcrumbs = () => {
     const linkPath = pathname.split("/");
     linkPath.shift();
-
+  
     const pathArray = linkPath.map((path, i) => {
       return {
         breadcrumb: path.split("?")[0] as string,
         href: "/" + linkPath.slice(0, i + 1).join("/"),
       };
     });
-
+  
     if (ignore && ignore.length) {
       const filtered = pathArray.filter((el) => {
-        return !ignore.find((rm) => rm.href === el.href);
+        return !ignore.some((rm) => {
+          const ignorePathParts = rm.href.split("/");
+          const elPathParts = el.href.split("/");
+          return (
+            ignorePathParts.length === elPathParts.length &&
+            ignorePathParts.every((part, i) => part === elPathParts[i] || part.startsWith(":"))
+          );
+        });
       });
-
+  
       setBreadcrumbs(filtered);
     } else {
       setBreadcrumbs(pathArray);

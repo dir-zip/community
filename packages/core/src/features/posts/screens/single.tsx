@@ -1,9 +1,8 @@
-import { buttonVariants } from "@/components/ui/Button"
-import { cn } from "@/lib/utils"
-import Link from "next/link"
+import { Comments } from "@/features/comments/screens"
 import { getSinglePost } from "../actions"
 import { redirect } from "next/navigation"
-import { Comments } from "../components/comments"
+
+import {Suspense} from 'react'
 
 export const SinglePost = async ({slug}: {slug: string}) => {
   const post = await getSinglePost({slug: slug})
@@ -19,16 +18,9 @@ export const SinglePost = async ({slug}: {slug: string}) => {
       <div>
         {post.body}
       </div>
-      <div>
-        {post.comments.map((comment, i) => {
-          return (
-          <div key={i}>
-            <div>{comment.parent?.body}</div>
-          </div>
-          )
-        })}
-      </div>
-      <Comments postId={post.id}/>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Comments postSlug={post.slug} />
+      </Suspense>
     </div>
   )
 }

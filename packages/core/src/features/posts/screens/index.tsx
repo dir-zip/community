@@ -5,7 +5,7 @@ import { getAllPosts } from "../actions"
 
 export const AllPosts = async () => {
   const categories = await getAllPosts()
-  console.log(categories)
+
   return (
     <div>
       <div className="flex justify-between items-center">

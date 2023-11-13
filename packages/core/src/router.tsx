@@ -32,6 +32,7 @@ import { AllPosts } from "./features/posts/screens";
 import { AllCategoriesPage, NewCategoryPage, SingleCategoryPage } from "./features/admin/screens/categories/page";
 import { NewPost } from "./features/posts/screens/new";
 import { SinglePost } from "./features/posts/screens/single";
+import { SingleCommentScreen } from "./features/comments/screens";
 
 
 
@@ -116,7 +117,10 @@ export async function PageInit<T>({
         <main className="flex-1 min-w-0 overflow-auto p-8 pt-6">
           <div className="pb-12 md:pb-6">
             <Breadcrumbs
-              ignore={[{ href: "/workspace", breadcrumb: "Workspace" }]}
+              ignore={[
+                { href: "/posts", breadcrumb: "Posts" }, 
+                { href: "/posts/:slug/comments", breadcrumb: "Comments" }
+              ]}
             />
           </div>
           {children}
@@ -139,7 +143,7 @@ export async function PageInit<T>({
         <main className="flex-1 min-w-0 overflow-auto p-8 pt-6">
           <div className="pb-12 md:pb-6">
             <Breadcrumbs
-              ignore={[{ href: "/posts", breadcrumb: "Posts" }]}
+              ignore={[{ href: "/posts", breadcrumb: "Posts" },{ href: "/posts/:slug/comments", breadcrumb: "Comments" }]}
             />
           </div>
           {children}
@@ -155,6 +159,10 @@ export async function PageInit<T>({
 
   router.addRoute("/posts/:slug", async({slug}) => {
     return <SinglePost slug={slug}/>
+  })
+
+  router.addRoute("/posts/:slug/comments/:commentId", async({slug, commentId}) => {
+    return <SingleCommentScreen commentId={commentId} postSlug={slug}/>
   })
 
 

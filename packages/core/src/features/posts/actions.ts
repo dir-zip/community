@@ -62,13 +62,7 @@ export const getSinglePost = createAction(async({}, {slug}) => {
     },
     include: {
       user: true,
-      category: true,
-      comments: {
-        include: {
-          user: true,
-          parent: true
-        }
-      }
+      category: true
     }
   })
 
@@ -110,35 +104,29 @@ export const updatePost = createAction(async({}, {id, data}) => {
   data: PostSchema
 }))
 
-export const createComment = createAction(async({session}, {postId, body}) => {
+export const createComment = createAction(async({session}, {postSlug, body, parentId}) => {
+  const post = await prisma.post.findFirst({
+    where: {
+      slug: postSlug
+    }
+  })
 
   const comment = await prisma.comment.create({
     data: {
-      postId,
+      postId: post!.id,
       userId: session?.data.userId!,
-      body
+      body,
+      parentId: parentId || null
     }
   })
   revalidatePath('/posts/[slug]')
 
   return comment
 }, z.object({
-  postId: z.string(),
+  postSlug: z.string(),
+  parentId: z.string().nullable(),
   body: z.string()
 }))
 
-export const getCommentsForPost = createAction(async({}, {postId}) => {
-  const comments = await prisma.comment.findMany({
-    where: {
-      postId
-    },
-    include: {
-      user: true
-    }
-  })
 
-  return comments
-}, z.object({
-  postId: z.string()
-}))
 
