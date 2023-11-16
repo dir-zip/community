@@ -14,6 +14,7 @@ import { authInit } from "./auth";
 import authDriver from "../authDriver";
 import { BaseSessionData } from "..";
 import { guards } from "../guards";
+import {prisma} from '@dir/db'
 
 
 type TCtx<S> = {
@@ -48,15 +49,25 @@ export const createAction = <T, P extends z.ZodType<any, any>, S>(
 ): ((input?: z.infer<P>) => Promise<T>) => {
   return async (input?: z.infer<P>) => {
 
+    const authed = options.authed === false ? false : options.authed === true ? true : 
+      (await prisma.globalSetting.findFirst({
+        where: {
+          id: 1
+        },
+        include: {
+          features: true
+        }
+      }))?.features.find(f => f.feature === 'private')?.isActive!;
 
     const _auth = authInit<S & BaseSessionData>({driver: authDriver, guards: auth ? auth.guards : guards, oauth: auth ? auth.oauth : undefined});
+
 
     let ctx: Partial<TCtx<S>> = {
       createSession: _auth.createSession,
       auth: _auth
     }
 
-    if(options.authed) {
+    if(authed) {
       const session = await _auth.getSession();
 
       if(!session) {

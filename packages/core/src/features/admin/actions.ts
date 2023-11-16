@@ -1,12 +1,61 @@
 "use server";
 import 'server-only'
 
+import { revalidatePath } from 'next/cache'
 import { prisma } from "@dir/db";
 import { z } from "zod";
 
 
 import { UpdateUserSchema } from "../auth/schemas";
 import {createAction} from '../../lib/createAction';
+
+export const getSiteSettings = createAction(
+  async({}, params) => {
+    const site = await prisma.globalSetting.findFirst({
+      where: {
+        id: 1
+      },
+      include: {
+        features: true
+      }
+    })
+
+    return site!
+  },
+  undefined,
+  {authed: true}
+)
+
+export const updateSiteSettings = createAction(
+  async({}, params) => {
+    const site = await prisma.globalSetting.update({
+      where: {
+        id: 1
+      },
+      data: {
+        siteTitle: params.siteTitle,
+        features: {
+          update: {
+            where: {
+              feature: 'private'
+            },
+            data: {
+              isActive: params.isPrivate === "true" ? true : false
+            }
+          }
+        }
+      }
+    })
+    revalidatePath('/admin')
+
+    return site
+  },
+  z.object({
+    siteTitle: z.string(),
+    isPrivate: z.string()
+  }),
+  {authed: true}
+)
 
 export const getAllResource = createAction(
   async({}, params) => {
@@ -35,7 +84,8 @@ export const getAllResource = createAction(
     skip: z.number().optional(),
     take: z.number().optional(),
     where: z.any()
-  })
+  }),
+  {authed: true}
 )
 
 export const getResource = createAction(
@@ -53,7 +103,8 @@ export const getResource = createAction(
   z.object({
     id: z.string(),
     resource: z.string().min(1)
-  })
+  }),
+  {authed: true}
 )
 
 export const updateResource = createAction(
@@ -74,7 +125,9 @@ export const updateResource = createAction(
     });
   
     return updatedResource;
-  }
+  },
+  undefined,
+  {authed: true}
 )
 
 
@@ -102,6 +155,7 @@ export const getAllUsers = createAction(
     take: z.number().optional(),
     where: z.any(),
   }),
+  {authed: true}
 );
 
 export const getSingleUser = createAction(
@@ -119,6 +173,7 @@ export const getSingleUser = createAction(
   z.object({
     id: z.string(),
   }),
+  {authed: true}
 );
 
 export const updateUser = createAction(async ({}, params) => {
@@ -132,7 +187,7 @@ export const updateUser = createAction(async ({}, params) => {
   });
 
   return user;
-}, UpdateUserSchema);
+}, UpdateUserSchema, {authed: true});
 
 export const getAllTokens = createAction(
   async ({}, params) => {
@@ -157,6 +212,7 @@ export const getAllTokens = createAction(
     take: z.number().optional(),
     where: z.any(),
   }),
+  {authed: true}
 );
 
 export const getSingleToken = createAction(
@@ -174,6 +230,7 @@ export const getSingleToken = createAction(
   z.object({
     id: z.string(),
   }),
+  {authed: true}
 );
 
 export const getAllSessions = createAction(
@@ -199,6 +256,7 @@ export const getAllSessions = createAction(
     take: z.number().optional(),
     where: z.any(),
   }),
+  {authed: true}
 );
 
 export const getSingleSession = createAction(
@@ -216,6 +274,7 @@ export const getSingleSession = createAction(
   z.object({
     id: z.string(),
   }),
+  {authed: true}
 );
 
 

@@ -5,7 +5,7 @@ import { redirect } from "next/navigation"
 import {Suspense} from 'react'
 import Link from "next/link"
 
-export const SinglePost = async ({slug}: {slug: string}) => {
+export const SinglePost = async ({slug, loggedIn}: {slug: string, loggedIn: boolean}) => {
   const post = await getSinglePost({slug: slug})
   if(!post) {
     redirect('/404')
@@ -20,7 +20,7 @@ export const SinglePost = async ({slug}: {slug: string}) => {
         {post.body}
       </div>
       <Suspense fallback={<div>Loading...</div>}>
-        <Comments postSlug={post.slug} />
+        <Comments postSlug={post.slug} loggedIn={loggedIn}/>
       </Suspense>
     </div>
   )

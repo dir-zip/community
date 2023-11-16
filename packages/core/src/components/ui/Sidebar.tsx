@@ -24,7 +24,7 @@ const AdminNav = ({resources}: {resources?: Resources}) => {
     <div className="flex flex-col bg-slate-100 p-2 border border-slate-200 rounded">
       <ul className="flex flex-col p-2 space-y-4">
         <li>
-          <Link href={"/admin"}>Admin Dashboard</Link>
+          <Link href={"/admin"}>Settings</Link>
         </li>
         <li>
           <Link href={"/admin/categories"}>Categories</Link>

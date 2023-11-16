@@ -68,7 +68,7 @@ export async function PageInit<T>({
       }
 
       if(route.resource) {
-        router.addRoute(`/workspace/:slug${route.route}`, route.handler)
+        router.addRoute(`/:slug${route.route}`, route.handler)
       } else {
         router.addRoute(route.route, route.handler)
       }
@@ -154,22 +154,84 @@ export async function PageInit<T>({
     );
   })
 
+
+
   router.addRoute("/", async() => {
-    return <AllPosts />
+    const session = await auth.getSession();
+    return <AllPosts loggedIn={session ? true : false}/>
   })
 
   router.addRoute("/posts/:slug", async({slug}) => {
-    return <SinglePost slug={slug}/>
+    const session = await auth.getSession();
+    return <SinglePost slug={slug} loggedIn={session ? true : false}/>
   })
 
   router.addRoute("/posts/:slug/comments/:commentId", async({slug, commentId}) => {
-    return <SingleCommentScreen commentId={commentId} postSlug={slug}/>
+    const session = await auth.getSession();
+    return <SingleCommentScreen commentId={commentId} postSlug={slug} loggedIn={session ? true : false}/>
   })
 
   router.addRoute("/profile/:username", async({username}) => {
     return <ProfileScreen username={username} />
   })
 
+  /** 
+   * 
+   * 
+   * 
+   * START AUTH
+   * 
+   * 
+   *
+   **/
+
+  // AUTH LAYOUTS
+
+  router.createLayout("/login", async ({children}) => {
+    return (
+      <div className="min-h-screen flex">
+        <main className="flex-1 min-w-0 overflow-auto">
+          {children}
+          <ToastProvider />
+        </main>
+      </div>
+    );
+  })
+
+  router.createLayout("/signup", async ({children}) => {
+    return (
+      <div className="min-h-screen flex">
+        <main className="flex-1 min-w-0 overflow-auto">
+          {children}
+          <ToastProvider />
+        </main>
+      </div>
+    );
+  })
+
+  router.createLayout("/forgot-password", async ({children}) => {
+    return (
+      <div className="min-h-screen flex">
+        <main className="flex-1 min-w-0 overflow-auto">
+          {children}
+          <ToastProvider />
+        </main>
+      </div>
+    );
+  })
+
+  router.createLayout("/reset-password", async ({children}) => {
+    return (
+      <div className="min-h-screen flex">
+        <main className="flex-1 min-w-0 overflow-auto">
+          {children}
+          <ToastProvider />
+        </main>
+      </div>
+    );
+  })
+
+  // AUTH ROUTES
 
   router.addRoute("/login", async() => {
     return <LoginPage auth={auth}/>
@@ -186,9 +248,23 @@ export async function PageInit<T>({
   router.addRoute('/reset-password', async () => {
     return <ResetPasswordPage />
   })
+
+  /** 
+   * 
+   * 
+   * 
+   * END AUTH
+   * 
+   * 
+   **/
   
 
   router.addRoute('/posts/new', async() => {
+    const session = await auth.getSession();
+    if(!session) {
+      throw new Error("You do not belong here.")
+    }
+
     return <NewPost />
   })
 

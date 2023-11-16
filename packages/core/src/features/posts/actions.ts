@@ -13,6 +13,7 @@ export const getCategories = createAction(async () => {
 })
 
 export const getAllPosts = createAction(async () => {
+
   const categoryWithPosts = await prisma.category.findMany({
     include: {
       posts: {
@@ -53,7 +54,7 @@ export const createPost = createAction(async({session}, {title, body, category, 
 
   return post
 
-}, PostSchema)
+}, PostSchema, {authed: true})
 
 export const getSinglePost = createAction(async({}, {slug}) => {
   const post = await prisma.post.findFirst({
@@ -102,7 +103,7 @@ export const updatePost = createAction(async({}, {id, data}) => {
 }, z.object({
   id: z.string(),
   data: PostSchema
-}))
+}), {authed: true})
 
 export const createComment = createAction(async({session}, {postSlug, body, parentId}) => {
   const post = await prisma.post.findFirst({
@@ -126,7 +127,7 @@ export const createComment = createAction(async({session}, {postSlug, body, pare
   postSlug: z.string(),
   parentId: z.string().nullable(),
   body: z.string()
-}))
+}), {authed: true})
 
 
 

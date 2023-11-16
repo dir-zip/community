@@ -22,7 +22,7 @@ const Comment = async ({ comment, postSlug }: {comment: Comment & {user?: User, 
   );
 }
 
-export const SingleCommentScreen = async({postSlug, commentId}: {postSlug:string, commentId: string}) => {
+export const SingleCommentScreen = async({postSlug, commentId, loggedIn}: {postSlug:string, commentId: string, loggedIn: boolean}) => {
   const comment = await getComment({commentId: commentId})
   if(!comment) {
     redirect('/404')
@@ -42,7 +42,7 @@ export const SingleCommentScreen = async({postSlug, commentId}: {postSlug:string
       <p>{comment.body}</p>
       <p>{comment.createdAt.toDateString()}</p>
       <p>{comment.user.username}</p>
-      <CommentForm postSlug={postSlug} parentId={comment.id}/>
+      {loggedIn && <CommentForm postSlug={postSlug} parentId={comment.id}/>}
       {comment.replies.map((reply, i) => {
         return (
           <div key={reply.id}>
@@ -58,13 +58,13 @@ export const SingleCommentScreen = async({postSlug, commentId}: {postSlug:string
 
 
 
-export const Comments = async ({postSlug}: {postSlug: string}) => {
+export const Comments = async ({postSlug, loggedIn}: {loggedIn: boolean, postSlug: string}) => {
   const comments = await getCommentsForPost({postSlug: postSlug})
-
+  
   return (
     <div>
       <h3>Comments</h3>
-      <CommentForm postSlug={postSlug} parentId={null}/>
+      {loggedIn && <CommentForm postSlug={postSlug} parentId={null}/>}
       <div>
         {comments.map((comment) => {
 

@@ -42,7 +42,6 @@ export function Form<S extends z.ZodType<any, any>>({
       <form
         onSubmit={ctx.handleSubmit(async (values) => {
           const result = (await onSubmit(values)) || {};
-          ctx.reset()
           for (const [key, value] of Object.entries(result)) {
             if (key === FORM_ERROR) {
               setFormError(value.replace(/^TRPCClientError:\s*/, ""));
