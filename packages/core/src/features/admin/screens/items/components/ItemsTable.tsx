@@ -1,13 +1,13 @@
 "use client"
-import { User } from "packages/db"
+import { useEffect, useState } from "react"
 import Link from "../../../../../components/ui/Link"
 import Table from "../../../../../components/ui/Table"
-import { getAllUsers } from "../../../actions"
 import {useSearchParams, usePathname, useRouter} from "next/navigation"
-import { useEffect, useState } from "react"
+import { getAllItems } from "../actions"
+import { type Item } from "packages/db"
 
 
-const UsersTable = () => {
+export const ItemsTable = () => {
   const ITEMS_PER_PAGE = 10
   const searchParams = useSearchParams()
   const pathname = usePathname();
@@ -15,11 +15,11 @@ const UsersTable = () => {
   const searchQuery = searchParams.get('search')
   const tablePage = Number(page)
   const skip = tablePage * ITEMS_PER_PAGE
-  const router = useRouter()
+  const router = useRouter() 
   const startPage = tablePage * ITEMS_PER_PAGE + 1
   let endPage = startPage - 1 + ITEMS_PER_PAGE
 
-  const [data, setData] = useState<User[]>([])
+  const [data, setData] = useState<Item[]>([])
   const [count, setCount] = useState(0)
 
   if (endPage > count) {
@@ -28,7 +28,8 @@ const UsersTable = () => {
 
   useEffect(() => {
     (async() => {
-      const data = await getAllUsers({
+      
+      const data = await getAllItems({
         skip, take: ITEMS_PER_PAGE, where: searchQuery && JSON.parse(searchQuery as string)
         ? {
           OR: [
@@ -37,16 +38,12 @@ const UsersTable = () => {
               ? {
                   id: Number(JSON.parse(searchQuery as string)),
                 }
-              : {
-                  email: {
-                    contains: JSON.parse(searchQuery as string),
-                  },
-                },
+              : {}
           ],
         }
         : {}
       })
-      setData(data.users)
+      setData(data.items)
       setCount(data.count)
     })()
     router.refresh()
@@ -59,7 +56,7 @@ const UsersTable = () => {
       cell: (info: any) => {
         return (
           <Link
-            href={`/admin/users/${info.getValue()}`}
+            href={`/admin/items/${info.getValue()}`}
           >
             {info.getValue()}
           </Link>
@@ -67,30 +64,20 @@ const UsersTable = () => {
       }
     },
     {
-      accessorKey: 'email',
-      id: 'email',
+      accessorKey: 'title',
+      id: 'title',
       cell: (info: any) => info.getValue()
     },
     {
-      accessorKey: 'points',
-      id: 'points',
+      accessorKey: 'description',
+      id: 'description',
       cell: (info: any) => info.getValue()
     },
     {
-      accessorKey: 'role',
-      id: 'role',
-      cell: (info: any) => info.getValue()
-    },
-    {
-      accessorKey: 'createdAt',
-      id: 'createdAt',
+      accessorKey: 'price',
+      id: 'price',
       cell: (info: any) => info.getValue().toString()
-    },
-    {
-      accessorKey: 'updatedAt',
-      id: 'updatedAt',
-      cell: (info: any) => info.getValue().toString()
-    },
+    }
   ]
 
   return (
@@ -108,5 +95,3 @@ const UsersTable = () => {
     />
   )
 }
-
-export default UsersTable

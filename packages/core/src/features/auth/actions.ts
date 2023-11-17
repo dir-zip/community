@@ -29,6 +29,7 @@ import { cache } from "react";
 import { authInit } from '../../lib/auth';
 import authDriver from '../../authDriver';
 import { guards } from '../../guards';
+import { redirect } from 'next/navigation';
 
 
 
@@ -163,6 +164,8 @@ export const logoutAction = createAction(async ({ deleteSession }) => {
   cookies().delete(COOKIE_SESSION_TOKEN);
   cookies().delete(COOKIE_CSRF_TOKEN);
   cookies().delete(COOKIE_PUBLIC_DATA_TOKEN);
+
+  redirect('/login')
 });
 
 export const checkGuard = createAction(

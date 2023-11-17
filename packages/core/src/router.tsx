@@ -34,6 +34,7 @@ import { NewPost } from "./features/posts/screens/new";
 import { SinglePost } from "./features/posts/screens/single";
 import { SingleCommentScreen } from "./features/comments/screens";
 import { ProfileScreen } from "./features/profile/screens";
+import { AllItemsPage, NewItemPage, SingleItemPage } from "./features/admin/screens/items/page";
 
 
 
@@ -113,6 +114,7 @@ export async function PageInit<T>({
           root={`/`} 
           sidebarLinks={sidebarLinks}
           resources={resources}
+          currentUser={user}
         />
   
         <main className="flex-1 min-w-0 overflow-auto p-8 pt-6">
@@ -132,6 +134,8 @@ export async function PageInit<T>({
   })
 
   router.createLayout("/*", async ({children}) => {
+    const user = await getCurrentUser()
+
     return (
       <div className="min-h-screen flex">
         <Sidebar 
@@ -139,6 +143,7 @@ export async function PageInit<T>({
           root={`/`} 
           sidebarLinks={sidebarLinks}
           resources={resources}
+          currentUser={user}
         />
   
         <main className="flex-1 min-w-0 overflow-auto p-8 pt-6">
@@ -282,6 +287,18 @@ export async function PageInit<T>({
 
   router.addRoute('/admin/categories/:id', async({id}) => {
     return <SingleCategoryPage id={id} />
+  })
+
+  router.addRoute('/admin/items', async() => {
+    return <AllItemsPage />
+  })
+
+  router.addRoute('/admin/items/new', async() => {
+    return <NewItemPage />
+  })
+
+  router.addRoute('/admin/items/:id', async({id}) => {
+    return <SingleItemPage id={id} />
   })
 
 

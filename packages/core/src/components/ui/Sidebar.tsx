@@ -3,9 +3,11 @@
 import { Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "../../lib/utils";
-import { Button } from "./Button";
+import { Button, buttonVariants } from "./Button";
 import Link from "./Link";
 import { Resources } from "../../index";
+import type { User } from "packages/db";
+import { logoutAction } from "@/features/auth/actions";
 
 const MainNav = ({root}: {root?: string}) => {
   return (
@@ -27,17 +29,22 @@ const AdminNav = ({resources}: {resources?: Resources}) => {
           <Link href={"/admin"}>Settings</Link>
         </li>
         <li>
+          <Link href={"/admin/items"}>Items</Link>
+        </li>
+        <li>
+          <Link href={"/admin/items"}>Actions</Link>
+        </li>
+        <li>
+          <Link href={"/admin/items"}>Badges</Link>
+        </li>
+        <li>
           <Link href={"/admin/categories"}>Categories</Link>
         </li>
         <li>
           <Link href={"/admin/users"}>Users</Link>
         </li>
-        <li>
-          <Link href={"/admin/sessions"}>Sessions</Link>
-        </li>
-        <li>
-          <Link href={"/admin/tokens"}>Tokens</Link>
-        </li>
+
+
         {resources?.map((resource, i) => {
           return (
             <li key={i}>
@@ -54,12 +61,14 @@ const Sidebar = ({
   adminSidebarComponent,
   root,
   sidebarLinks,
-  resources
+  resources,
+  currentUser
 }: {
   adminSidebarComponent?: boolean;
   root: string;
   sidebarLinks?: {icon?: React.ElementType, url: string, text:string}[];
   resources?: Resources
+  currentUser?: User
 }) => {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const mobileNavRef = useRef<HTMLDivElement>(null);
@@ -99,6 +108,19 @@ const Sidebar = ({
               })}
             </ul>
           </div> : <MainNav root={root} />}
+          
+          <div>
+            {currentUser ? 
+              <div>
+                <p>{currentUser.username}</p>
+                <p>Points: {currentUser.points}</p>
+                <button onClick={(e) => {
+                  e.preventDefault()
+                  logoutAction()
+                }} className={cn(buttonVariants({variant: 'ghost'}))}>Logout</button>
+                {currentUser.role === "ADMIN" ? <Link className={cn(buttonVariants({variant: 'ghost'}))} href='/admin'>Admin</Link> : null}
+              </div> : <div>You're not logged in</div>}
+          </div>
 
         </div>
       </div>

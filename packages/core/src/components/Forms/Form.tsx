@@ -13,6 +13,7 @@ export interface FormProps<S extends z.ZodType<any, any>>
   schema?: S;
   onSubmit: (values: z.infer<S>) => Promise<void | OnSubmitResult>;
   initialValues?: UseFormProps<z.infer<S>>["defaultValues"];
+  reset?: boolean;
 }
 
 interface OnSubmitResult {
@@ -28,6 +29,7 @@ export function Form<S extends z.ZodType<any, any>>({
   schema,
   initialValues,
   onSubmit,
+  reset = false,
   ...props
 }: FormProps<S>) {
   const ctx = useForm<z.infer<S>>({
@@ -42,6 +44,9 @@ export function Form<S extends z.ZodType<any, any>>({
       <form
         onSubmit={ctx.handleSubmit(async (values) => {
           const result = (await onSubmit(values)) || {};
+          if(reset) {
+            ctx.reset()
+          }
           for (const [key, value] of Object.entries(result)) {
             if (key === FORM_ERROR) {
               setFormError(value.replace(/^TRPCClientError:\s*/, ""));

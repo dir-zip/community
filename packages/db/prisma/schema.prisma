@@ -10,11 +10,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// If you're using sqlite, make sure to use the following flags for the user role.
-// enum Role {
-//   USER
-//   ADMIN
-// }
 
 model User {
   id             String      @id @default(cuid())
@@ -30,6 +25,8 @@ model User {
   avatar String?
 
   verified Boolean @default(false)
+
+  points Int @default(0)
 
   posts    Post[]
   comments Comment[]
@@ -124,12 +121,10 @@ model Item {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   title       String
-  description String?
+  description String
   image       String?
   price       Int
-
-  inventoryItemId String @unique
-  inventoryItem InventoryItem? @relation(fields: [inventoryItemId], references: [id])
+  purchasedItems   InventoryItem[]
 }
 
 model Badge {
@@ -205,7 +200,8 @@ model InventoryItem {
 
   equipped Boolean @default(false)
 
-  item Item?
+  itemId           String
+  item             Item @relation(fields: [itemId], references: [id])
   badge Badge?
 }
 
