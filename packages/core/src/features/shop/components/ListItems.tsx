@@ -19,9 +19,14 @@ export const ListItems = ({items}: {items: Item[]}) => {
             <button className={cn(buttonVariants({variant: "default"}))} onClick={async (e) => {
               e.preventDefault()
               toast.promise(
-                new Promise(async (resolve) => {
-                  await buyItem({itemId: item.id})
-                  resolve(null)
+                new Promise(async (resolve, reject) => {
+                  try {
+                    await buyItem({itemId: item.id})
+                    resolve(null)
+                  } catch (err) {
+                    reject(err)
+                  }
+    
                 }),
                 {
                   loading: `Buying item...`,
