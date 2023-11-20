@@ -4,6 +4,7 @@ import { buttonVariants } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import { Item } from "packages/db";
 import { buyItem } from "../actions";
+import { toast } from "sonner";
 
 export const ListItems = ({items}: {items: Item[]}) => {
   return (
@@ -17,7 +18,18 @@ export const ListItems = ({items}: {items: Item[]}) => {
             <p>{item.price}</p>
             <button className={cn(buttonVariants({variant: "default"}))} onClick={async (e) => {
               e.preventDefault()
-              await buyItem({itemId: item.id})
+              toast.promise(
+                new Promise(async (resolve) => {
+                  await buyItem({itemId: item.id})
+                  resolve(null)
+                }),
+                {
+                  loading: `Buying item...`,
+                  success: `Item purchased!`,
+                  error: (error) => `Error buying item ${error.message}`
+                }
+              )
+       
             }}>Buy now</button>
           </div>
         )
