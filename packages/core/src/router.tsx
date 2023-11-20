@@ -38,6 +38,7 @@ import { AllItemsPage, NewItemPage, SingleItemPage } from "./features/admin/scre
 import { AllActionsPage, NewActionPage, SingleActionPage } from "./features/admin/screens/actions/page";
 import { AllBadgesPage, NewBadgePage, SingleBadgePage } from "./features/admin/screens/badges/page";
 import { EditPost } from "./features/posts/screens/edit";
+import { ShopPage } from "./features/shop/screens";
 
 
 
@@ -283,6 +284,15 @@ export async function PageInit<T>({
     }
 
     return <EditPost slug={slug}/>
+  })
+
+  router.addRoute('/shop', async() => {
+    const session = await auth.getSession();
+    if(!session) {
+      throw new Error("You do not belong here.")
+    }
+
+    return <ShopPage />
   })
 
   router.addRoute("/admin", async () => {

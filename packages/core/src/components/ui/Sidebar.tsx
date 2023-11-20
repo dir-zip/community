@@ -16,6 +16,9 @@ const MainNav = ({root}: {root?: string}) => {
         <li>
           <Link href={root || "/"}>Posts</Link>
         </li>
+        <li>
+          <Link href={"/shop"}>Shop</Link>
+        </li>
       </ul>
     </div>
   );

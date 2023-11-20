@@ -7,6 +7,7 @@ import { PostSchema } from "@/features/posts/schemas";
 import { findFreeSlug } from "@/lib/utils";
 import { revalidatePath } from 'next/cache'
 import { prepareArrayField } from "@creatorsneverdie/prepare-array-for-prisma"
+import { triggerAction } from '../actions/actions';
 
 
 export const getCategories = createAction(async () => {
@@ -51,11 +52,19 @@ export const createPost = createAction(async({session}, {title, body, category, 
       slug: createSlug,
       categoryId: getCategory?.id!,
       userId: session?.data.userId!,
-      tags: prepareArrayField(tags.map(tag => {
-        return ({id: tag})
-      }))
+      tags: {
+        connectOrCreate: tags.split(',').map(tagSlug => ({
+          where: { slug: tagSlug },
+          create: { title: tagSlug, slug: tagSlug }
+        }))
+      }
     }
   })
+
+  
+
+
+  await triggerAction({title: "CREATE_POST"})
 
   return post
 
@@ -97,7 +106,7 @@ export const updatePost = createAction(async({validate, session}, {slug, data}) 
   }
 
   const mappedTags = prepareArrayField(
-    data.tags.map((c) => {
+    data.tags.split(",").map((c) => {
       return { id: c }
     }) || [],
     currentPost?.tags,
@@ -144,6 +153,8 @@ export const createComment = createAction(async({session}, {postSlug, body, pare
       parentId: parentId || null
     }
   })
+
+  await triggerAction({title: "CREATE_COMMENT"})
   revalidatePath('/posts/[slug]')
 
   return comment

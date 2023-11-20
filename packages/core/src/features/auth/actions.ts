@@ -67,9 +67,19 @@ export const signUpAction = createAction(async ({createSession}, { email, passwo
     data: {
       email,
       username,
-      hashedPassword: hashedPassword,
+      hashedPassword: hashedPassword
     },
   });
+
+  await prisma.inventory.create({
+    data: {
+      user: {
+        connect: {
+          id: user.id
+        }
+      }
+    }
+  })
   
 
 

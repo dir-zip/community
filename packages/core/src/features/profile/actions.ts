@@ -16,3 +16,23 @@ export const getUser = createAction(async ({}, {username}) => {
 }, z.object({
   username: z.string()
 }))
+
+export const getInventory = createAction(async({}, {userId}) => {
+  const inventory = await prisma.inventory.findFirst({
+    where: {
+      userId,
+    },
+    include: {
+      collection: {
+        include: {
+          item: true,
+          badge: true,
+        },
+      },
+    },
+  })
+
+  return inventory
+}, z.object({
+  userId: z.string()
+}), {authed: true})

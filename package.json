@@ -10,11 +10,12 @@
   ],
   "scripts": {
     "build": "turbo build",
-    "clean": "bun clean:workspaces && rm -rf node_modules",
+    "clean": "pnpm clean:workspaces && rm -rf node_modules",
     "clean:workspaces": "turbo clean",
     "db:generate": "turbo db:generate",
     "db:push": "turbo db:push db:generate",
     "db:reset": "turbo db:reset",
+    "db:seed": "turbo db:seed",
     "dev": "turbo dev",
     "minio": "minio server ./minio-data/",
     "dev:tunnel": "ssh -o ServerAliveInterval=60 -R 80:localhost:3000 localhost.run",
