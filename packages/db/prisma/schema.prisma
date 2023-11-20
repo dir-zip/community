@@ -47,12 +47,6 @@ model Session {
   userId String?
 }
 
-// If you're using sqlite, make sure to use the following flags for the token types.
-// enum TokenTypes {
-//   RESET_PASSWORD
-//   INVITE_TOKEN
-//   API_KEY
-// }
 
 model Token {
   id          String      @id @default(cuid())
@@ -132,12 +126,10 @@ model Badge {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   title       String
-  description String?
+  description String
   image       String?
   condition   Condition?
-
-  inventoryItem InventoryItem? @relation(fields: [inventoryItemId], references: [id])
-  inventoryItemId String @unique
+  unlockedBadges InventoryItem[]
 }
 
 model Action {
@@ -202,7 +194,10 @@ model InventoryItem {
 
   itemId           String
   item             Item @relation(fields: [itemId], references: [id])
-  badge Badge?
+
+  badgeId           String
+  badge             Badge @relation(fields: [itemId], references: [id])
+
 }
 
 model Condition {

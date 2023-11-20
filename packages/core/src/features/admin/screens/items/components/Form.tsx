@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation"
 import { createItem, updateItem } from "../actions"
 import type { Item } from "packages/db"
 import { CreateItemSchema } from "../schema"
+import { SingleFileUploadField } from "@/features/files/components/SingleFileUpload"
 
 export const ItemForm = ({item}: {item?: Item}) => {
   const router = useRouter()
@@ -51,6 +52,7 @@ export const ItemForm = ({item}: {item?: Item}) => {
     <TextField name="title" label="Title"/>
     <TextField name="description" label="Description" />
     <TextField type="number" name="price" label="Price" />
+    <SingleFileUploadField name="image" label="Image"/>
   </Form>
   )
 }

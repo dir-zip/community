@@ -48,6 +48,7 @@ export class FileUploader {
       Key: `${file.name}`,
       Body: fileBuffer,
     };
+
     const parallelUploads3 = new Upload({
       client: this.s3Client,
       params,
@@ -56,12 +57,15 @@ export class FileUploader {
       leavePartsOnError: false, // optional manually handle dropped parts
     });
 
+
     parallelUploads3.on("httpUploadProgress", async (progress) => {
       if (progress.total) {
         const percentage = (progress.loaded! / progress.total) * 100;
         await this.updateProgress(percentage);
       }
     });
+
+
 
     try {
       const response = await parallelUploads3.done();

@@ -10,10 +10,10 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.405.0",
-    "@aws-sdk/lib-storage": "^3.405.0",
-    "@aws-sdk/s3-request-presigner": "^3.409.0",
-    "@aws-sdk/xhr-http-handler": "^3.408.0",
+    "@aws-sdk/client-s3": "3.405.0",
+    "@aws-sdk/lib-storage": "3.405.0",
+    "@aws-sdk/s3-request-presigner": "3.409.0",
+    "@aws-sdk/xhr-http-handler": "3.408.0",
     "file-type": "^18.5.0",
     "react": "18.2.0",
     "react-dropzone": "^14.2.3"

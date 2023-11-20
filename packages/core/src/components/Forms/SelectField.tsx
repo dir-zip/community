@@ -25,7 +25,7 @@ export interface SelectFieldProps
 }
 
 export const SelectField = forwardRef<HTMLInputElement, SelectFieldProps>(
-  ({ label, outerProps, labelProps, name, options }, _) => {
+  ({ label, outerProps, labelProps, name, options, ...props }, _) => {
     const {
       control,
       formState: { isSubmitting, errors },
@@ -53,6 +53,7 @@ export const SelectField = forwardRef<HTMLInputElement, SelectFieldProps>(
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
+
                   {options.map((option) => (
                     <SelectItem key={option.key} value={option.value}>
                       {option.key}

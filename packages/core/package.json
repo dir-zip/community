@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@1upsaas/1uprouter": "^0.2.1",
+    "@creatorsneverdie/prepare-array-for-prisma": "^0.1.2",
     "@dir/auth": "workspace:*",
     "@dir/db": "workspace:*",
     "@dir/files": "workspace:*",

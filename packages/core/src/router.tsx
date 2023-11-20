@@ -35,6 +35,9 @@ import { SinglePost } from "./features/posts/screens/single";
 import { SingleCommentScreen } from "./features/comments/screens";
 import { ProfileScreen } from "./features/profile/screens";
 import { AllItemsPage, NewItemPage, SingleItemPage } from "./features/admin/screens/items/page";
+import { AllActionsPage, NewActionPage, SingleActionPage } from "./features/admin/screens/actions/page";
+import { AllBadgesPage, NewBadgePage, SingleBadgePage } from "./features/admin/screens/badges/page";
+import { EditPost } from "./features/posts/screens/edit";
 
 
 
@@ -273,6 +276,15 @@ export async function PageInit<T>({
     return <NewPost />
   })
 
+  router.addRoute('/posts/:slug/edit', async({slug}) => {
+    const session = await auth.getSession();
+    if(!session) {
+      throw new Error("You do not belong here.")
+    }
+
+    return <EditPost slug={slug}/>
+  })
+
   router.addRoute("/admin", async () => {
     return <Admin />;
   });
@@ -299,6 +311,30 @@ export async function PageInit<T>({
 
   router.addRoute('/admin/items/:id', async({id}) => {
     return <SingleItemPage id={id} />
+  })
+
+  router.addRoute('/admin/actions', async() => {
+    return <AllActionsPage />
+  })
+
+  router.addRoute('/admin/actions/new', async() => {
+    return <NewActionPage />
+  })
+
+  router.addRoute('/admin/actions/:id', async({id}) => {
+    return <SingleActionPage id={id} />
+  })
+
+  router.addRoute('/admin/badges', async() => {
+    return <AllBadgesPage />
+  })
+
+  router.addRoute('/admin/badges/new', async() => {
+    return <NewBadgePage />
+  })
+
+  router.addRoute('/admin/badges/:id', async({id}) => {
+    return <SingleBadgePage id={id} />
   })
 
 

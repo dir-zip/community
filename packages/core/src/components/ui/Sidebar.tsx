@@ -32,10 +32,10 @@ const AdminNav = ({resources}: {resources?: Resources}) => {
           <Link href={"/admin/items"}>Items</Link>
         </li>
         <li>
-          <Link href={"/admin/items"}>Actions</Link>
+          <Link href={"/admin/actions"}>Actions</Link>
         </li>
         <li>
-          <Link href={"/admin/items"}>Badges</Link>
+          <Link href={"/admin/badges"}>Badges</Link>
         </li>
         <li>
           <Link href={"/admin/categories"}>Categories</Link>

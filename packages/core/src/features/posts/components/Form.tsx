@@ -6,22 +6,38 @@ import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 
 import { PostSchema } from "@/features/posts/schemas"
-import { createPost } from "../actions"
-import { Category, type Post } from "packages/db"
+import { createPost, updatePost } from "../actions"
+import { Category, Tag, type Post } from "packages/db"
 
-const PostForm = ({post, categories}: {post?: Post, categories: Category[]}) => {
+const PostForm = ({post, categories}: {post?: Post & {tags: Tag[], category: Category}, categories: Category[]}) => {
   const router = useRouter()
 
   return (
     <Form
     submitText={post ? "Update" : "Create"}
     schema={PostSchema}
+    initialValues={post && {
+      title: post.title,
+      body: post.body,
+      category: post.category.slug,
+      tags: post.tags.map(p => p.id)
+    }}
     onSubmit={async (values) => {
       toast.promise(
         new Promise(async (resolve) => {
-          await createPost({
-            ...values
-          })
+          if(!post) {
+            await createPost({
+              ...values
+            })
+          } else {
+            await updatePost({
+              slug: post.slug,
+              data: {
+                ...values,
+              }
+            })
+          }
+
 
           router.push(`/`)
           router.refresh()
@@ -39,6 +55,7 @@ const PostForm = ({post, categories}: {post?: Post, categories: Category[]}) => 
     <SelectField label="Category" name="category" options={categories.map((c) => {
       return {value: c.slug, key: c.title}
     })}/>
+    <TextField name="tags" label="Tags" />
     <TextField name="body" label="Body" />
   </Form>
   )
