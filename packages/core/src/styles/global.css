@@ -80,3 +80,31 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
+
+.tiptap {
+  @apply w-full;
+}
+
+.tiptap h1 {
+  @apply text-3xl font-bold;
+}
+
+.tiptap h2 {
+  @apply text-xl;
+}
+
+.tiptap h3 {
+  @apply text-lg;
+}
+
+.tiptap p {
+  @apply text-sm;
+}
+
+.tiptap ul {
+  @apply list-disc list-outside p-4;
+}
+
+.tiptap li {
+  @apply py-1;
+}

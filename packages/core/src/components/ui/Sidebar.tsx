@@ -121,7 +121,7 @@ const Sidebar = ({
           <div>
             {currentUser ? 
               <div>
-                <p>{currentUser.username}</p>
+                <Link href={`/profile/${currentUser.username}`}><p>{currentUser.username}</p></Link>
                 <p>Points: {currentUser.points}</p>
                 <button onClick={(e) => {
                   e.preventDefault()

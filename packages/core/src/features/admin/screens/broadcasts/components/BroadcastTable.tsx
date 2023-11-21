@@ -53,15 +53,7 @@ export const BroadcastTable = () => {
     {
       accessorKey: 'id',
       id: 'id',
-      cell: (info: any) => {
-        return (
-          <Link
-            href={`/admin/broadcasts/${info.getValue()}`}
-          >
-            {info.getValue()}
-          </Link>
-        )
-      }
+      cell: (info: any) => info.getValue()
     },
     {
       accessorKey: 'title',
@@ -71,7 +63,15 @@ export const BroadcastTable = () => {
     {
       accessorKey: 'slug',
       id: 'slug',
-      cell: (info: any) => info.getValue()
+      cell: (info: any) => {
+        return (
+          <Link
+            href={`/admin/broadcasts/${info.getValue()}`}
+          >
+            {info.getValue()}
+          </Link>
+        )
+      }
     }
   ]
 

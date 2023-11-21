@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation"
 import { CreateBroadcastSchema } from "@/features/broadcasts/schemas"
 import { createBroadcast, updateBroadcast } from "../actions"
 import { Broadcast, Tag } from "packages/db"
+import BodyField from "@/components/Forms/BodyField"
 
 export const BroadcastForm = ({broadcast}: {broadcast?: Broadcast & {tags: Tag[]}}) => {
   const router = useRouter()
@@ -48,7 +49,7 @@ export const BroadcastForm = ({broadcast}: {broadcast?: Broadcast & {tags: Tag[]
   >
     <TextField name="title" label="Title"/>
     <TextField name="tags" label="Tags" />
-    <TextField name="body" label="Body" />
+    <BodyField name="body" label="Body" />
   </Form>
   )
 }

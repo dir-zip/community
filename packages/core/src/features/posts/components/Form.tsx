@@ -8,6 +8,8 @@ import { useRouter } from "next/navigation"
 import { PostSchema } from "@/features/posts/schemas"
 import { createPost, updatePost } from "../actions"
 import { Category, Tag, type Post } from "packages/db"
+import Tiptap from "@/components/ui/TipTap"
+import BodyField from "@/components/Forms/BodyField"
 
 const PostForm = ({post, categories}: {post?: Post & {tags: Tag[], category: Category}, categories: Category[]}) => {
   const router = useRouter()
@@ -20,7 +22,7 @@ const PostForm = ({post, categories}: {post?: Post & {tags: Tag[], category: Cat
       title: post.title,
       body: post.body,
       category: post.category.slug,
-      tags: post.tags.map(p => p.id).join(', ')
+      tags: post.tags.map(p => p.slug).join(', ')
     }}
     onSubmit={async (values) => {
       toast.promise(
@@ -56,7 +58,8 @@ const PostForm = ({post, categories}: {post?: Post & {tags: Tag[], category: Cat
       return {value: c.slug, key: c.title}
     })}/>
     <TextField name="tags" label="Tags" />
-    <TextField name="body" label="Body" />
+    <BodyField name="body" label="Body"/>
+
   </Form>
   )
 }
