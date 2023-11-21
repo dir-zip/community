@@ -19,6 +19,9 @@ const MainNav = ({root}: {root?: string}) => {
         <li>
           <Link href={"/shop"}>Shop</Link>
         </li>
+        <li>
+          <Link href={"/broadcasts"}>Broadcasts</Link>
+        </li>
       </ul>
     </div>
   );
@@ -39,6 +42,9 @@ const AdminNav = ({resources}: {resources?: Resources}) => {
         </li>
         <li>
           <Link href={"/admin/badges"}>Badges</Link>
+        </li>
+        <li>
+          <Link href={"/admin/broadcasts"}>Broadcasts</Link>
         </li>
         <li>
           <Link href={"/admin/categories"}>Categories</Link>

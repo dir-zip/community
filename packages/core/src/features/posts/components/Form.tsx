@@ -20,7 +20,7 @@ const PostForm = ({post, categories}: {post?: Post & {tags: Tag[], category: Cat
       title: post.title,
       body: post.body,
       category: post.category.slug,
-      tags: post.tags.map(p => p.id)
+      tags: post.tags.map(p => p.id).join(', ')
     }}
     onSubmit={async (values) => {
       toast.promise(

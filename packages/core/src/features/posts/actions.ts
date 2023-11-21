@@ -1,6 +1,6 @@
 'use server'
 import 'server-only'
-import { prisma, type Post } from "@dir/db";
+import { prisma, type Post, Tag } from "@dir/db";
 import { z } from "zod";
 import {createAction} from '../../lib/createAction';
 import { PostSchema } from "@/features/posts/schemas";
@@ -44,6 +44,34 @@ export const createPost = createAction(async({session}, {title, body, category, 
       slug: category
     }
   })
+  
+  const newTags = await Promise.all(
+    tags.split(",").map(async (tagSlug) => {
+      tagSlug = tagSlug.trim(); // Trim whitespace
+  
+      if (!tagSlug) return null; // Skip empty strings
+  
+      // Check if the tag already exists
+      const existingTag = await prisma.tag.findUnique({ where: { slug: tagSlug } });
+  
+      if (existingTag) {
+        // If the tag exists, return it to connect to it
+        return { id: existingTag.id };
+      } else {
+        // If the tag doesn't exist, generate a new slug and create a new tag
+        const updatedTagSlug = await findFreeSlug<Tag>(
+          tagSlug.toLowerCase().replace(/[^a-z0-9]/g, "-"),
+          async (slug: string) =>
+            await prisma.tag.findUnique({ where: { slug } }),
+        );
+  
+        return { title: tagSlug, slug: updatedTagSlug };
+      }
+    })
+  );
+
+  const filteredTags = newTags.filter(Boolean);
+  
 
   const post = await prisma.post.create({
     data: {
@@ -52,12 +80,11 @@ export const createPost = createAction(async({session}, {title, body, category, 
       slug: createSlug,
       categoryId: getCategory?.id!,
       userId: session?.data.userId!,
-      tags: {
-        connectOrCreate: tags.split(',').map(tagSlug => ({
-          where: { slug: tagSlug },
-          create: { title: tagSlug, slug: tagSlug }
-        }))
-      }
+      tags: prepareArrayField(
+        filteredTags.map((c) => {
+          return c
+        })
+      ),
     }
   })
 
@@ -92,8 +119,6 @@ export const updatePost = createAction(async({validate, session}, {slug, data}) 
   const currentPost = await prisma.post.findUnique({ where: { slug }, include: {tags: true} });
 
 
-  console.log(data.category)
-
   let newSlug;
   if (currentPost?.title !== data.title) {
     newSlug = await findFreeSlug<Post>(
@@ -105,10 +130,36 @@ export const updatePost = createAction(async({validate, session}, {slug, data}) 
     newSlug = currentPost.slug;
   }
 
+  const newTags = await Promise.all(
+    data.tags.split(",").map(async (tagSlug) => {
+      tagSlug = tagSlug.trim(); // Trim whitespace
+  
+      if (!tagSlug) return null; // Skip empty strings
+  
+      // Check if the tag already exists
+      const existingTag = await prisma.tag.findUnique({ where: { slug: tagSlug } });
+  
+      if (existingTag) {
+        // If the tag exists, return it to connect to it
+        return { id: existingTag.id };
+      } else {
+        // If the tag doesn't exist, generate a new slug and create a new tag
+        const updatedTagSlug = await findFreeSlug<Tag>(
+          tagSlug.toLowerCase().replace(/[^a-z0-9]/g, "-"),
+          async (slug: string) =>
+            await prisma.tag.findUnique({ where: { slug } }),
+        );
+  
+        return { title: tagSlug, slug: updatedTagSlug };
+      }
+    })
+  );
+
+  const filteredTags = newTags.filter(Boolean);
+
+
   const mappedTags = prepareArrayField(
-    data.tags.split(",").map((c) => {
-      return { id: c }
-    }) || [],
+    filteredTags,
     currentPost?.tags,
     (item) => ({
       ...item,
