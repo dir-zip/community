@@ -44,7 +44,7 @@ const Tiptap = ({value, onValueChange, editable = true}: {value: string, onValue
       },
     },
     editable,
-    content: `${value}<br />`,
+    content: `${value ? value : null}<br />`,
     onUpdate({ editor }) {
       onValueChange!(editor.getHTML())
     }

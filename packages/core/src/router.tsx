@@ -55,7 +55,7 @@ export async function PageInit<T>({
   auth,
   sidebarLinks,
   resources
-}: 
+}:
 {
   params: { "1up": string[] };
   searchParams: { [key: string]: string | string[] | undefined };
@@ -79,7 +79,7 @@ export async function PageInit<T>({
       } else {
         router.addRoute(route.route, route.handler)
       }
-      
+
     }
 
     if(route.type === "layout") {
@@ -102,32 +102,32 @@ export async function PageInit<T>({
 
   await router.createLayout("/admin/*", async({children}) => {
     const user = await getCurrentUser();
-  
+
     const session = await auth.getSession();
     if(!session) {
       throw new Error("You do not belong here.")
     }
 
-  
+
     if(user.role !== "ADMIN") {
       throw new Error("You are not authorized to access this page.")
     }
-  
+
     return (
       <div className="min-h-screen flex">
-        <Sidebar 
-          adminSidebarComponent={true} 
-          root={`/`} 
+        <Sidebar
+          adminSidebarComponent={true}
+          root={`/`}
           sidebarLinks={sidebarLinks}
           resources={resources}
           currentUser={user}
         />
-  
+
         <main className="flex-1 min-w-0 overflow-auto p-8 pt-6">
           <div className="pb-12 md:pb-6">
             <Breadcrumbs
               ignore={[
-                { href: "/posts", breadcrumb: "Posts" }, 
+                { href: "/posts", breadcrumb: "Posts" },
                 { href: "/posts/:slug/comments", breadcrumb: "Comments" }
               ]}
             />
@@ -144,14 +144,14 @@ export async function PageInit<T>({
 
     return (
       <div className="min-h-screen flex">
-        <Sidebar 
-          adminSidebarComponent={false} 
-          root={`/`} 
+        <Sidebar
+          adminSidebarComponent={false}
+          root={`/`}
           sidebarLinks={sidebarLinks}
           resources={resources}
           currentUser={user}
         />
-  
+
         <main className="flex-1 min-w-0 overflow-auto p-8 pt-6">
           <div className="pb-12 md:pb-6">
             <Breadcrumbs
@@ -186,13 +186,13 @@ export async function PageInit<T>({
     return <ProfileScreen username={username} />
   })
 
-  /** 
-   * 
-   * 
-   * 
+  /**
+   *
+   *
+   *
    * START AUTH
-   * 
-   * 
+   *
+   *
    *
    **/
 
@@ -260,15 +260,15 @@ export async function PageInit<T>({
     return <ResetPasswordPage />
   })
 
-  /** 
-   * 
-   * 
-   * 
+  /**
+   *
+   *
+   *
    * END AUTH
-   * 
-   * 
+   *
+   *
    **/
-  
+
 
   router.addRoute('/posts/new', async() => {
     const session = await auth.getSession();
@@ -443,5 +443,4 @@ export async function ApiRouteInit() {
   const routes = router.initApiRoute()
   return routes
 }
-
 
