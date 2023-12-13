@@ -1,13 +1,18 @@
-import {Init1up} from '@dir/core';
+import { Init1up } from "@dir/core";
 
-
-
-
-export const {createAction, createApiEndpoint, createJob, PageInit, LayoutInit, ApiRouteInit, auth, global} = Init1up({
-
+export const {
+  createAction,
+  createApiEndpoint,
+  createJob,
+  PageInit,
+  LayoutInit,
+  ApiRouteInit,
+  auth,
+  global,
+} = Init1up({
   auth: {
-    guards: async({sessionData}) => {
-      console.log(sessionData)
+    guards: async ({ sessionData }) => {
+      console.log(sessionData);
     },
     oauth: {
       providers: {
@@ -18,11 +23,9 @@ export const {createAction, createApiEndpoint, createJob, PageInit, LayoutInit, 
         github: {
           clientId: process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID!,
           clientSecret: process.env.GITHUB_CLIENT_SECRET!,
-        }
+        },
       },
       baseUrl: process.env.NEXT_PUBLIC_APP_URL!,
-    }
-  }
-})
-.build()
-
+    },
+  },
+}).build();
