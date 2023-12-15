@@ -1,5 +1,5 @@
 "use server";
-import 'server-only'
+
 import {
   PasswordHandler,
   generateToken,

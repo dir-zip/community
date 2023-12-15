@@ -1,5 +1,5 @@
 "use server"
-import "server-only"
+
 import { prisma } from "@dir/db";
 import {z} from 'zod'
 import { prepareArrayField } from "@creatorsneverdie/prepare-array-for-prisma"

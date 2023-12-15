@@ -1,7 +1,7 @@
 "use client"
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import "regenerator-runtime/runtime"
+
 import {useCallback, useMemo, useState} from "react"
 import {
   type PaginationState,
