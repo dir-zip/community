@@ -2,7 +2,7 @@ import { buttonVariants } from "@/components/ui/Button"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
 import { getAllPosts } from "../actions"
-import {Button} from '@dir/ui'
+import { Button } from '@dir/ui'
 
 
 export const AllPosts = async ({loggedIn}: {loggedIn: boolean}) => {
@@ -13,10 +13,7 @@ export const AllPosts = async ({loggedIn}: {loggedIn: boolean}) => {
     <div>
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">All Posts</h2>
-        <Button>Test</Button>
-        {loggedIn && <Link className={cn(
-          buttonVariants({variant: 'default'})
-        )} href="/posts/new">New Post</Link>}
+        <Button variant="destructive">Test</Button>
 
       </div>
       <div>
