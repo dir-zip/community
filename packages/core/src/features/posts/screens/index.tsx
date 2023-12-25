@@ -1,21 +1,56 @@
-import { buttonVariants } from "@/components/ui/Button"
-import { cn } from "@/lib/utils"
 import Link from "next/link"
 import { getAllPosts } from "../actions"
-import { Button } from '@dir/ui'
+import { Button, Table } from '@dir/ui'
 
 
 export const AllPosts = async ({loggedIn}: {loggedIn: boolean}) => {
   const categories = await getAllPosts()
 
+  const columns = [
+    {
+      accessorKey: 'title',
+      id: 'title',
+    },
+    {
+      accessorKey: 'author',
+      id: 'author',
+    },
+    {
+      accessorKey: 'date',
+      id: 'date',
+    }
+  ];
+
+  const data = [
+    { title: 'Post 1', author: 'Author 1', date: '2022-01-01' },
+    { title: 'Post 2', author: 'Author 2', date: '2022-01-02' },
+    { title: 'Post 3', author: 'Author 3', date: '2022-01-03' }
+  ];
+
 
   return (
-    <div>
+    <div className="px-4">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">All Posts</h2>
-        <Button variant="destructive">Test</Button>
-
+        <Button>Test</Button>
       </div>
+
+      <div className="py-4">
+      <Table
+        columns={columns}
+        data={data}
+        pageCount={1}
+        pageIndex={0}
+        pageSize={3}
+        hasNext={false}
+        hasPrevious={false}
+        totalCount={3}
+        startPage={0}
+        endPage={0}
+      />
+      </div>
+
+
       <div>
         {categories.map((c,i) => {
           return (

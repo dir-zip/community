@@ -402,7 +402,7 @@ importers:
         specifier: ^1.0.4
         version: 1.0.4(@types/react-dom@18.2.7)(@types/react@18.2.16)(react-dom@18.2.0)(react@18.2.0)
       '@tanstack/react-table':
-        specifier: ^8.8.5
+        specifier: ^8.10.7
         version: 8.10.7(react-dom@18.2.0)(react@18.2.0)
       class-variance-authority:
         specifier: ^0.6.0
