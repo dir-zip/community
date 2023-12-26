@@ -1,4 +1,3 @@
-"use client"
 import * as React from "react";
 import {
   type PaginationState,
@@ -9,6 +8,7 @@ import {
 } from '@tanstack/react-table'
 import { useMemo, useState } from "react";
 import { Button } from "./Button";
+import Debouncer from "../utils/debouncer";
 
 function IndeterminateCheckbox({
   indeterminate,
@@ -43,7 +43,10 @@ export const Table = ({
   hasPrevious: controlledHasPrevious,
   totalCount,
   startPage,
-  endPage
+  endPage,
+  routingContext,
+  onNavigate,
+  enableMultiSelect
 }: {
   columns: ColumnDef<any, any>[],
   data: any[],
@@ -54,8 +57,17 @@ export const Table = ({
   hasPrevious: boolean,
   totalCount: number,
   startPage: number,
-  endPage: number
+  endPage: number,
+  routingContext?: {
+    pathname: string;
+    searchParams: string | null
+  },
+  onNavigate?: (url: string) => void,
+  enableMultiSelect?: boolean
 }) => {
+
+
+
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
     pageIndex: controlledPageIndex,
     pageSize: controlledPageSize,
@@ -71,27 +83,61 @@ export const Table = ({
     [pageIndex, pageSize]
   )
 
+  const createQueryString = (name: string, value: string) => {
+    const params = new URLSearchParams()
+    params.set(name, value)
+
+    return params.toString()
+  }
+
+
+  const goToPreviousPage = () => {
+    onNavigate?.(routingContext?.pathname + '?' + createQueryString('search', routingContext?.searchParams || '') + '&' + createQueryString('page', `${controlledPageIndex - 1}`))
+  }
+
+  const goToNextPage = () => {
+    onNavigate?.(routingContext?.pathname + '?' + createQueryString('search', routingContext?.searchParams || '') + '&' + createQueryString('page', `${controlledPageIndex + 1}`))
+  }
+
+  const searchQuery = async (e: any) => {
+    onNavigate?.(routingContext?.pathname + '?' + createQueryString('search', JSON.stringify(e.target.value) || '') + '&' + createQueryString('page', '0'))
+  }
+
+  const debouncer = new Debouncer((e) => searchQuery(e), 500)
+  const execDebouncer = (e: any) => {
+    e.persist()
+    return debouncer.execute(e)
+  }
+
   const table = useReactTable({
     data,
-    columns: [{id: 'select', header: ({ table }) => (
-      <IndeterminateCheckbox
-        {...{
-          checked: table.getIsAllRowsSelected(),
-          indeterminate: table.getIsSomeRowsSelected(),
-          onChange: table.getToggleAllRowsSelectedHandler(),
-        }}
-      />
-    ),
-    cell: ({ row }) => (
-      <IndeterminateCheckbox
-        {...{
-          checked: row.getIsSelected(),
-          disabled: !row.getCanSelect(),
-          indeterminate: row.getIsSomeSelected(),
-          onChange: row.getToggleSelectedHandler(),
-        }}
-      />
-    ),}, ...columns],
+    columns: enableMultiSelect
+    ? [
+        {
+          id: 'select',
+          header: ({ table }) => (
+            <IndeterminateCheckbox
+              {...{
+                checked: table.getIsAllRowsSelected(),
+                indeterminate: table.getIsSomeRowsSelected(),
+                onChange: table.getToggleAllRowsSelectedHandler(),
+              }}
+            />
+          ),
+          cell: ({ row }) => (
+            <IndeterminateCheckbox
+              {...{
+                checked: row.getIsSelected(),
+                disabled: !row.getCanSelect(),
+                indeterminate: row.getIsSomeSelected(),
+                onChange: row.getToggleSelectedHandler(),
+              }}
+            />
+          ),
+        },
+        ...columns,
+      ]
+    : columns,
     pageCount: controlledPageCount,
     state: {
       pagination,
@@ -100,7 +146,7 @@ export const Table = ({
     onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     manualPagination: true,
-    enableRowSelection: true,
+    enableRowSelection: enableMultiSelect,
     onRowSelectionChange: setRowSelection,
   })
 
@@ -113,14 +159,14 @@ export const Table = ({
           type="text"
           className="border border-gray-300 mr-2 lg:w-1/4 px-2 py-2 w-full rounded"
           onChange={async (e) => {
-            // execDebouncer(e)
+            execDebouncer(e)
           }}
         />
 
-        <div>
+      { enableMultiSelect ? <div>
           {Object.keys(rowSelection).length} of{' '}
           {table.getPreFilteredRowModel().rows.length} Total Rows Selected
-        </div>
+        </div> : null }
       </div>
 
       <div className="flex flex-col bg-primary overflow-auto border rounded-tl rounded-tr border-b-0">
@@ -176,14 +222,14 @@ export const Table = ({
         <div className="flex-1 flex justify-end">
           <Button
             disabled={!controlledHasPrevious}
-            // onClick={() => goToPreviousPage()}
+            onClick={() => goToPreviousPage()}
           >
             Previous
           </Button>
           <Button
             className="ml-3"
             disabled={!controlledHasNext}
-            // onClick={() => goToNextPage()}
+            onClick={() => goToNextPage()}
           >
             Next
           </Button>

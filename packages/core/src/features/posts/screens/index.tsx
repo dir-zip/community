@@ -1,32 +1,11 @@
 import Link from "next/link"
 import { getAllPosts } from "../actions"
 import { Button, Table } from '@dir/ui'
+import { TestTable } from "../components/TestTable"
 
 
 export const AllPosts = async ({loggedIn}: {loggedIn: boolean}) => {
   const categories = await getAllPosts()
-
-  const columns = [
-    {
-      accessorKey: 'title',
-      id: 'title',
-    },
-    {
-      accessorKey: 'author',
-      id: 'author',
-    },
-    {
-      accessorKey: 'date',
-      id: 'date',
-    }
-  ];
-
-  const data = [
-    { title: 'Post 1', author: 'Author 1', date: '2022-01-01' },
-    { title: 'Post 2', author: 'Author 2', date: '2022-01-02' },
-    { title: 'Post 3', author: 'Author 3', date: '2022-01-03' }
-  ];
-
 
   return (
     <div className="px-4">
@@ -36,18 +15,7 @@ export const AllPosts = async ({loggedIn}: {loggedIn: boolean}) => {
       </div>
 
       <div className="py-4">
-      <Table
-        columns={columns}
-        data={data}
-        pageCount={1}
-        pageIndex={0}
-        pageSize={3}
-        hasNext={false}
-        hasPrevious={false}
-        totalCount={3}
-        startPage={0}
-        endPage={0}
-      />
+        <TestTable />
       </div>
 
 
