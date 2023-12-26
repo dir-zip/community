@@ -25,6 +25,7 @@ module.exports = {
           800: "var(--primary-container)",
           700: "var(--primary-medium)",
           500: "var(--primary)",
+          400: "var(--primary-subtle)",
           100: "var(--primary-foreground)",
         },
       },

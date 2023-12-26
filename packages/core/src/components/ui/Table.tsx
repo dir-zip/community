@@ -10,7 +10,7 @@ import {
   flexRender,
   type ColumnDef,
 } from '@tanstack/react-table'
-import Debouncer from "../../lib/debouncer";
+
 import { Button } from "../../components/ui/Button";
 
 
@@ -92,11 +92,11 @@ const Table = ({
     router.push(pathname + '?' + createQueryString('search', JSON.stringify(e.target.value) || '') + '&' + createQueryString('page', '0'))
   }
 
-  const debouncer = new Debouncer((e) => searchQuery(e), 500)
-  const execDebouncer = (e: any) => {
-    e.persist()
-    return debouncer.execute(e)
-  }
+  // const debouncer = new Debouncer((e) => searchQuery(e), 500)
+  // const execDebouncer = (e: any) => {
+  //   e.persist()
+  //   return debouncer.execute(e)
+  // }
 
   return (
     <div>
@@ -106,7 +106,7 @@ const Table = ({
           type="text"
           className="border border-gray-300 mr-2 lg:w-1/4 px-2 py-2 w-full rounded"
           onChange={async (e) => {
-            execDebouncer(e)
+            // execDebouncer(e)
           }}
         />
       </div>

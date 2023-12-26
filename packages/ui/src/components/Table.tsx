@@ -9,6 +9,8 @@ import {
 import { useMemo, useState } from "react";
 import { Button } from "./Button";
 import Debouncer from "../utils/debouncer";
+import { InputField } from "./InputField";
+import {Search} from 'lucide-react'
 
 function IndeterminateCheckbox({
   indeterminate,
@@ -152,89 +154,88 @@ export const Table = ({
 
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-2">
-        <input
-          placeholder="Search"
-          type="text"
-          className="border border-gray-300 mr-2 lg:w-1/4 px-2 py-2 w-full rounded"
-          onChange={async (e) => {
-            execDebouncer(e)
-          }}
-        />
+    <div className="flex flex-col space-y-2">
+      <div className="bg-primary-800 p-2 rounded flex items-center">
+        <div className="flex items-center justify-between w-full">
+          <InputField placeholder="Search" icon={<Search className="w-5 h-5"/>} name="search" onChange={async (e) => {
+              execDebouncer(e)
+            }}/>
 
-      { enableMultiSelect ? <div>
-          {Object.keys(rowSelection).length} of{' '}
-          {table.getPreFilteredRowModel().rows.length} Total Rows Selected
-        </div> : null }
+        { enableMultiSelect ? <div>
+            {Object.keys(rowSelection).length} of{' '}
+            {table.getPreFilteredRowModel().rows.length} Total Rows Selected
+          </div> : null }
+        </div>
       </div>
-
-      <div className="flex flex-col bg-primary overflow-auto border rounded-tl rounded-tr border-b-0">
-        <table className="table min-w-full">
-          <thead className="bg-primary-900 border-b">
-            {table.getHeaderGroups().map((headerGroup, i) => (
-              <tr key={i}>
-                {headerGroup.headers.map((column, i) => (
-                  <th
-                    className="px-6 py-3 text-left text-sm font-medium text-foreground capitalize"
-                    colSpan={column.colSpan}
-                    key={i}
-                  >
-                    {flexRender(
-                      column.column.columnDef.header,
-                      column.getContext()
-                    )}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-          {table.getRowModel().rows.map(row => {
-            return (
-              <tr className="bg-primary-300" key={row.id}>
-                {row.getVisibleCells().map(cell => {
-                  return (
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground border-b border-primary-200" key={cell.id}>
+      
+      <div>
+        <div className="flex flex-col bg-primary overflow-auto border rounded-tl rounded-tr border-b-0">
+          <table className="table min-w-full">
+            <thead className="bg-primary-900 border-b">
+              {table.getHeaderGroups().map((headerGroup, i) => (
+                <tr key={i}>
+                  {headerGroup.headers.map((column, i) => (
+                    <th
+                      className="px-6 py-3 text-left text-sm font-medium text-foreground capitalize"
+                      colSpan={column.colSpan}
+                      key={i}
+                    >
                       {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
+                        column.column.columnDef.header,
+                        column.getContext()
                       )}
-                    </td>
-                  )
-                })}
-              </tr>
-            )
-          })}
-        </tbody>
-        </table>
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody>
+            {table.getRowModel().rows.map(row => {
+              return (
+                <tr className="bg-primary-300" key={row.id}>
+                  {row.getVisibleCells().map(cell => {
+                    return (
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground border-b border-primary-200" key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    )
+                  })}
+                </tr>
+              )
+            })}
+          </tbody>
+          </table>
+        </div>
+
+
+        <nav className="flex items-center justify-between px-2 py-1 bg-primary-900 rounded-bl rounded-br border border-t-0" aria-label="Pagination">
+          <div>
+            <p className="text-sm text-primary-100">
+              Showing <span className="font-medium">{startPage}</span> to{" "}
+              <span className="font-medium">{endPage}</span> of{" "}
+              <span className="font-medium">{totalCount}</span> results
+            </p>
+          </div>
+          <div className="flex-1 flex justify-end">
+            <Button
+              disabled={!controlledHasPrevious}
+              onClick={() => goToPreviousPage()}
+            >
+              Previous
+            </Button>
+            <Button
+              className="ml-3"
+              disabled={!controlledHasNext}
+              onClick={() => goToNextPage()}
+            >
+              Next
+            </Button>
+          </div>
+        </nav>
       </div>
-
-
-      <nav className="flex items-center justify-between px-2 py-1 bg-primary-900 rounded-bl rounded-br border border-t-0" aria-label="Pagination">
-        <div>
-          <p className="text-sm text-primary-100">
-            Showing <span className="font-medium">{startPage}</span> to{" "}
-            <span className="font-medium">{endPage}</span> of{" "}
-            <span className="font-medium">{totalCount}</span> results
-          </p>
-        </div>
-        <div className="flex-1 flex justify-end">
-          <Button
-            disabled={!controlledHasPrevious}
-            onClick={() => goToPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            className="ml-3"
-            disabled={!controlledHasNext}
-            onClick={() => goToNextPage()}
-          >
-            Next
-          </Button>
-        </div>
-      </nav>
 
     </div>
   )
