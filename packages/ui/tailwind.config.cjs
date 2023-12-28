@@ -28,6 +28,9 @@ module.exports = {
           400: "var(--primary-subtle)",
           100: "var(--primary-foreground)",
         },
+        link: {
+          DEFAULT: "var(--link)"
+        }
       },
       borderRadius: {
         DEFAULT: "var(--radius)",
