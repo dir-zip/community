@@ -404,6 +404,24 @@ importers:
       '@tanstack/react-table':
         specifier: ^8.10.7
         version: 8.10.7(react-dom@18.2.0)(react@18.2.0)
+      '@tiptap/extension-code-block-lowlight':
+        specifier: ^2.1.12
+        version: 2.1.13(@tiptap/core@2.1.13)(@tiptap/extension-code-block@2.1.13)(@tiptap/pm@2.1.13)
+      '@tiptap/extension-list-item':
+        specifier: ^2.1.12
+        version: 2.1.13(@tiptap/core@2.1.13)
+      '@tiptap/extension-text-style':
+        specifier: ^2.1.12
+        version: 2.1.13(@tiptap/core@2.1.13)
+      '@tiptap/pm':
+        specifier: ^2.1.12
+        version: 2.1.13
+      '@tiptap/react':
+        specifier: ^2.1.12
+        version: 2.1.13(@tiptap/core@2.1.13)(@tiptap/pm@2.1.13)(react-dom@18.2.0)(react@18.2.0)
+      '@tiptap/starter-kit':
+        specifier: ^2.1.12
+        version: 2.1.13(@tiptap/pm@2.1.13)
       class-variance-authority:
         specifier: ^0.6.0
         version: 0.6.1
@@ -413,6 +431,12 @@ importers:
       cmdk:
         specifier: ^0.2.0
         version: 0.2.0(@types/react@18.2.16)(react-dom@18.2.0)(react@18.2.0)
+      highlight.js:
+        specifier: ^11.9.0
+        version: 11.9.0
+      lowlight:
+        specifier: ^3.1.0
+        version: 3.1.0
       lucide-react:
         specifier: ^0.263.1
         version: 0.263.1(react@18.2.0)

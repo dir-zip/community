@@ -36,9 +36,17 @@
     "@radix-ui/react-switch": "^1.0.3",
     "@radix-ui/react-tabs": "^1.0.4",
     "@tanstack/react-table": "^8.10.7",
+    "@tiptap/extension-code-block-lowlight": "^2.1.12",
+    "@tiptap/extension-list-item": "^2.1.12",
+    "@tiptap/extension-text-style": "^2.1.12",
+    "@tiptap/pm": "^2.1.12",
+    "@tiptap/react": "^2.1.12",
+    "@tiptap/starter-kit": "^2.1.12",
     "class-variance-authority": "^0.6.0",
     "clsx": "^1.2.1",
     "cmdk": "^0.2.0",
+    "highlight.js": "^11.9.0",
+    "lowlight": "^3.1.0",
     "lucide-react": "^0.263.1",
     "tailwind-merge": "^1.12.0"
   }

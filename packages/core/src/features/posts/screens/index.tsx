@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { getAllPosts } from "../actions"
-import { Button, Table } from '@dir/ui'
+import { Button, PostPreview } from '@dir/ui'
 import { TestTable } from "../components/TestTable"
 
 
@@ -17,6 +17,8 @@ export const AllPosts = async ({loggedIn}: {loggedIn: boolean}) => {
       <div className="py-4">
         <TestTable />
       </div>
+
+      <PostPreview content="Test" />
 
 
       <div>
