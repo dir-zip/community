@@ -1,7 +1,11 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
-  content: ["**/*.{ts,tsx}"],
+  content: ["./src/**/*.{ts,tsx}"],
+  corePlugins: {
+    preflight: false,
+  },
+  darkMode: ["class", 'html[class~="dark"]'],
   theme: {
     container: {
       center: true,
@@ -13,41 +17,24 @@ module.exports = {
     extend: {
       colors: {
         border: "var(--border)",
-        input: "var(--input)",
-        ring: "var(--ring)",
         background: "var(--background)",
         foreground: "var(--foreground)",
         primary: {
           DEFAULT: "var(--primary)",
-          foreground: "var(--primary-foreground)",
+          900: "var(--primary-darkest)",
+          800: "var(--primary-container)",
+          700: "var(--primary-medium)",
+          500: "var(--primary)",
+          400: "var(--primary-subtle)",
+          100: "var(--primary-foreground)",
         },
-        secondary: {
-          DEFAULT: "var(--secondary)",
-          foreground: "var(--secondary-foreground)",
-        },
-        destructive: {
-          DEFAULT: "var(--destructive)",
-          foreground: "var(--destructive-foreground)",
-        },
-        muted: {
-          DEFAULT: "var(--muted)",
-          foreground: "var(--muted-foreground)",
-        },
-        accent: {
-          DEFAULT: "var(--accent)",
-          foreground: "var(--accent-foreground)",
-        },
-        popover: {
-          DEFAULT: "var(--popover)",
-          foreground: "var(--popover-foreground)",
-        },
-        card: {
-          DEFAULT: "var(--card)",
-          foreground: "var(--card-foreground)",
-        },
+        link: {
+          DEFAULT: "var(--link)"
+        }
       },
       borderRadius: {
-        lg: "var(--radius)",
+        DEFAULT: "var(--radius)",
+        lg: "var(--radius) + 4px",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },

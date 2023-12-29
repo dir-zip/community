@@ -1,5 +1,5 @@
 'use server'
-import 'server-only'
+
 import { prisma, type Post, Tag } from "@dir/db";
 import { z } from "zod";
 import {createAction} from '../../lib/createAction';

@@ -11,7 +11,6 @@ import { ResetPasswordPage } from "./features/auth/screens/reset_password";
 import Admin from "./features/admin/screens";
 import Sidebar from "./components/ui/Sidebar";
 
-import '../dist/output.css'
 
 import UsersAdminPage from "./features/admin/screens/users/page";
 import SingleUserAdminPage from "./features/admin/screens/users/[id]/page";
@@ -21,7 +20,6 @@ import SessionsAdminPage from "./features/admin/screens/sessions/page";
 import SingleSessionAdminPage from "./features/admin/screens/sessions/[id]/page";
 
 import { BaseSessionData, type Resources, Routes } from ".";
-
 
 
 import ToastProvider from "./components/ui/Toaster";
@@ -143,24 +141,8 @@ export async function PageInit<T>({
     const user = await getCurrentUser()
 
     return (
-      <div className="min-h-screen flex">
-        <Sidebar
-          adminSidebarComponent={false}
-          root={`/`}
-          sidebarLinks={sidebarLinks}
-          resources={resources}
-          currentUser={user}
-        />
-
-        <main className="flex-1 min-w-0 overflow-auto p-8 pt-6">
-          <div className="pb-12 md:pb-6">
-            <Breadcrumbs
-              ignore={[{ href: "/posts", breadcrumb: "Posts" },{ href: "/posts/:slug/comments", breadcrumb: "Comments" }]}
-            />
-          </div>
-          {children}
-          <ToastProvider />
-        </main>
+      <div>
+        {children}
       </div>
     );
   })
@@ -443,4 +425,3 @@ export async function ApiRouteInit() {
   const routes = router.initApiRoute()
   return routes
 }
-

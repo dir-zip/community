@@ -1,5 +1,5 @@
 "use server"
-import "server-only"
+
 import { createAction } from "@/lib/createAction"
 import {prisma} from '@dir/db'
 import {z} from 'zod'

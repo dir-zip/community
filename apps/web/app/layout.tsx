@@ -1,6 +1,3 @@
-import "@/styles/global.css";
-
-
 export const metadata = {
   title: "dir.zip",
   description: "Build your community.",

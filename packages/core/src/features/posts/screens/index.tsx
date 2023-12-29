@@ -1,23 +1,26 @@
-import { buttonVariants } from "@/components/ui/Button"
-import { cn } from "@/lib/utils"
 import Link from "next/link"
 import { getAllPosts } from "../actions"
+import { Button, PostPreview } from '@dir/ui'
+import { TestTable } from "../components/TestTable"
 
 
 export const AllPosts = async ({loggedIn}: {loggedIn: boolean}) => {
   const categories = await getAllPosts()
 
-
   return (
-    <div>
+    <div className="px-4">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">All Posts</h2>
-
-        {loggedIn && <Link className={cn(
-          buttonVariants({variant: 'default'})
-        )} href="/posts/new">New Post</Link>}
-
+        <Button>Test</Button>
       </div>
+
+      <div className="py-4">
+        <TestTable />
+      </div>
+
+      <PostPreview content="Test" />
+
+
       <div>
         {categories.map((c,i) => {
           return (
