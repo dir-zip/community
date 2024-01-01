@@ -2,7 +2,7 @@ import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import ListItem from '@tiptap/extension-list-item'
 import TextStyle from '@tiptap/extension-text-style'
-import { cn } from '@/lib/utils'
+import { cn } from '@/utils'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
 import { createLowlight, common } from 'lowlight'
 import css from 'highlight.js/lib/languages/css'
@@ -17,7 +17,7 @@ lowlight.register('ts', ts)
 lowlight.register('js', js)
 lowlight.register('css', css)
 
-export const RichTextField = ({value, onValueChange, editable = true}: {value: string, onValueChange?: (e: string) => void, editable?: boolean}) => {
+export const RichTextField = ({ value, onValueChange, editable = true }: { value: string, onValueChange?: (e: string) => void, editable?: boolean }) => {
 
 
   const editor = useEditor({
@@ -35,7 +35,7 @@ export const RichTextField = ({value, onValueChange, editable = true}: {value: s
       TextStyle,
       ListItem,
       CodeBlockLowlight
-      .configure({ lowlight })
+        .configure({ lowlight })
     ],
     editorProps: {
       attributes: {
@@ -50,6 +50,6 @@ export const RichTextField = ({value, onValueChange, editable = true}: {value: s
   })
 
   return (
-    <EditorContent editor={editor} className={cn(editable && "flex rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50")}/>
+    <EditorContent editor={editor} className={cn(editable && "flex rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50")} />
   )
 }

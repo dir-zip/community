@@ -5,10 +5,10 @@ import { z } from "zod";
 
 
 import {createAction} from '../../../../lib/createAction';
-import { CreateBroadcastSchema } from "@/features/broadcasts/schemas";
-import { findFreeSlug } from "@/lib/utils";
+import { CreateBroadcastSchema } from "../../../../features/broadcasts/schemas";
+import { findFreeSlug } from "../../../../lib/utils";
 import { prepareArrayField } from "@creatorsneverdie/prepare-array-for-prisma";
-import { sendEmail } from "@/jobs";
+import { sendEmail } from "../../../../jobs";
 
 
 export const createBroadcast = createAction(async({}, {title, body, tags}) => {

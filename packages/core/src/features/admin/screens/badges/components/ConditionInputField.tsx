@@ -4,10 +4,10 @@ import { useFormContext, useFieldArray } from "react-hook-form"
 
 import { Action, Condition } from "@dir/db"
 
-import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/components/ui/Button"
+import { cn } from "@/utils"
+import { buttonVariants } from "@/components/Button"
 import { X } from "lucide-react"
-import { SelectField } from "@/components/Forms"
+import { SelectField } from "../../../../../components/Forms"
 
 
 export interface ConditionInputFieldProps extends PropsWithoutRef<JSX.IntrinsicElements["input"]> {

@@ -1,7 +1,7 @@
 "use client";
 
-import { buttonVariants } from "@/components/ui/Button";
-import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/Button";
+import { cn } from "@/utils";
 import { Item } from "packages/db";
 import { buyItem } from "../actions";
 import { toast } from "sonner";

@@ -5,8 +5,8 @@ import { z } from "zod";
 
 
 import {createAction} from '../../../../lib/createAction';
-import { CategorySchema } from "@/features/posts/schemas";
-import { findFreeSlug } from "@/lib/utils";
+import { CategorySchema } from "../../../../features/posts/schemas";
+import { findFreeSlug } from "../../../../lib/utils";
 
 
 export const createCategory = createAction(async({}, {title}) => {

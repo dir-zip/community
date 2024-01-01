@@ -3,8 +3,8 @@ import {Suspense} from 'react'
 import {BadgeForm} from './components/Form'
 import Link from 'next/link'
 
-import { cn } from '@/lib/utils'
-import { buttonVariants } from '@/components/ui/Button'
+import { cn } from '@/utils'
+import { buttonVariants } from '@/components/Button'
 import { getSingleBadge } from './actions'
 import { BadgesTable } from './components/BadgesTable'
 import { getAllActions } from '../actions/actions'
@@ -16,7 +16,7 @@ export const AllBadgesPage = async () => {
       <div className="flex justify-between items-center pb-4">
         <h3 className="text-xl font-bold">Badges</h3>
         <Link className={cn(
-          buttonVariants({ variant: "default", size: "sm" })
+          buttonVariants({ variant: "default" })
         )} href="/admin/badges/new">New</Link>
       </div>
       <Suspense>

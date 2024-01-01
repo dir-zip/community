@@ -3,8 +3,8 @@
 import { prisma, type Post, Tag } from "@dir/db";
 import { z } from "zod";
 import {createAction} from '../../lib/createAction';
-import { PostSchema } from "@/features/posts/schemas";
-import { findFreeSlug } from "@/lib/utils";
+import { PostSchema } from "../../features/posts/schemas";
+import { findFreeSlug } from "@/utils";
 import { revalidatePath } from 'next/cache'
 import { prepareArrayField } from "@creatorsneverdie/prepare-array-for-prisma"
 import { triggerAction } from '../actions/actions';

@@ -4,8 +4,8 @@ import {BroadcastForm} from './components/Form'
 import Link from 'next/link'
 import { BroadcastTable } from './components/BroadcastTable'
 import { getSingleBroadcast } from './actions'
-import { cn } from '@/lib/utils'
-import { buttonVariants } from '@/components/ui/Button'
+import { cn } from '@/utils'
+import { buttonVariants } from '@/components/Button'
 
 export const AllBroadcasts = async () => {
   return (
@@ -13,7 +13,7 @@ export const AllBroadcasts = async () => {
       <div className="flex justify-between items-center pb-4">
         <h3 className="text-xl font-bold">Broadcasts</h3>
         <Link className={cn(
-          buttonVariants({ variant: "default", size: "sm" })
+          buttonVariants({ variant: "default" })
         )} href="/admin/broadcasts/new">New</Link>
       </div>
       <Suspense>

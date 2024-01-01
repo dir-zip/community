@@ -3,8 +3,8 @@ import {Suspense} from 'react'
 import {ItemForm} from './components/Form'
 import Link from 'next/link'
 
-import { cn } from '@/lib/utils'
-import { buttonVariants } from '@/components/ui/Button'
+import { cn } from '@/utils'
+import { buttonVariants } from '@/components/Button'
 import { getSingleItem } from './actions'
 import { ItemsTable } from './components/ItemsTable'
 
@@ -14,7 +14,7 @@ export const AllItemsPage = async () => {
       <div className="flex justify-between items-center pb-4">
         <h3 className="text-xl font-bold">Items</h3>
         <Link className={cn(
-          buttonVariants({ variant: "default", size: "sm" })
+          buttonVariants({ variant: "default"})
         )} href="/admin/items/new">New</Link>
       </div>
       <Suspense>

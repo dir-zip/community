@@ -3,8 +3,8 @@ import {Suspense} from 'react'
 import {ActionForm} from './components/Form'
 import Link from 'next/link'
 
-import { cn } from '@/lib/utils'
-import { buttonVariants } from '@/components/ui/Button'
+import { cn } from '@/utils'
+import { buttonVariants } from '@/components/Button'
 import { getSingleAction } from './actions'
 import { ActionsTable } from './components/ActionsTable'
 
@@ -15,7 +15,7 @@ export const AllActionsPage = async () => {
       <div className="flex justify-between items-center pb-4">
         <h3 className="text-xl font-bold">Actions</h3>
         <Link className={cn(
-          buttonVariants({ variant: "default", size: "sm" })
+          buttonVariants({ variant: "default"})
         )} href="/admin/actions/new">New</Link>
       </div>
       <Suspense>

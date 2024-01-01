@@ -1,6 +1,6 @@
 "use client"
 
-import { Form, TextField } from "@/components/Forms"
+import { Form, TextField } from "../../../../../components/Forms"
 
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
@@ -10,9 +10,9 @@ import { createBadge, deleteBadge, updateBadge } from "../actions"
 import type { Action, Badge, Condition } from "packages/db"
 import { CreateBadgeSchema } from "../schema"
 import { ConditionInputField } from "./ConditionInputField"
-import SingleFileUploadField from "@/features/files/components/SingleFileUpload"
-import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/components/ui/Button"
+import SingleFileUploadField from "../../../../../features/files/components/SingleFileUpload"
+import { cn } from "@/utils"
+import { buttonVariants } from "@/components/Button"
 
 export const BadgeForm = ({badge, actions}: {badge?: Badge & {condition: (Condition & {actions: Action[]}) | null}, actions: Action[]}) => {
   const router = useRouter()

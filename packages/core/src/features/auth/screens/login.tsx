@@ -1,8 +1,8 @@
 'use server'
 import LoginForm from "../components/LoginForm";
 import Link from "next/link";
-import { buttonVariants } from "@/components/ui/Button";
-import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/Button";
+import { cn } from "@/utils";
 import { AuthInit } from "packages/auth";
 
 
@@ -13,7 +13,7 @@ export async function LoginPage<T>({auth}: {auth: AuthInit<T>}) {
       <Link
         href="/signup"
         className={cn(
-          buttonVariants({ variant: "ghost", size: "sm" }),
+          buttonVariants({ variant: "outline"}),
           "absolute right-4 top-4 md:right-8 md:top-8",
         )}
       >
@@ -48,7 +48,7 @@ export async function LoginPage<T>({auth}: {auth: AuthInit<T>}) {
             <Link
               href="/forgot-password"
               className={cn(
-                buttonVariants({ variant: "ghost", size: "sm" })
+                buttonVariants({ variant: "outline" })
               )}
             >
               Forgot password?

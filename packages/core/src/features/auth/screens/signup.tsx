@@ -1,6 +1,6 @@
 import SignUpForm from "../components/SignUpForm";
-import { buttonVariants } from "@/components/ui/Button";
-import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/Button";
+import { cn } from "@/utils";
 import Link from "next/link";
 interface SignupPageProps {
   searchParams: {
@@ -15,7 +15,7 @@ export function SignupPage({searchParams}: SignupPageProps) {
       <Link
         href="/login"
         className={cn(
-          buttonVariants({ variant: "ghost", size: "sm" }),
+          buttonVariants({ variant: "outline" }),
           "absolute right-4 top-4 md:right-8 md:top-8",
         )}
       >

@@ -1,10 +1,10 @@
 "use client";
 
-import { FORM_ERROR, Form, TextField } from "@/components/Forms";
+import { FORM_ERROR, Form, TextField } from "../../../components/Forms";
 import { ForgotPasswordSchema } from "../schemas";
 import Link from "next/link";
-import { buttonVariants } from "@/components/ui/Button";
-import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/Button";
+import { cn } from "@/utils";
 import {forgotPasswordAction} from '../actions'
 
 
@@ -27,7 +27,7 @@ export default function ForgotPasswordForm() {
           <Link
             href="/login"
             className={cn(
-              buttonVariants({ variant: "ghost", size: "sm" })
+              buttonVariants({ variant: "outline" })
             )}
           >
             Go back to login
