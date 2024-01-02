@@ -9,7 +9,8 @@ import { SignupPage } from "./features/auth/screens/signup";
 import { ForgotPasswordPage } from "./features/auth/screens/forgot_password";
 import { ResetPasswordPage } from "./features/auth/screens/reset_password";
 import Admin from "./features/admin/screens";
-import Sidebar from "./components/ui/Sidebar";
+
+import {Sidebar} from "@dir/ui"
 
 
 import UsersAdminPage from "./features/admin/screens/users/page";
@@ -141,8 +142,16 @@ export async function PageInit<T>({
     const user = await getCurrentUser()
 
     return (
-      <div>
-        {children}
+      <div className="flex h-screen">
+        <Sidebar />
+        <main className="flex-1">
+          <div className="border-b">
+            <div className="px-4 py-6">
+              Breadcrumbs goes here
+            </div>
+          </div>
+          {children}
+        </main>
       </div>
     );
   })
