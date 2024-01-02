@@ -2,9 +2,9 @@ import Link from "next/link"
 import { getAllPosts } from "../actions"
 import { Button, PostPreview } from '@dir/ui'
 import { TestTable } from "../components/TestTable"
+import { Divider } from '@/components/Divider'
 
-
-export const AllPosts = async ({loggedIn}: {loggedIn: boolean}) => {
+export const AllPosts = async ({ loggedIn }: { loggedIn: boolean }) => {
   const categories = await getAllPosts()
 
   return (
@@ -19,10 +19,10 @@ export const AllPosts = async ({loggedIn}: {loggedIn: boolean}) => {
       </div>
 
       <PostPreview content="Test" />
-
+      <Divider text="Test" />
 
       <div>
-        {categories.map((c,i) => {
+        {categories.map((c, i) => {
           return (
             <div key={i}>
               <div className="py-4">

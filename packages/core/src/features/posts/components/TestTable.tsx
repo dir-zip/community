@@ -1,9 +1,9 @@
 "use client";
-import {useState, useEffect} from 'react'
-import {Table} from '@dir/ui'
+import { useState, useEffect } from 'react'
+import { Table } from '@dir/ui'
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import { Category } from 'packages/db';
-import { getAllCategories } from '@/features/admin/screens/categories/actions';
+import { getAllCategories } from '~/features/admin/screens/categories/actions';
 import Link from 'next/link';
 export const TestTable = () => {
   const ITEMS_PER_PAGE = 1
@@ -20,29 +20,29 @@ export const TestTable = () => {
   const [data, setData] = useState<Category[]>([])
   const [count, setCount] = useState(0)
 
-  if(endPage > count) {
+  if (endPage > count) {
     endPage = count
   }
 
   useEffect(() => {
-    (async() => {
+    (async () => {
 
       const data = await getAllCategories({
-        skip, 
-        take: ITEMS_PER_PAGE, 
+        skip,
+        take: ITEMS_PER_PAGE,
         where: searchQuery && JSON.parse(searchQuery as string)
           ? {
-              OR: [
-                {
-                  id: JSON.parse(searchQuery as string),
-                },
-                {
-                  title: {
-                    contains: JSON.parse(searchQuery as string),
-                  }
+            OR: [
+              {
+                id: JSON.parse(searchQuery as string),
+              },
+              {
+                title: {
+                  contains: JSON.parse(searchQuery as string),
                 }
-              ],
-            }
+              }
+            ],
+          }
           : {}
       })
       setData(data.categories)
@@ -84,7 +84,7 @@ export const TestTable = () => {
 
   return (
     <div>
-      <Table 
+      <Table
         columns={columns}
         data={data}
         pageCount={Math.ceil(count / ITEMS_PER_PAGE)}

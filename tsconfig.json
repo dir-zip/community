@@ -24,6 +24,9 @@
     "paths": {
       "@/*": [
         "./packages/ui/src/*"
+      ],
+      "~/*": [
+        "./packages/core/src/*"
       ]
     }
   },
