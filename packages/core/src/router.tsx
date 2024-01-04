@@ -2,15 +2,13 @@
 import Router from "@1upsaas/1uprouter"
 import { authInit } from "./lib/auth";
 import { getCurrentUser } from "./features/auth/actions";
-import {Breadcrumbs} from "./components/ui/Breadcrumbs";
-
+import { Breadcrumbs } from "./components/ui/Breadcrumbs";
 import { LoginPage } from "./features/auth/screens/login";
 import { SignupPage } from "./features/auth/screens/signup";
 import { ForgotPasswordPage } from "./features/auth/screens/forgot_password";
 import { ResetPasswordPage } from "./features/auth/screens/reset_password";
 import Admin from "./features/admin/screens";
-
-import {Sidebar} from "@dir/ui"
+import { Sidebar } from './components/ui/Sidebar'
 
 
 import UsersAdminPage from "./features/admin/screens/users/page";
@@ -43,7 +41,6 @@ import { AllBroadcastsPage, BroadcastPage } from "./features/broadcasts/screens"
 
 
 
-
 const router = new Router();
 
 
@@ -55,25 +52,25 @@ export async function PageInit<T>({
   sidebarLinks,
   resources
 }:
-{
-  params: { "1up": string[] };
-  searchParams: { [key: string]: string | string[] | undefined };
-  routes: Routes
-  auth: ReturnType<typeof authInit<T & BaseSessionData>>;
-  sidebarLinks?: {icon?: React.ElementType, url: string, text:string}[];
-  resources: Resources
-}) {
+  {
+    params: { "1up": string[] };
+    searchParams: { [key: string]: string | string[] | undefined };
+    routes: Routes
+    auth: ReturnType<typeof authInit<T & BaseSessionData>>;
+    sidebarLinks?: { icon?: React.ElementType, url: string, text: string }[];
+    resources: Resources
+  }) {
   const getParams = params["1up"]
   let rootPath: string
 
 
-  for(const route of routes) {
-    if(route.type === "page") {
-      if(route.root) {
+  for (const route of routes) {
+    if (route.type === "page") {
+      if (route.root) {
         rootPath = route.route
       }
 
-      if(route.resource) {
+      if (route.resource) {
         router.addRoute(`/:slug${route.route}`, route.handler)
       } else {
         router.addRoute(route.route, route.handler)
@@ -81,46 +78,39 @@ export async function PageInit<T>({
 
     }
 
-    if(route.type === "layout") {
-      router.createLayout(route.route, async ({children}) => {
+    if (route.type === "layout") {
+      router.createLayout(route.route, async ({ children }) => {
         return <route.handler>{children}</route.handler>;
       })
     }
   }
 
   // Create admin routes for resource
-  for(const resource of resources) {
+  for (const resource of resources) {
     router.addRoute(`/admin/${resource.name.toLowerCase()}`, async (params) => {
-      return <AllResourcePage resource={resource.name.toLowerCase()} schema={resource.schema}/>
+      return <AllResourcePage resource={resource.name.toLowerCase()} schema={resource.schema} />
     })
 
     router.addRoute(`/admin/${resource.name.toLowerCase()}/:id`, async (params) => {
-      return <SingleResourcePage resource={resource.name.toLowerCase()} params={params} schema={resource.schema}/>
+      return <SingleResourcePage resource={resource.name.toLowerCase()} params={params} schema={resource.schema} />
     })
   }
 
-  await router.createLayout("/admin/*", async({children}) => {
+  await router.createLayout("/admin/*", async ({ children }) => {
     const user = await getCurrentUser();
 
     const session = await auth.getSession();
-    if(!session) {
+    if (!session) {
       throw new Error("You do not belong here.")
     }
 
 
-    if(user.role !== "ADMIN") {
+    if (user.role !== "ADMIN") {
       throw new Error("You are not authorized to access this page.")
     }
 
     return (
       <div className="min-h-screen flex">
-        <Sidebar
-          adminSidebarComponent={true}
-          root={`/`}
-          sidebarLinks={sidebarLinks}
-          resources={resources}
-          currentUser={user}
-        />
 
         <main className="flex-1 min-w-0 overflow-auto p-8 pt-6">
           <div className="pb-12 md:pb-6">
@@ -138,16 +128,21 @@ export async function PageInit<T>({
     );
   })
 
-  router.createLayout("/*", async ({children}) => {
+
+
+  router.createLayout("/*", async ({ children }) => {
     const user = await getCurrentUser()
+    const settings = await prisma?.globalSetting.findFirst()
+    const memberCount = await prisma?.user.findMany()
 
     return (
       <div className="flex h-screen">
-        <Sidebar />
+        <Sidebar siteTitle={settings?.siteTitle!} memberCount={memberCount!.length} />
+
         <main className="flex-1">
           <div className="border-b">
             <div className="px-4 py-6">
-              Breadcrumbs goes here
+              <Breadcrumbs />
             </div>
           </div>
           {children}
@@ -158,22 +153,22 @@ export async function PageInit<T>({
 
 
 
-  router.addRoute("/", async() => {
+  router.addRoute("/", async () => {
     const session = await auth.getSession();
-    return <AllPosts loggedIn={session ? true : false}/>
+    return <AllPosts loggedIn={session ? true : false} />
   })
 
-  router.addRoute("/posts/:slug", async({slug}) => {
+  router.addRoute("/posts/:slug", async ({ slug }) => {
     const session = await auth.getSession();
-    return <SinglePost slug={slug} loggedIn={session ? true : false}/>
+    return <SinglePost slug={slug} loggedIn={session ? true : false} />
   })
 
-  router.addRoute("/posts/:slug/comments/:commentId", async({slug, commentId}) => {
+  router.addRoute("/posts/:slug/comments/:commentId", async ({ slug, commentId }) => {
     const session = await auth.getSession();
-    return <SingleCommentScreen commentId={commentId} postSlug={slug} loggedIn={session ? true : false}/>
+    return <SingleCommentScreen commentId={commentId} postSlug={slug} loggedIn={session ? true : false} />
   })
 
-  router.addRoute("/profile/:username", async({username}) => {
+  router.addRoute("/profile/:username", async ({ username }) => {
     return <ProfileScreen username={username} />
   })
 
@@ -189,7 +184,7 @@ export async function PageInit<T>({
 
   // AUTH LAYOUTS
 
-  router.createLayout("/login", async ({children}) => {
+  router.createLayout("/login", async ({ children }) => {
     return (
       <div className="min-h-screen flex">
         <main className="flex-1 min-w-0 overflow-auto">
@@ -200,7 +195,7 @@ export async function PageInit<T>({
     );
   })
 
-  router.createLayout("/signup", async ({children}) => {
+  router.createLayout("/signup", async ({ children }) => {
     return (
       <div className="min-h-screen flex">
         <main className="flex-1 min-w-0 overflow-auto">
@@ -211,7 +206,7 @@ export async function PageInit<T>({
     );
   })
 
-  router.createLayout("/forgot-password", async ({children}) => {
+  router.createLayout("/forgot-password", async ({ children }) => {
     return (
       <div className="min-h-screen flex">
         <main className="flex-1 min-w-0 overflow-auto">
@@ -222,7 +217,7 @@ export async function PageInit<T>({
     );
   })
 
-  router.createLayout("/reset-password", async ({children}) => {
+  router.createLayout("/reset-password", async ({ children }) => {
     return (
       <div className="min-h-screen flex">
         <main className="flex-1 min-w-0 overflow-auto">
@@ -235,12 +230,12 @@ export async function PageInit<T>({
 
   // AUTH ROUTES
 
-  router.addRoute("/login", async() => {
-    return <LoginPage auth={auth}/>
+  router.addRoute("/login", async () => {
+    return <LoginPage auth={auth} />
   })
 
   router.addRoute("/signup", async () => {
-    return <SignupPage searchParams={searchParams}/>
+    return <SignupPage searchParams={searchParams} />
   })
 
   router.addRoute('/forgot-password', async () => {
@@ -261,45 +256,45 @@ export async function PageInit<T>({
    **/
 
 
-  router.addRoute('/posts/new', async() => {
+  router.addRoute('/posts/new', async () => {
     const session = await auth.getSession();
-    if(!session) {
+    if (!session) {
       throw new Error("You do not belong here.")
     }
 
     return <NewPost />
   })
 
-  router.addRoute('/posts/:slug/edit', async({slug}) => {
+  router.addRoute('/posts/:slug/edit', async ({ slug }) => {
     const session = await auth.getSession();
-    if(!session) {
+    if (!session) {
       throw new Error("You do not belong here.")
     }
 
-    return <EditPost slug={slug}/>
+    return <EditPost slug={slug} />
   })
 
-  router.addRoute('/shop', async() => {
+  router.addRoute('/shop', async () => {
     const session = await auth.getSession();
-    if(!session) {
+    if (!session) {
       throw new Error("You do not belong here.")
     }
 
     return <ShopPage />
   })
 
-  router.addRoute('/broadcasts', async() => {
+  router.addRoute('/broadcasts', async () => {
     const session = await auth.getSession();
-    if(!session) {
+    if (!session) {
       throw new Error("You do not belong here.")
     }
 
     return <AllBroadcastsPage />
   })
 
-  router.addRoute('/broadcasts/:slug', async({slug}) => {
+  router.addRoute('/broadcasts/:slug', async ({ slug }) => {
     const session = await auth.getSession();
-    if(!session) {
+    if (!session) {
       throw new Error("You do not belong here.")
     }
 
@@ -310,110 +305,110 @@ export async function PageInit<T>({
     return <Admin />;
   });
 
-  router.addRoute('/admin/categories', async() => {
+  router.addRoute('/admin/categories', async () => {
     return <AllCategoriesPage />
   })
 
-  router.addRoute('/admin/categories/new', async() => {
+  router.addRoute('/admin/categories/new', async () => {
     return <NewCategoryPage />
   })
 
-  router.addRoute('/admin/categories/:id', async({id}) => {
+  router.addRoute('/admin/categories/:id', async ({ id }) => {
     return <SingleCategoryPage id={id} />
   })
 
-  router.addRoute('/admin/broadcasts', async() => {
+  router.addRoute('/admin/broadcasts', async () => {
     return <AllBroadcasts />
   })
 
-  router.addRoute('/admin/broadcasts/new', async() => {
+  router.addRoute('/admin/broadcasts/new', async () => {
     return <NewBroadcastPage />
   })
 
-  router.addRoute('/admin/broadcasts/:slug', async({slug}) => {
+  router.addRoute('/admin/broadcasts/:slug', async ({ slug }) => {
     return <SingleBroadcastPage slug={slug} />
   })
 
-  router.addRoute('/admin/items', async() => {
+  router.addRoute('/admin/items', async () => {
     return <AllItemsPage />
   })
 
-  router.addRoute('/admin/items/new', async() => {
+  router.addRoute('/admin/items/new', async () => {
     return <NewItemPage />
   })
 
-  router.addRoute('/admin/items/:id', async({id}) => {
+  router.addRoute('/admin/items/:id', async ({ id }) => {
     return <SingleItemPage id={id} />
   })
 
-  router.addRoute('/admin/actions', async() => {
+  router.addRoute('/admin/actions', async () => {
     return <AllActionsPage />
   })
 
-  router.addRoute('/admin/actions/new', async() => {
+  router.addRoute('/admin/actions/new', async () => {
     return <NewActionPage />
   })
 
-  router.addRoute('/admin/actions/:id', async({id}) => {
+  router.addRoute('/admin/actions/:id', async ({ id }) => {
     return <SingleActionPage id={id} />
   })
 
-  router.addRoute('/admin/badges', async() => {
+  router.addRoute('/admin/badges', async () => {
     return <AllBadgesPage />
   })
 
-  router.addRoute('/admin/badges/new', async() => {
+  router.addRoute('/admin/badges/new', async () => {
     return <NewBadgePage />
   })
 
-  router.addRoute('/admin/badges/:id', async({id}) => {
+  router.addRoute('/admin/badges/:id', async ({ id }) => {
     return <SingleBadgePage id={id} />
   })
 
 
-  router.addRoute('/admin/users', async() => {
+  router.addRoute('/admin/users', async () => {
     return <UsersAdminPage />
   })
 
-  router.addRoute('/admin/users/:id', async(params) => {
+  router.addRoute('/admin/users/:id', async (params) => {
     return <SingleUserAdminPage id={params.id} />
   })
 
-  router.addRoute('/admin/tokens', async() => {
+  router.addRoute('/admin/tokens', async () => {
     return <TokensAdminPage />
   })
 
-  router.addRoute('/admin/tokens/:id', async(params) => {
+  router.addRoute('/admin/tokens/:id', async (params) => {
     return <SingleTokenAdminPage id={params.id} />
   })
 
-  router.addRoute('/admin/sessions', async() => {
+  router.addRoute('/admin/sessions', async () => {
     return <SessionsAdminPage />
   })
 
-  router.addRoute('/admin/sessions/:id', async(params) => {
+  router.addRoute('/admin/sessions/:id', async (params) => {
     return <SingleSessionAdminPage id={params.id} />
   })
 
 
-  router.addRoute('/activateAccount', async(_, request) => {
+  router.addRoute('/activateAccount', async (_, request) => {
     return VerifyUser(request!)
   }, 'api:GET')
 
 
-  router.addRoute('/auth/google', async(_, request) => {
-   return OAuthLogin(request!, 'google', auth)
+  router.addRoute('/auth/google', async (_, request) => {
+    return OAuthLogin(request!, 'google', auth)
   }, 'api:GET')
 
-  router.addRoute('/auth/github', async(_, request) => {
+  router.addRoute('/auth/github', async (_, request) => {
     return OAuthLogin(request!, 'github', auth)
-   }, 'api:GET')
+  }, 'api:GET')
 
 
-  router.addRoute('/files/upload', async(_, request) => {
+  router.addRoute('/files/upload', async (_, request) => {
     const user = await getCurrentUser();
 
-    if(!user) {
+    if (!user) {
       throw new Error("You are not authorized")
     }
     return UploadFileRoute(request!)
@@ -427,7 +422,7 @@ export async function LayoutInit({
 }: {
   children: React.ReactNode;
 }) {
-  return await router.initLayout({children})
+  return await router.initLayout({ children })
 }
 
 export async function ApiRouteInit() {

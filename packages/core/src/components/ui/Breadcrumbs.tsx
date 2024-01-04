@@ -20,14 +20,14 @@ export const Breadcrumbs = ({ ignore }: BreadcrumbsProps) => {
   const buildBreadcrumbs = () => {
     const linkPath = pathname.split("/");
     linkPath.shift();
-  
+
     const pathArray = linkPath.map((path, i) => {
       return {
         breadcrumb: path.split("?")[0] as string,
         href: "/" + linkPath.slice(0, i + 1).join("/"),
       };
     });
-  
+
     if (ignore && ignore.length) {
       const filtered = pathArray.filter((el) => {
         return !ignore.some((rm) => {
@@ -39,7 +39,7 @@ export const Breadcrumbs = ({ ignore }: BreadcrumbsProps) => {
           );
         });
       });
-  
+
       setBreadcrumbs(filtered);
     } else {
       setBreadcrumbs(pathArray);
@@ -54,11 +54,11 @@ export const Breadcrumbs = ({ ignore }: BreadcrumbsProps) => {
   }, [pathname]);
 
   return (
-    <ul className="flex items-center space-x-4 w-full overflow-x-auto py-6 top-0 fixed bg-white z-20 md:relative md:py-0 pr-12 md:pr-0">
+    <ul className="flex items-center space-x-4 w-full overflow-x-auto py-6 top-0 fixed z-20 md:relative md:py-0 pr-12 md:pr-0">
       <li>
         <Link href={"/"}>
           <HomeIcon
-            className={pathname === "/" ? "h-5 w-5 text-slate-900" : "h-5 w-5 text-slate-400 hover:text-gray-500"}
+            className={pathname === "/" ? "h-5 w-5 text-foreground" : "h-5 w-5 text-link hover:text-foregroud"}
             aria-hidden="true"
           />
         </Link>
@@ -80,7 +80,7 @@ export const Breadcrumbs = ({ ignore }: BreadcrumbsProps) => {
                         fill="currentColor"
                       />
                     </svg>
-  
+
                     <span className="text-sm font-medium text-gray-800">
                       {breadcrumb.breadcrumb.charAt(0).toUpperCase() +
                         breadcrumb.breadcrumb.slice(1)}
