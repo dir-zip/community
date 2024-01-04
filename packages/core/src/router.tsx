@@ -111,7 +111,6 @@ export async function PageInit<T>({
 
     return (
       <div className="min-h-screen flex">
-
         <main className="flex-1 min-w-0 overflow-auto p-8 pt-6">
           <div className="pb-12 md:pb-6">
             <Breadcrumbs

@@ -1,13 +1,13 @@
 "use client"
 import { useCallback, useEffect, useState } from "react"
-import Link from "../../../../../components/ui/Link"
-import Table from "../../../../../components/ui/Table"
-import {useSearchParams, usePathname, useRouter} from "next/navigation"
+import { Table } from '@dir/ui'
+import Link from 'next/link'
+import { useSearchParams, usePathname, useRouter } from "next/navigation"
 import { getAllResource } from "../../../../admin/actions"
 import { ResourceSchema } from "../../../../../index"
 
 
-const ResourceTable = ({resource, schema}: {resource: string, schema: ResourceSchema}) => {
+const ResourceTable = ({ resource, schema }: { resource: string, schema: ResourceSchema }) => {
   const ITEMS_PER_PAGE = 10
   const searchParams = useSearchParams()
   const pathname = usePathname();
@@ -30,29 +30,29 @@ const ResourceTable = ({resource, schema}: {resource: string, schema: ResourceSc
     endPage = count
   }
 
-  const searchData = useCallback(async() => {
+  const searchData = useCallback(async () => {
 
 
     const data = await getAllResource({
-      resource, 
+      resource,
       skip, take: ITEMS_PER_PAGE, where: searchQuery && JSON.parse(searchQuery as string)
-      ? {
-        OR: [
-          !isNaN(Number(JSON.parse(searchQuery as string))) &&
-          Number(JSON.parse(searchQuery as string)) > 0
-            ? {
+        ? {
+          OR: [
+            !isNaN(Number(JSON.parse(searchQuery as string))) &&
+              Number(JSON.parse(searchQuery as string)) > 0
+              ? {
                 id: Number(JSON.parse(searchQuery as string)),
               }
-            : {},
-          !isNaN(Number(JSON.parse(searchQuery as string))) &&
-          Number(JSON.parse(searchQuery as string)) > 0
-            ? {
+              : {},
+            !isNaN(Number(JSON.parse(searchQuery as string))) &&
+              Number(JSON.parse(searchQuery as string)) > 0
+              ? {
                 userId: Number(JSON.parse(searchQuery as string)),
               }
-            : {},
-        ],
-      }
-      : {}
+              : {},
+          ],
+        }
+        : {}
     })
 
     setData(data.resource)

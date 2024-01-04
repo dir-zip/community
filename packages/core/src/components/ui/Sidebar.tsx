@@ -1,5 +1,5 @@
 "use client"
-import { SidebarContainer, TagCloud, SiteInfo, NavWrapper, InnerSidebarContainer, type SidebarProps } from "@dir/ui"
+import { SidebarContainer, UserInfo, TagCloud, SiteInfo, NavWrapper, InnerSidebarContainer, type SidebarProps } from "@dir/ui"
 import { usePathname } from "next/navigation"
 import Link from 'next/link'
 import { Layers, Settings, Users, LogOut, Store, FileText } from 'lucide-react'
@@ -29,7 +29,10 @@ export const Sidebar = (props: Omit<SidebarProps, 'children'>) => {
       </InnerSidebarContainer>
 
       <InnerSidebarContainer>
-        <TagCloud />
+        <div className="py-6">
+          <TagCloud />
+        </div>
+        <UserInfo username={`Dillon Raphael`} points={100} />
         <NavWrapper>
           <Link href={`/settings`} className={`${pathname === '/settings' ? 'bg-primary-900' : null} text-sm rounded px-4 py-2 flex items-center space-x-2`}><Settings className="w-4 h-4" /><span>Settings</span></Link>
           <button onClick={(e) => {

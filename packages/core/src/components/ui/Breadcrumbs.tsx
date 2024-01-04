@@ -3,7 +3,7 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { HomeIcon } from "lucide-react";
-import { Skeleton } from "./Skeleton";
+import { Skeleton } from "@dir/ui";
 
 type BreadcrumbsProps = {
   ignore?: { breadcrumb: string | undefined; href: string }[];

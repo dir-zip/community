@@ -1,8 +1,8 @@
 "use client"
 import { useEffect, useState } from "react"
-import Link from "../../../../../components/ui/Link"
-import Table from "../../../../../components/ui/Table"
-import {useSearchParams, usePathname, useRouter} from "next/navigation"
+import { Table } from '@dir/ui'
+import Link from 'next/link'
+import { useSearchParams, usePathname, useRouter } from "next/navigation"
 import { getAllTokens } from "../../../actions"
 import { Token } from "packages/db"
 
@@ -27,32 +27,32 @@ const TokensTable = () => {
   }
 
   useEffect(() => {
-    (async() => {
-      
+    (async () => {
+
       const data = await getAllTokens({
         skip, take: ITEMS_PER_PAGE, where: searchQuery && JSON.parse(searchQuery as string)
-        ? {
-          OR: [
-            {
-              workspaceId: {
-                contains: JSON.parse(searchQuery as string).toString()
+          ? {
+            OR: [
+              {
+                workspaceId: {
+                  contains: JSON.parse(searchQuery as string).toString()
+                },
               },
-            },
-            !isNaN(Number(JSON.parse(searchQuery as string))) &&
-            Number(JSON.parse(searchQuery as string)) > 0
-              ? {
+              !isNaN(Number(JSON.parse(searchQuery as string))) &&
+                Number(JSON.parse(searchQuery as string)) > 0
+                ? {
                   id: Number(JSON.parse(searchQuery as string)).toString(),
                 }
-              : {},
-            !isNaN(Number(JSON.parse(searchQuery as string))) &&
-            Number(JSON.parse(searchQuery as string)) > 0
-              ? {
+                : {},
+              !isNaN(Number(JSON.parse(searchQuery as string))) &&
+                Number(JSON.parse(searchQuery as string)) > 0
+                ? {
                   userId: Number(JSON.parse(searchQuery as string)).toString(),
                 }
-              : {},
-          ],
-        }
-        : {}
+                : {},
+            ],
+          }
+          : {}
       })
       setData(data.tokens)
       setCount(data.count)

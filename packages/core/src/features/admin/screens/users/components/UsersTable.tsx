@@ -1,9 +1,9 @@
 "use client"
 import { User } from "packages/db"
-import Link from "../../../../../components/ui/Link"
-import Table from "../../../../../components/ui/Table"
+import { Table } from "@dir/ui"
+import Link from 'next/link'
 import { getAllUsers } from "../../../actions"
-import {useSearchParams, usePathname, useRouter} from "next/navigation"
+import { useSearchParams, usePathname, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
 
@@ -27,24 +27,24 @@ const UsersTable = () => {
   }
 
   useEffect(() => {
-    (async() => {
+    (async () => {
       const data = await getAllUsers({
         skip, take: ITEMS_PER_PAGE, where: searchQuery && JSON.parse(searchQuery as string)
-        ? {
-          OR: [
-            !isNaN(Number(JSON.parse(searchQuery as string))) &&
-            Number(JSON.parse(searchQuery as string)) > 0
-              ? {
+          ? {
+            OR: [
+              !isNaN(Number(JSON.parse(searchQuery as string))) &&
+                Number(JSON.parse(searchQuery as string)) > 0
+                ? {
                   id: Number(JSON.parse(searchQuery as string)),
                 }
-              : {
+                : {
                   email: {
                     contains: JSON.parse(searchQuery as string),
                   },
                 },
-          ],
-        }
-        : {}
+            ],
+          }
+          : {}
       })
       setData(data.users)
       setCount(data.count)

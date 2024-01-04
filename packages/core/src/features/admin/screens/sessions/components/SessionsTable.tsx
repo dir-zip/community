@@ -1,8 +1,8 @@
 "use client"
 import { useEffect, useState } from "react"
-import Link from "../../../../../components/ui/Link"
-import Table from "../../../../../components/ui/Table"
-import {useSearchParams, usePathname, useRouter} from "next/navigation"
+import Link from 'next/link'
+import { Table } from "@dir/ui"
+import { useSearchParams, usePathname, useRouter } from "next/navigation"
 import { getAllSessions } from "../../../actions"
 import { Session } from "packages/db"
 
@@ -15,7 +15,7 @@ const SessionsTable = () => {
   const searchQuery = searchParams.get('search')
   const tablePage = Number(page)
   const skip = tablePage * ITEMS_PER_PAGE
-  const router = useRouter() 
+  const router = useRouter()
   const startPage = tablePage * ITEMS_PER_PAGE + 1
   let endPage = startPage - 1 + ITEMS_PER_PAGE
 
@@ -27,27 +27,27 @@ const SessionsTable = () => {
   }
 
   useEffect(() => {
-    (async() => {
-      
+    (async () => {
+
       const data = await getAllSessions({
         skip, take: ITEMS_PER_PAGE, where: searchQuery && JSON.parse(searchQuery as string)
-        ? {
-          OR: [
-            !isNaN(Number(JSON.parse(searchQuery as string))) &&
-            Number(JSON.parse(searchQuery as string)) > 0
-              ? {
+          ? {
+            OR: [
+              !isNaN(Number(JSON.parse(searchQuery as string))) &&
+                Number(JSON.parse(searchQuery as string)) > 0
+                ? {
                   id: Number(JSON.parse(searchQuery as string)),
                 }
-              : {},
-            !isNaN(Number(JSON.parse(searchQuery as string))) &&
-            Number(JSON.parse(searchQuery as string)) > 0
-              ? {
+                : {},
+              !isNaN(Number(JSON.parse(searchQuery as string))) &&
+                Number(JSON.parse(searchQuery as string)) > 0
+                ? {
                   userId: Number(JSON.parse(searchQuery as string)),
                 }
-              : {},
-          ],
-        }
-        : {}
+                : {},
+            ],
+          }
+          : {}
       })
       setData(data.sessions)
       setCount(data.count)

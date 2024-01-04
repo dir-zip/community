@@ -13,7 +13,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/Select";
+} from "@dir/ui";
 
 export interface SelectFieldProps
   extends PropsWithoutRef<JSX.IntrinsicElements["input"]> {

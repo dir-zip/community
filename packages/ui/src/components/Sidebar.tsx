@@ -1,6 +1,8 @@
 import React from 'react'
 import { Badge } from '../components/Badge'
 import { Globe } from 'lucide-react'
+import { Avatar, AvatarFallback, AvatarImage } from './Avatar'
+import { GoldCoinIcon } from '@/icons/GoldCoin'
 
 export type SidebarProps = {
   siteTitle: string,
@@ -39,10 +41,14 @@ export const TagCloud = () => {
 
 export const UserInfo = ({ username, points }: { username: string, points: number }) => {
   return (
-    <div className="flex flex-col">
-      <div className="flex items-center space-x-3">
+    <div className="flex bg-primary-700 rounded p-4">
+      <Avatar>
+        <AvatarImage src="https://avatars.githubusercontent.com/u/3496193" />
+        <AvatarFallback>{username.split(" ").map(name => name[0]).join("")}</AvatarFallback>
+      </Avatar>
+      <div className="flex px-4 flex-col space-y-2">
         <h3 className="text-sm font-semibold">{username}</h3>
-        <p className="text-xs">{points} points</p>
+        <p className="text-xs flex space-x-1 items-center"><GoldCoinIcon /><span>{points} points</span></p>
       </div>
     </div>
   )
