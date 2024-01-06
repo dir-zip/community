@@ -1,3 +1,4 @@
+import React from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import ListItem from '@tiptap/extension-list-item'
@@ -50,6 +51,6 @@ export const RichTextField = ({ value, onValueChange, editable = true }: { value
   })
 
   return (
-    <EditorContent editor={editor} className={cn(editable && "flex rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50")} />
+    <EditorContent editor={editor} style={{ minHeight: '4rem' }} className={cn(editable && "flex rounded-md border w-full bg-transparent px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50")} />
   )
 }

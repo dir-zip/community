@@ -71,7 +71,7 @@ export const Breadcrumbs = ({ ignore }: BreadcrumbsProps) => {
                 {pathname === breadcrumb.href ? (
                   <div className="flex items-center">
                     <svg
-                      className="text-gray-400 mr-2 w-4 h-4"
+                      className="text-foreground mr-2 w-4 h-4"
                       viewBox="0 0 24 24"
                       fill="none"
                     >
@@ -81,7 +81,7 @@ export const Breadcrumbs = ({ ignore }: BreadcrumbsProps) => {
                       />
                     </svg>
 
-                    <span className="text-sm font-medium text-gray-800">
+                    <span className="text-sm font-medium text-foreground">
                       {breadcrumb.breadcrumb.charAt(0).toUpperCase() +
                         breadcrumb.breadcrumb.slice(1)}
                     </span>
@@ -89,7 +89,7 @@ export const Breadcrumbs = ({ ignore }: BreadcrumbsProps) => {
                 ) : (
                   <div className="flex items-center">
                     <svg
-                      className="text-gray-400 mr-2 w-4 h-4"
+                      className="text-foreground mr-2 w-4 h-4"
                       viewBox="0 0 24 24"
                       fill="none"
                     >
@@ -100,7 +100,7 @@ export const Breadcrumbs = ({ ignore }: BreadcrumbsProps) => {
                     </svg>
                     <Link
                       href={breadcrumb.href}
-                      className="text-sm font-medium text-gray-500 hover:text-gray-700"
+                      className="text-sm font-medium text-foreground hover:text-link"
                     >
                       {breadcrumb.breadcrumb.charAt(0).toUpperCase() +
                         breadcrumb.breadcrumb.slice(1)}

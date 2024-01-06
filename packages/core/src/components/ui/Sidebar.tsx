@@ -6,7 +6,7 @@ import { Layers, Settings, Users, LogOut, Store, FileText } from 'lucide-react'
 import { logoutAction } from "../../features/auth/actions"
 
 const _sidebarLinks = [
-  { icon: Layers, text: "Feed", link: '/' },
+  { icon: Layers, text: "Feed", link: '/feed' },
   { icon: FileText, text: "Posts", link: '/posts' },
   { icon: Users, text: "Members", link: '/members' },
   { icon: Store, text: "Shop", link: '/shop' }
@@ -32,7 +32,7 @@ export const Sidebar = (props: Omit<SidebarProps, 'children'>) => {
         <div className="py-6">
           <TagCloud />
         </div>
-        <UserInfo username={`Dillon Raphael`} points={100} />
+        <UserInfo username={props.user.username} avatar={props.user.avatar} points={props.user.points} />
         <NavWrapper>
           <Link href={`/settings`} className={`${pathname === '/settings' ? 'bg-primary-900' : null} text-sm rounded px-4 py-2 flex items-center space-x-2`}><Settings className="w-4 h-4" /><span>Settings</span></Link>
           <button onClick={(e) => {

@@ -5,7 +5,6 @@ import { redirect } from "next/navigation"
 import { Suspense } from 'react'
 import Link from "next/link"
 import { checkGuard } from "~/features/auth/actions"
-import Tiptap from "~/components/ui/TipTap"
 
 export const SinglePost = async ({ slug, loggedIn }: { slug: string, loggedIn: boolean }) => {
   const post = await getSinglePost({ slug: slug })
@@ -21,7 +20,7 @@ export const SinglePost = async ({ slug, loggedIn }: { slug: string, loggedIn: b
       <p>{post.createdAt.toDateString()}</p>
       <Link href={`/profile/${post.user.username}`}><p>{post.user.username}</p></Link>
       <div>
-        <Tiptap value={post.body} editable={false} onValueChange={undefined} />
+        {/* <Tiptap value={post.body} editable={false} onValueChange={undefined} /> */}
       </div>
       <Suspense fallback={<div>Loading...</div>}>
         <Comments postSlug={post.slug} loggedIn={loggedIn} />

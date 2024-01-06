@@ -2,7 +2,7 @@ import React from 'react'
 export const GoldCoinIcon = () => {
   return (
     <svg width="13" height="12" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <g clip-path="url(#clip0_61_3371)">
+      <g clipPath="url(#clip0_61_3371)">
         <path d="M4.875 0H4.0625V0.75H4.875V0Z" fill="black" />
         <path d="M5.6875 0H4.875V0.75H5.6875V0Z" fill="black" />
         <path d="M6.5 0H5.6875V0.75H6.5V0Z" fill="black" />

@@ -38,7 +38,8 @@ import { EditPost } from "./features/posts/screens/edit";
 import { ShopPage } from "./features/shop/screens";
 import { AllBroadcasts, NewBroadcastPage, SingleBroadcastPage } from "./features/admin/screens/broadcasts/page";
 import { AllBroadcastsPage, BroadcastPage } from "./features/broadcasts/screens";
-
+import { redirect } from 'next/navigation'
+import { FeedScreen } from "./features/feed/screens";
 
 
 const router = new Router();
@@ -133,10 +134,19 @@ export async function PageInit<T>({
     const user = await getCurrentUser()
     const settings = await prisma?.globalSetting.findFirst()
     const memberCount = await prisma?.user.findMany()
-
     return (
       <div className="flex h-screen">
-        <Sidebar siteTitle={settings?.siteTitle!} memberCount={memberCount!.length} />
+        <Sidebar
+          siteTitle={settings?.siteTitle!}
+          memberCount={memberCount!.length}
+          user={
+            {
+              username: user.username,
+              points: user.points,
+              avatar: user.avatar || ""
+            }
+          }
+        />
 
         <main className="flex-1">
           <div className="border-b">
@@ -150,11 +160,12 @@ export async function PageInit<T>({
     );
   })
 
+  router.addRoute('/', async () => {
+    redirect('/feed')
+  })
 
-
-  router.addRoute("/", async () => {
-    const session = await auth.getSession();
-    return <AllPosts loggedIn={session ? true : false} />
+  router.addRoute("/feed", async () => {
+    return <FeedScreen />
   })
 
   router.addRoute("/posts/:slug", async ({ slug }) => {

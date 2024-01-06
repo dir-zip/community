@@ -1,12 +1,17 @@
 import React from 'react'
 import { Badge } from '../components/Badge'
 import { Globe } from 'lucide-react'
-import { Avatar, AvatarFallback, AvatarImage } from './Avatar'
+import { Avatar } from './Avatar'
 import { GoldCoinIcon } from '@/icons/GoldCoin'
 
 export type SidebarProps = {
   siteTitle: string,
   memberCount: number
+  user: {
+    username: string,
+    points: number,
+    avatar: string
+  }
   children: React.ReactNode
 }
 
@@ -39,15 +44,13 @@ export const TagCloud = () => {
   )
 }
 
-export const UserInfo = ({ username, points }: { username: string, points: number }) => {
+export const UserInfo = ({ username, avatar, points }: { username: string, avatar: string, points: number }) => {
   return (
     <div className="flex bg-primary-700 rounded p-4">
-      <Avatar>
-        <AvatarImage src="https://avatars.githubusercontent.com/u/3496193" />
-        <AvatarFallback>{username.split(" ").map(name => name[0]).join("")}</AvatarFallback>
-      </Avatar>
+      <Avatar imageUrl={avatar} fallback={username} />
+
       <div className="flex px-4 flex-col space-y-2">
-        <h3 className="text-sm font-semibold">{username}</h3>
+        <a href={`/profile/${username}`}><h3 className="text-sm text-link font-semibold">{username}</h3></a>
         <p className="text-xs flex space-x-1 items-center"><GoldCoinIcon /><span>{points} points</span></p>
       </div>
     </div>
