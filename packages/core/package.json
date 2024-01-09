@@ -16,8 +16,8 @@
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
-    "@1upsaas/1uprouter": "^0.2.2",
     "@creatorsneverdie/prepare-array-for-prisma": "^0.1.2",
+    "@dir.zip/central-router": "^0.2.3",
     "@dir/auth": "workspace:*",
     "@dir/db": "workspace:*",
     "@dir/files": "workspace:*",

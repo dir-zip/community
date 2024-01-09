@@ -1,5 +1,5 @@
 'use server'
-import Router from "@1upsaas/1uprouter"
+import Router from "@dir.zip/central-router"
 import { authInit } from "./lib/auth";
 import { getCurrentUser } from "./features/auth/actions";
 import { Breadcrumbs } from "./components/ui/Breadcrumbs";
@@ -54,14 +54,14 @@ export async function PageInit<T>({
   resources
 }:
   {
-    params: { "1up": string[] };
+    params: { "router": string[] };
     searchParams: { [key: string]: string | string[] | undefined };
     routes: Routes
     auth: ReturnType<typeof authInit<T & BaseSessionData>>;
     sidebarLinks?: { icon?: React.ElementType, url: string, text: string }[];
     resources: Resources
   }) {
-  const getParams = params["1up"]
+  const getParams = params["router"]
   let rootPath: string
 
 

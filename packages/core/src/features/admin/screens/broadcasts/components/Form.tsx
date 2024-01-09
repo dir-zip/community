@@ -1,11 +1,11 @@
 "use client"
 
-import { Form, TextField } from "@/components/Forms"
+import { Form, TextField } from "../../../../../components/Forms"
 
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 
-import { CreateBroadcastSchema } from "@/features/broadcasts/schemas"
+import { CreateBroadcastSchema } from "../../../../../features/broadcasts/schemas"
 import { createBroadcast, updateBroadcast } from "../actions"
 import { Broadcast, Tag } from "packages/db"
 

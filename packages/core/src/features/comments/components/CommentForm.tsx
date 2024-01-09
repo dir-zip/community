@@ -1,12 +1,12 @@
 "use client";
 
-import { Form, TextField } from "@/components/Forms";
+import { Form, TextField } from "../../../components/Forms";
 import { createComment } from "../../posts/actions";
 import { CommentSchema } from "../schemas";
 
 
 
-export const CommentForm = ({postSlug, parentId}: {postSlug: string, parentId: string | null}) => {
+export const CommentForm = ({ postSlug, parentId }: { postSlug: string, parentId: string | null }) => {
   return (
     <div>
       <Form

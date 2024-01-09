@@ -1,6 +1,6 @@
 "use server"
 
-import { createAction } from "@/lib/createAction"
+import { createAction } from "~/lib/createAction"
 import {prisma} from '@dir/db'
 import {z} from 'zod'
 import { revalidatePath } from "next/cache"

@@ -5,7 +5,7 @@ import { authInit } from "./lib/auth";
 import { PageInit, LayoutInit, ApiRouteInit } from "./router";
 
 import type { Tag, Post, User, Item, Category } from "@dir/db";
-import type { PostSchema } from "@/features/posts/schemas";
+import type { PostSchema } from "~/features/posts/schemas";
 
 import "@dir/ui/dist/index.css"
 import "../dist/output.css";
@@ -122,7 +122,7 @@ type BaseExportedPlugins<T> = {
     params,
     searchParams,
   }: {
-    params: { "1up": string[] };
+    params: { "router": string[] };
     searchParams: { [key: string]: string | string[] };
   }) => Promise<
     ReactElement<any, string | JSXElementConstructor<any>> | Response

@@ -1,11 +1,11 @@
 "use client"
 
-import { Form, SelectField, TextField } from "@/components/Forms"
+import { Form, SelectField, TextField } from "~/components/Forms"
 
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 
-import { PostSchema } from "@/features/posts/schemas"
+import { PostSchema } from "~/features/posts/schemas"
 import { createPost, updatePost } from "../actions"
 import { Category, Tag, type Post } from "packages/db"
 
@@ -56,6 +56,7 @@ const PostForm = ({ post, categories }: { post?: Post & { tags: Tag[], category:
         return { value: c.slug, key: c.title }
       })} />
       <TextField name="tags" label="Tags" />
+
 
     </Form>
   )

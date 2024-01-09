@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation"
 import { getInventory, getUser } from "./actions"
 import Link from "next/link"
-import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/components/ui/Button"
+import { cn } from "~/lib/utils"
+import { buttonVariants } from "@/components/Button"
 import { InventoryProfile } from "./components/Inventory"
 
 export const ProfileScreen = async ({username}: {username: string}) => {

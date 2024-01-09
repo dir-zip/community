@@ -142,12 +142,12 @@ importers:
 
   packages/core:
     dependencies:
-      '@1upsaas/1uprouter':
-        specifier: ^0.2.2
-        version: 0.2.2
       '@creatorsneverdie/prepare-array-for-prisma':
         specifier: ^0.1.2
         version: 0.1.2
+      '@dir.zip/central-router':
+        specifier: ^0.2.3
+        version: 0.2.3
       '@dir/auth':
         specifier: workspace:*
         version: link:../auth
@@ -479,10 +479,6 @@ importers:
         version: 5.3.3
 
 packages:
-
-  /@1upsaas/1uprouter@0.2.2:
-    resolution: {integrity: sha512-gOtC3z9FV2JyY7K7wgSURWS7+I/ouT9xyaJILp/8lRrI3twJcC9ZpYyowWHEBrjhazcfAcMUw9YL4AYFPYdJfQ==}
-    dev: false
 
   /@aashutoshrathi/word-wrap@1.2.6:
     resolution: {integrity: sha512-1Yjs2SvM8TflER/OD3cOjhWWOZb58A2t7wpE2S9XfBYTiIl+XFhQG2bjy4Pu1I+EAlCNUzRDYDdFwFYUKvXcIA==}
@@ -1186,6 +1182,10 @@ packages:
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
     dev: true
+
+  /@dir.zip/central-router@0.2.3:
+    resolution: {integrity: sha512-BVHcG7WUpKU07dZDYC88uLTk0ZR+lrq3geQ+vsGIhgH3xVmXeSYlmNrwYqyOhsIUMjN5COUIQ0WicelFxecmrw==}
+    dev: false
 
   /@esbuild/android-arm64@0.16.4:
     resolution: {integrity: sha512-VPuTzXFm/m2fcGfN6CiwZTlLzxrKsWbPkG7ArRFpuxyaHUm/XFHQPD4xNwZT6uUmpIHhnSjcaCmcla8COzmZ5Q==}

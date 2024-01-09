@@ -1,4 +1,4 @@
-import { createAction } from "@/lib/createAction"
+import { createAction } from "~/lib/createAction"
 import { prisma } from "packages/db"
 import {z} from 'zod'
 
