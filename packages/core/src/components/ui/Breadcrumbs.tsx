@@ -54,7 +54,7 @@ export const Breadcrumbs = ({ ignore }: BreadcrumbsProps) => {
   }, [pathname]);
 
   return (
-    <ul className="flex items-center space-x-4 w-full overflow-x-auto py-6 top-0 fixed z-20 md:relative md:py-0 pr-12 md:pr-0">
+    <ul className="flex items-center space-x-4 w-full">
       <li>
         <Link href={"/"}>
           <HomeIcon

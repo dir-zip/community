@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Button } from './Button'
-import {  MessageSquare, PenSquare, LucideSquareStack, Hash } from 'lucide-react'
-import {  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../primitives/dropdown-menu'
+import { MessageSquare, PenSquare, LucideSquareStack, Hash } from 'lucide-react'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../primitives/dropdown-menu'
 
 export type PostPreviewProps = {
   content: string
 }
 
 export const PostPreview = (props: PostPreviewProps) => {
-  const {  content } = props
+  const { content } = props
 
   const [showGradient, setShowGradient] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -44,18 +44,18 @@ export const PostPreview = (props: PostPreviewProps) => {
   };
 
   return (
-    <div className="max-h-96 overflow-hidden px-6 py-4 bg-primary-800 rounded border relative">
-        <div className="relative overflow-hidden" ref={contentRef}>
-            <div className="max-h-60 overflow-y-hidden">
-              {content}
-            </div>
-            {showGradient ? <div className="pt-12 h-32 absolute bottom-0 left-0 right-0 bg-gradient-to-t from-primary-800 to-transparent flex items-center justify-center">
-              <Button>Read More</Button>
-            </div> : null }
+    <div className="max-h-96 w-full overflow-hidden px-6 py-4 bg-primary-800 rounded border relative">
+      <div className="relative overflow-hidden" ref={contentRef}>
+        <div className="max-h-60 overflow-y-hidden">
+          {content}
         </div>
+        {showGradient ? <div className="pt-12 h-32 absolute bottom-0 left-0 right-0 bg-gradient-to-t from-primary-800 to-transparent flex items-center justify-center">
+          <Button>Read More</Button>
+        </div> : null}
+      </div>
       <div className="flex justify-between items-center pt-4">
 
-        <a href="#" className="text-link text-sm font-medium flex items-center space-x-2"><MessageSquare className='w-4 h-4' / > <span>12 replies</span></a>
+        <a href="#" className="text-link text-sm font-medium flex items-center space-x-2"><MessageSquare className='w-4 h-4' /> <span>12 replies</span></a>
 
         <div className="bg-primary-700 px-2 py-2 rounded flex items-center space-x-8 transition-all duration-500 ease-in-out">
           <PenSquare className='text-link w-4 cursor-pointer h-4' onClick={toggleShowEdit} />

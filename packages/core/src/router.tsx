@@ -136,25 +136,30 @@ export async function PageInit<T>({
     const memberCount = await prisma?.user.findMany()
     return (
       <div className="flex h-screen">
-        <Sidebar
-          siteTitle={settings?.siteTitle!}
-          memberCount={memberCount!.length}
-          user={
-            {
-              username: user.username,
-              points: user.points,
-              avatar: user.avatar || ""
-            }
-          }
-        />
-
-        <main className="flex-1">
-          <div className="border-b">
+        <div className="md:flex md:flex-shrink-0">
+          <div className="flex flex-col w-64">
+            <Sidebar
+              siteTitle={settings?.siteTitle!}
+              memberCount={memberCount!.length}
+              user={
+                {
+                  username: user.username,
+                  points: user.points,
+                  avatar: user.avatar || ""
+                }
+              }
+            />
+          </div>
+        </div>
+        <main className="flex flex-col w-0 flex-1 overflow-hidden">
+          <div className="border-b flex items-center">
             <div className="px-4 py-6">
               <Breadcrumbs />
             </div>
           </div>
-          {children}
+          <div className="overflow-auto">
+            {children}
+          </div>
         </main>
       </div>
     );
