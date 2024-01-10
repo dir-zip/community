@@ -32,9 +32,9 @@ export const RichTextField = ({ value, onValueChange, editable = true }: { value
           keepMarks: true,
           keepAttributes: false, // TODO : Making this as `false` becase marks are not preserved when I try to preserve attrs, awaiting a bit of help
         },
+        codeBlock: false,
       }),
       TextStyle,
-      ListItem,
       CodeBlockLowlight
         .configure({ lowlight })
     ],
@@ -44,7 +44,7 @@ export const RichTextField = ({ value, onValueChange, editable = true }: { value
       },
     },
     editable,
-    content: `${value ? value : null}<br />`,
+    content: `${value}<br />`,
     onUpdate({ editor }) {
       onValueChange!(editor.getHTML())
     }

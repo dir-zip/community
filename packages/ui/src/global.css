@@ -63,9 +63,25 @@
 }
 
 .tiptap ul {
-  @apply list-disc list-outside p-4;
+  @apply list-disc list-outside px-4;
 }
 
 .tiptap li {
   @apply py-1;
+}
+
+.tiptap ol {
+  @apply list-decimal list-outside px-4;
+}
+
+.tiptap pre {
+  @apply bg-white px-2 py-1 rounded my-2 w-fit;
+}
+
+.tiptap pre > code {
+  @apply text-black;
+}
+
+.tiptap code {
+  @apply text-white;
 }
