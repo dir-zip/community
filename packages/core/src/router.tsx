@@ -152,7 +152,7 @@ export async function PageInit<T>({
           </div>
         </div>
         <main className="flex flex-col w-0 flex-1 overflow-hidden">
-          <div className="border-b flex items-center">
+          <div className="border-b border-b-border-subtle flex items-center">
             <div className="px-4 py-6">
               <Breadcrumbs />
             </div>

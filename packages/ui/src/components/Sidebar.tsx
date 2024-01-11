@@ -69,7 +69,7 @@ export const InnerSidebarContainer = ({ children }: { children: React.ReactNode 
 
 export const SidebarContainer = ({ children }: { children: React.ReactNode }) => {
   return (
-    <aside className="fixed inset-y-0 left-0 flex justify-between flex-col py-4 px-4 w-64 border-r">
+    <aside className="fixed inset-y-0 left-0 flex justify-between flex-col py-4 px-4 w-64 border-r border-r-border-subtle">
       {children}
     </aside>
   )

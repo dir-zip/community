@@ -1,3 +1,4 @@
+"use client"
 import React, { useEffect, useRef, useState } from 'react'
 import { Button } from './Button'
 import { MessageSquare, PenSquare, LucideSquareStack, Hash } from 'lucide-react'
@@ -27,15 +28,21 @@ export const PostPreview = (props: PostPreviewProps) => {
       }
     };
 
-    checkContentHeight();
-    // Add a resize event listener, if the window resize could affect the content size
-    window.addEventListener('resize', checkContentHeight);
+    console.log(content)
 
-    // Clean up the event listener
+    // Create a new MutationObserver instance
+    const observer = new MutationObserver(checkContentHeight);
+
+    // Start observing the contentRef for changes
+    if (contentRef.current) {
+      observer.observe(contentRef.current, { childList: true, subtree: true });
+    }
+
+    // Clean up the observer when the component unmounts
     return () => {
-      window.removeEventListener('resize', checkContentHeight);
+      observer.disconnect();
     };
-  }, []);
+  }, [content]);
 
 
   const [showEdit, setShowEdit] = useState(false);
@@ -45,7 +52,7 @@ export const PostPreview = (props: PostPreviewProps) => {
   };
 
   return (
-    <div className="max-h-96 w-full overflow-hidden px-6 py-4 bg-primary-800 rounded border relative">
+    <div className="max-h-96 w-full overflow-hidden px-6 py-4 bg-primary-800 rounded border border-border-subtle relative">
       <div className="relative overflow-hidden" ref={contentRef}>
         <div className="max-h-60 overflow-y-hidden">
           <RichTextField value={content} editable={false} onValueChange={undefined} />

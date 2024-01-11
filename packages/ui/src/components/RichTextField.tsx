@@ -1,5 +1,5 @@
-import React from 'react'
-import { useEditor, EditorContent } from '@tiptap/react'
+import React, { ForwardedRef, useEffect, useRef } from 'react'
+import { useEditor, EditorContent, Editor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import TextStyle from '@tiptap/extension-text-style'
 import { cn } from '@/utils'
@@ -18,8 +18,18 @@ lowlight.register('ts', ts)
 lowlight.register('js', js)
 lowlight.register('css', css)
 
-export const RichTextField = ({ value, placeholder, onValueChange, editable = true }: { value: string, onValueChange?: (e: string) => void, editable?: boolean, placeholder?: string }) => {
+export const RichTextField = (
+  { value, placeholder, onValueChange, editable = true }:
+    { value: string, onValueChange?: (e: string) => void, editable?: boolean, placeholder?: string }
+) => {
 
+  const editorRef = useRef<Editor | null>(null);
+
+  useEffect(() => {
+    if (value === null && editorRef.current) {
+      editorRef.current.commands.setContent('');
+    }
+  }, [value]);
 
   const editor = useEditor({
     extensions: [
@@ -50,10 +60,11 @@ export const RichTextField = ({ value, placeholder, onValueChange, editable = tr
     content: value,
     onUpdate({ editor }) {
       onValueChange!(editor.getHTML())
+      editorRef.current = editor as Editor;
     }
   })
 
   return (
-    <EditorContent editor={editor} style={{ minHeight: '4rem' }} className={cn(editable && "flex rounded-md border w-full bg-transparent px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50")} />
+    <EditorContent editor={editor} style={{ minHeight: editable ? '4rem' : 'auto' }} className={cn(editable && "flex rounded-md border w-full bg-transparent px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50")} />
   )
 }

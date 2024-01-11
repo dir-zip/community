@@ -7,6 +7,9 @@ export const getFeed = createAction(async ({ }) => {
   const feed = await prisma.post.findMany({
     where: {
       title: undefined
+    },
+    orderBy: {
+      createdAt: 'desc'
     }
   })
 

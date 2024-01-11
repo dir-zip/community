@@ -16,7 +16,10 @@ module.exports = {
     },
     extend: {
       colors: {
-        border: "var(--border)",
+        border: {
+          DEFAULT: "var(--border)",
+          subtle: "var(--border-subtle)"
+        },
         background: "var(--background)",
         foreground: "var(--foreground)",
         primary: {

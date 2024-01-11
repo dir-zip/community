@@ -7,7 +7,7 @@ import { logoutAction } from "../../features/auth/actions"
 
 const _sidebarLinks = [
   { icon: Layers, text: "Feed", link: '/feed' },
-  { icon: FileText, text: "Posts", link: '/posts' },
+  // { icon: FileText, text: "Posts", link: '/posts' },
   { icon: Users, text: "Members", link: '/members' },
   { icon: Store, text: "Shop", link: '/shop' }
 ]

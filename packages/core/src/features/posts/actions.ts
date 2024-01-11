@@ -89,7 +89,7 @@ export const createPost = createAction(async ({ session }, { title, body, catego
   })
 
   await triggerAction({ title: "CREATE_POST" })
-
+  revalidatePath('/feed')
   return post
 
 }, PostSchema, { authed: true })
