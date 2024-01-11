@@ -5,10 +5,13 @@ import { FeedList } from "../components/FeedList"
 
 import { Suspense } from 'react'
 import { getCurrentUser } from "~/features/auth/actions"
+import { getAllCategories } from "~/features/admin/screens/categories/actions"
 
 export const FeedScreen = async () => {
   const feed = await getFeed()
   const currentUser = await getCurrentUser()
+  const categories = await getAllCategories({skip: 0, take: 20})
+  
 
   return (
     <div className="flex items-center gap-20 justify-center p-6 flex-col">
@@ -42,7 +45,7 @@ export const FeedScreen = async () => {
         )
       }} />
       <Suspense>
-        <FeedList feed={feed} currentUser={currentUser}  />
+        <FeedList feed={feed} currentUser={currentUser} categories={categories.categories}  />
       </Suspense>
     </div>
   )

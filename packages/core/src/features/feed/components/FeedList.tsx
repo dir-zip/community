@@ -1,8 +1,8 @@
 "use client"
 import React, { useRef } from 'react'
 import { PostPreview, Avatar } from "@dir/ui"
-import { Post, User, Comment } from "@dir/db"
-export const FeedList = ({ feed, currentUser }: { feed: (Post & { user: User, comments: Comment[] })[], currentUser: User }) => {
+import { Post, User, Comment, Category } from "@dir/db"
+export const FeedList = ({ feed, currentUser, categories }: { feed: (Post & { user: User, comments: Comment[] })[], currentUser: User, categories: Category[] }) => {
   const contentRef = useRef<HTMLDivElement>(null);
 
   return (
@@ -11,7 +11,14 @@ export const FeedList = ({ feed, currentUser }: { feed: (Post & { user: User, co
         return (
           <div className="flex flex-row space-x-4 w-full" key={feed.id} ref={contentRef}>
             <Avatar imageUrl={feed.user.avatar} fallback={feed.user.username} />
-            <PostPreview content={feed.body} slug={feed.slug} comments={feed.comments.length} currentUserId={currentUser.id} userId={feed.user.id} />
+            <PostPreview 
+              content={feed.body} 
+              slug={feed.slug} 
+              comments={feed.comments.length} 
+              currentUserId={currentUser.id} 
+              userId={feed.user.id}
+              categories={categories.map((c) => { return {title: c.title, slug: c.slug}})} 
+            />
           </div>
         )
       })}

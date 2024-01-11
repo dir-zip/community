@@ -1,6 +1,6 @@
 "use client"
 import React, { useEffect, useRef, useState } from 'react'
-import { Button, buttonVariants } from './Button'
+import { buttonVariants } from './Button'
 import { MessageSquare, PenSquare, LucideSquareStack, Hash } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../primitives/dropdown-menu'
 import { RichTextField } from './RichTextField'
@@ -11,10 +11,11 @@ export type PostPreviewProps = {
   slug: string,
   userId: string,
   currentUserId: string
+  categories: {title: string, slug: string}[]
 }
 
 export const PostPreview = (props: PostPreviewProps) => {
-  const { content, comments, slug, currentUserId, userId } = props
+  const { content, comments, slug, currentUserId, userId, categories } = props
 
   const [showGradient, setShowGradient] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -81,7 +82,12 @@ export const PostPreview = (props: PostPreviewProps) => {
             <DropdownMenu>
               <DropdownMenuTrigger><LucideSquareStack className="text-link w-4 h-4" /></DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem>Test</DropdownMenuItem>
+                {categories.map((category, i) => {
+                  return (
+                    <DropdownMenuItem key={i}>{category.title}</DropdownMenuItem>
+                  )
+                })}
+        
               </DropdownMenuContent>
             </DropdownMenu>
           </div> : null}
