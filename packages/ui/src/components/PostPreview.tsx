@@ -1,6 +1,6 @@
 "use client"
 import React, { useEffect, useRef, useState } from 'react'
-import { Button } from './Button'
+import { Button, buttonVariants } from './Button'
 import { MessageSquare, PenSquare, LucideSquareStack, Hash } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../primitives/dropdown-menu'
 import { RichTextField } from './RichTextField'
@@ -58,7 +58,7 @@ export const PostPreview = (props: PostPreviewProps) => {
           <RichTextField value={content} editable={false} onValueChange={undefined} />
         </div>
         {showGradient ? <div className="pt-12 h-32 absolute bottom-0 left-0 right-0 bg-gradient-to-t from-primary-800 to-transparent flex items-center justify-center">
-          <Button>Read More</Button>
+          <a href={`/posts/${slug}`} className={buttonVariants({variant: "default"})}>Read More</a>
         </div> : null}
       </div>
       <div className="flex justify-between items-center pt-4">
