@@ -4,15 +4,17 @@ import { FeedInput } from "../components/FeedInput"
 import { FeedList } from "../components/FeedList"
 
 import { Suspense } from 'react'
+import { getCurrentUser } from "~/features/auth/actions"
 
 export const FeedScreen = async () => {
   const feed = await getFeed()
+  const currentUser = await getCurrentUser()
 
   return (
     <div className="flex items-center gap-20 justify-center p-6 flex-col">
       <Suspense>
         <div className="w-full pt-20">
-          <FeedInput username="dillonraphael" avatar="" />
+          <FeedInput username={currentUser.username} avatar={currentUser.avatar || ""} />
         </div>
       </Suspense>
       <Divider component={() => {
@@ -40,10 +42,7 @@ export const FeedScreen = async () => {
         )
       }} />
       <Suspense>
-        <FeedList feed={feed} user={{
-          username: 'dillonraphael',
-          avatar: ''
-        }} />
+        <FeedList feed={feed} currentUser={currentUser}  />
       </Suspense>
     </div>
   )

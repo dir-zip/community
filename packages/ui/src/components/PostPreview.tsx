@@ -8,11 +8,13 @@ import { RichTextField } from './RichTextField'
 export type PostPreviewProps = {
   content: string,
   comments: number,
-  slug: string
+  slug: string,
+  userId: string,
+  currentUserId: string
 }
 
 export const PostPreview = (props: PostPreviewProps) => {
-  const { content, comments, slug } = props
+  const { content, comments, slug, currentUserId, userId } = props
 
   const [showGradient, setShowGradient] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -65,7 +67,7 @@ export const PostPreview = (props: PostPreviewProps) => {
 
         <a href={`/posts/${slug}`} className="text-link text-sm font-medium flex items-center space-x-2"><MessageSquare className='w-4 h-4' /> <span>{comments} replies</span></a>
 
-        <div className="bg-primary-700 px-2 py-2 rounded flex items-center space-x-8 transition-all duration-500 ease-in-out">
+        {currentUserId === userId ? <div className="bg-primary-700 px-2 py-2 rounded flex items-center space-x-8 transition-all duration-500 ease-in-out">
           <PenSquare className='text-link w-4 cursor-pointer h-4' onClick={toggleShowEdit} />
 
           {showEdit ? <div className="flex items-center space-x-4">
@@ -83,7 +85,7 @@ export const PostPreview = (props: PostPreviewProps) => {
               </DropdownMenuContent>
             </DropdownMenu>
           </div> : null}
-        </div>
+        </div> : null}
       </div>
     </div>
   )
