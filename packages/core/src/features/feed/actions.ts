@@ -8,6 +8,10 @@ export const getFeed = createAction(async ({ }) => {
     where: {
       title: undefined
     },
+    include: {
+      user: true,
+      comments: true
+    },
     orderBy: {
       createdAt: 'desc'
     }

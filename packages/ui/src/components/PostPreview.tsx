@@ -6,11 +6,13 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { RichTextField } from './RichTextField'
 
 export type PostPreviewProps = {
-  content: string
+  content: string,
+  comments: number,
+  slug: string
 }
 
 export const PostPreview = (props: PostPreviewProps) => {
-  const { content } = props
+  const { content, comments, slug } = props
 
   const [showGradient, setShowGradient] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -27,8 +29,6 @@ export const PostPreview = (props: PostPreviewProps) => {
         setShowGradient(false);
       }
     };
-
-    console.log(content)
 
     // Create a new MutationObserver instance
     const observer = new MutationObserver(checkContentHeight);
@@ -63,7 +63,7 @@ export const PostPreview = (props: PostPreviewProps) => {
       </div>
       <div className="flex justify-between items-center pt-4">
 
-        <a href="#" className="text-link text-sm font-medium flex items-center space-x-2"><MessageSquare className='w-4 h-4' /> <span>12 replies</span></a>
+        <a href={`/posts/${slug}`} className="text-link text-sm font-medium flex items-center space-x-2"><MessageSquare className='w-4 h-4' /> <span>{comments} replies</span></a>
 
         <div className="bg-primary-700 px-2 py-2 rounded flex items-center space-x-8 transition-all duration-500 ease-in-out">
           <PenSquare className='text-link w-4 cursor-pointer h-4' onClick={toggleShowEdit} />
