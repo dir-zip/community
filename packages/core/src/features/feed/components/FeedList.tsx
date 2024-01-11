@@ -1,8 +1,9 @@
 "use client"
 import React, { useRef } from 'react'
 import { PostPreview, Avatar } from "@dir/ui"
-import { Post, User, Comment, Category } from "@dir/db"
-export const FeedList = ({ feed, currentUser, categories }: { feed: (Post & { user: User, comments: Comment[] })[], currentUser: User, categories: Category[] }) => {
+import { Post, User, Comment, Category, Tag } from "@dir/db"
+import { updatePost } from '~/features/posts/actions'
+export const FeedList = ({ feed, currentUser, categories }: { feed: (Post & { user: User, comments: Comment[], category: Category, tags: Tag[] })[], currentUser: User, categories: Category[] }) => {
   const contentRef = useRef<HTMLDivElement>(null);
 
   return (
@@ -13,11 +14,23 @@ export const FeedList = ({ feed, currentUser, categories }: { feed: (Post & { us
             <Avatar imageUrl={feed.user.avatar} fallback={feed.user.username} />
             <PostPreview 
               content={feed.body} 
-              slug={feed.slug} 
+              slug={feed.slug}
+              category={feed.category.slug} 
               comments={feed.comments.length} 
               currentUserId={currentUser.id} 
               userId={feed.user.id}
-              categories={categories.map((c) => { return {title: c.title, slug: c.slug}})} 
+              categories={categories.map((c) => { return {title: c.title, slug: c.slug}})}
+              onCategorySelect={async (slug) => {
+                await updatePost({
+                  data: {
+                    ...feed,
+                    category: slug,
+                    tags: feed.tags.map(tag => tag.slug).join(', ')
+                  },
+                  slug: feed.slug
+                })
+                console.log(slug)
+              }} 
             />
           </div>
         )

@@ -10,7 +10,9 @@ export const getFeed = createAction(async ({ }) => {
     },
     include: {
       user: true,
-      comments: true
+      comments: true,
+      category: true,
+      tags: true
     },
     orderBy: {
       createdAt: 'desc'

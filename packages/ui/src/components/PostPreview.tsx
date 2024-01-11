@@ -7,16 +7,20 @@ import { RichTextField } from './RichTextField'
 
 export type PostPreviewProps = {
   content: string,
+  category: string,
   comments: number,
   slug: string,
   userId: string,
   currentUserId: string
   categories: {title: string, slug: string}[]
+  onCategorySelect?: (categorySlug: string) => Promise<void>
 }
 
 export const PostPreview = (props: PostPreviewProps) => {
-  const { content, comments, slug, currentUserId, userId, categories } = props
+  const { content, comments, slug, currentUserId, userId, categories, category, onCategorySelect } = props
 
+
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(category);
   const [showGradient, setShowGradient] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -84,7 +88,10 @@ export const PostPreview = (props: PostPreviewProps) => {
               <DropdownMenuContent align="end">
                 {categories.map((category, i) => {
                   return (
-                    <DropdownMenuItem key={i}>{category.title}</DropdownMenuItem>
+                    <DropdownMenuItem key={i} className={category.slug === selectedCategory ? 'bg-primary-700' : ''} onSelect={() => {
+                      setSelectedCategory(category.slug);
+                      onCategorySelect?.(category.slug);
+                    }}>{category.title}</DropdownMenuItem>
                   )
                 })}
         
