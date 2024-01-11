@@ -157,7 +157,7 @@ export async function PageInit<T>({
               <Breadcrumbs />
             </div>
           </div>
-          <div className="overflow-auto">
+          <div className="overflow-auto xl:mx-auto xl:w-[960px]">
             {children}
           </div>
         </main>
