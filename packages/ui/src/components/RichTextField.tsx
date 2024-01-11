@@ -1,7 +1,6 @@
 import React from 'react'
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import ListItem from '@tiptap/extension-list-item'
 import TextStyle from '@tiptap/extension-text-style'
 import { cn } from '@/utils'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
@@ -11,6 +10,7 @@ import js from 'highlight.js/lib/languages/javascript'
 import ts from 'highlight.js/lib/languages/typescript'
 import html from 'highlight.js/lib/languages/xml'
 import 'highlight.js/styles/github.css';
+import Placeholder from '@tiptap/extension-placeholder'
 
 const lowlight = createLowlight(common)
 lowlight.register('html', html)
@@ -18,7 +18,7 @@ lowlight.register('ts', ts)
 lowlight.register('js', js)
 lowlight.register('css', css)
 
-export const RichTextField = ({ value, onValueChange, editable = true }: { value: string, onValueChange?: (e: string) => void, editable?: boolean }) => {
+export const RichTextField = ({ value, placeholder, onValueChange, editable = true }: { value: string, onValueChange?: (e: string) => void, editable?: boolean, placeholder?: string }) => {
 
 
   const editor = useEditor({
@@ -36,7 +36,10 @@ export const RichTextField = ({ value, onValueChange, editable = true }: { value
       }),
       TextStyle,
       CodeBlockLowlight
-        .configure({ lowlight })
+        .configure({ lowlight }),
+      Placeholder.configure({
+        placeholder: placeholder
+      })
     ],
     editorProps: {
       attributes: {
@@ -44,7 +47,7 @@ export const RichTextField = ({ value, onValueChange, editable = true }: { value
       },
     },
     editable,
-    content: `${value}<br />`,
+    content: value,
     onUpdate({ editor }) {
       onValueChange!(editor.getHTML())
     }

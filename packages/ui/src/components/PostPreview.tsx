@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Button } from './Button'
 import { MessageSquare, PenSquare, LucideSquareStack, Hash } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../primitives/dropdown-menu'
+import { RichTextField } from './RichTextField'
 
 export type PostPreviewProps = {
   content: string
@@ -47,7 +48,7 @@ export const PostPreview = (props: PostPreviewProps) => {
     <div className="max-h-96 w-full overflow-hidden px-6 py-4 bg-primary-800 rounded border relative">
       <div className="relative overflow-hidden" ref={contentRef}>
         <div className="max-h-60 overflow-y-hidden">
-          {content}
+          <RichTextField value={content} editable={false} onValueChange={undefined} />
         </div>
         {showGradient ? <div className="pt-12 h-32 absolute bottom-0 left-0 right-0 bg-gradient-to-t from-primary-800 to-transparent flex items-center justify-center">
           <Button>Read More</Button>

@@ -2,7 +2,7 @@
 
 import { prisma, type Post, Tag } from "@dir/db";
 import { z } from "zod";
-import {createAction} from '../../lib/createAction';
+import { createAction } from '../../lib/createAction';
 import { PostSchema } from "../../features/posts/schemas";
 import { findFreeSlug } from "@/utils";
 import { revalidatePath } from 'next/cache'
@@ -32,7 +32,7 @@ export const getAllPosts = createAction(async () => {
 
 
 
-export const createPost = createAction(async({session}, {title, body, category, tags}) => {
+export const createPost = createAction(async ({ session }, { title, body, category, tags }) => {
   const createSlug = await findFreeSlug<Post>(
     title.toLowerCase().replace(/[^a-z0-9]/g, "-"),
     async (slug: string) =>
@@ -44,16 +44,16 @@ export const createPost = createAction(async({session}, {title, body, category, 
       slug: category
     }
   })
-  
+
   const newTags = await Promise.all(
     tags.split(",").map(async (tagSlug) => {
       tagSlug = tagSlug.trim(); // Trim whitespace
-  
+
       if (!tagSlug) return null; // Skip empty strings
-  
+
       // Check if the tag already exists
       const existingTag = await prisma.tag.findUnique({ where: { slug: tagSlug } });
-  
+
       if (existingTag) {
         // If the tag exists, return it to connect to it
         return { id: existingTag.id };
@@ -64,14 +64,14 @@ export const createPost = createAction(async({session}, {title, body, category, 
           async (slug: string) =>
             await prisma.tag.findUnique({ where: { slug } }),
         );
-  
+
         return { title: tagSlug, slug: updatedTagSlug };
       }
     })
   );
 
   const filteredTags = newTags.filter(Boolean);
-  
+
 
   const post = await prisma.post.create({
     data: {
@@ -88,18 +88,15 @@ export const createPost = createAction(async({session}, {title, body, category, 
     }
   })
 
-  
-
-
-  await triggerAction({title: "CREATE_POST"})
+  await triggerAction({ title: "CREATE_POST" })
 
   return post
 
-}, PostSchema, {authed: true})
+}, PostSchema, { authed: true })
 
-export const getSinglePost = createAction(async({}, {slug}) => {
+export const getSinglePost = createAction(async ({ }, { slug }) => {
   const post = await prisma.post.findFirst({
-    where:{ 
+    where: {
       slug: slug
     },
     include: {
@@ -114,9 +111,9 @@ export const getSinglePost = createAction(async({}, {slug}) => {
   slug: z.string()
 }))
 
-export const updatePost = createAction(async({validate, session}, {slug, data}) => {
+export const updatePost = createAction(async ({ validate, session }, { slug, data }) => {
   await validate(['UPDATE', "post", slug])
-  const currentPost = await prisma.post.findUnique({ where: { slug }, include: {tags: true} });
+  const currentPost = await prisma.post.findUnique({ where: { slug }, include: { tags: true } });
 
 
   let newSlug;
@@ -133,12 +130,12 @@ export const updatePost = createAction(async({validate, session}, {slug, data}) 
   const newTags = await Promise.all(
     data.tags.split(",").map(async (tagSlug) => {
       tagSlug = tagSlug.trim(); // Trim whitespace
-  
+
       if (!tagSlug) return null; // Skip empty strings
-  
+
       // Check if the tag already exists
       const existingTag = await prisma.tag.findUnique({ where: { slug: tagSlug } });
-  
+
       if (existingTag) {
         // If the tag exists, return it to connect to it
         return { id: existingTag.id };
@@ -149,7 +146,7 @@ export const updatePost = createAction(async({validate, session}, {slug, data}) 
           async (slug: string) =>
             await prisma.tag.findUnique({ where: { slug } }),
         );
-  
+
         return { title: tagSlug, slug: updatedTagSlug };
       }
     })
@@ -168,7 +165,7 @@ export const updatePost = createAction(async({validate, session}, {slug, data}) 
   )
 
   const post = await prisma.post.update({
-    where:{ 
+    where: {
       slug
     },
     data: {
@@ -187,9 +184,9 @@ export const updatePost = createAction(async({validate, session}, {slug, data}) 
 }, z.object({
   slug: z.string(),
   data: PostSchema
-}), {authed: true})
+}), { authed: true })
 
-export const createComment = createAction(async({session}, {postSlug, body, parentId}) => {
+export const createComment = createAction(async ({ session }, { postSlug, body, parentId }) => {
   const post = await prisma.post.findFirst({
     where: {
       slug: postSlug
@@ -205,7 +202,7 @@ export const createComment = createAction(async({session}, {postSlug, body, pare
     }
   })
 
-  await triggerAction({title: "CREATE_COMMENT"})
+  await triggerAction({ title: "CREATE_COMMENT" })
   revalidatePath('/posts/[slug]')
 
   return comment
@@ -213,7 +210,7 @@ export const createComment = createAction(async({session}, {postSlug, body, pare
   postSlug: z.string(),
   parentId: z.string().nullable(),
   body: z.string()
-}), {authed: true})
+}), { authed: true })
 
 
 

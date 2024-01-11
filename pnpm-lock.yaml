@@ -416,6 +416,9 @@ importers:
       '@tiptap/extension-list-item':
         specifier: ^2.1.12
         version: 2.1.13(@tiptap/core@2.1.13)
+      '@tiptap/extension-placeholder':
+        specifier: ^2.1.15
+        version: 2.1.15(@tiptap/core@2.1.13)(@tiptap/pm@2.1.13)
       '@tiptap/extension-text-style':
         specifier: ^2.1.12
         version: 2.1.13(@tiptap/core@2.1.13)
@@ -4420,6 +4423,16 @@ packages:
       '@tiptap/core': ^2.0.0
     dependencies:
       '@tiptap/core': 2.1.13(@tiptap/pm@2.1.13)
+    dev: false
+
+  /@tiptap/extension-placeholder@2.1.15(@tiptap/core@2.1.13)(@tiptap/pm@2.1.13):
+    resolution: {integrity: sha512-a6jtylXlUUl/GmPfbBf2pVHcm60RnZWVO5V2H/WTLzzzl+jUuPKeXyS3ISyaueCOSq9zEsvOQz+DQjiFsUEhdw==}
+    peerDependencies:
+      '@tiptap/core': ^2.0.0
+      '@tiptap/pm': ^2.0.0
+    dependencies:
+      '@tiptap/core': 2.1.13(@tiptap/pm@2.1.13)
+      '@tiptap/pm': 2.1.13
     dev: false
 
   /@tiptap/extension-strike@2.1.13(@tiptap/core@2.1.13):

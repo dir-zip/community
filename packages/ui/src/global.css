@@ -85,3 +85,11 @@
 .tiptap code {
   @apply text-white;
 }
+
+.tiptap p.is-editor-empty:first-child::before {
+  @apply text-primary-400;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
