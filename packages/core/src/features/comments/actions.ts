@@ -11,6 +11,9 @@ export const getComment = createAction(async({}, {commentId}) => {
       replies: {
         include: {
           user: true
+        },
+        orderBy: {
+          createdAt: 'desc'
         }
       },
       parent: {
@@ -94,6 +97,9 @@ export const getCommentsForPost = createAction(async({}, {postSlug}) => {
     },
     include: {
       user: true
+    },
+    orderBy: {
+      createdAt: 'desc'
     }
   })
 
@@ -111,6 +117,9 @@ export const getCommentsForPost = createAction(async({}, {postSlug}) => {
       },
       include: {
         user: true
+      },
+      orderBy: {
+        createdAt: 'desc'
       }
     });
 
