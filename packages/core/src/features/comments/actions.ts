@@ -1,6 +1,8 @@
+'use server'
 import { createAction } from "~/lib/createAction"
 import { prisma } from "packages/db"
 import {z} from 'zod'
+import { revalidatePath } from "next/cache"
 
 export const getComment = createAction(async({}, {commentId}) => {
   const comment = await prisma.comment.findFirst({
@@ -130,3 +132,26 @@ export const getCommentsForPost = createAction(async({}, {postSlug}) => {
 }, z.object({
   postSlug: z.string()
 }))
+
+
+export const updateComment = createAction(async ({ validate, session }, { id, data }) => {
+  await validate(['UPDATE', "comment", id])
+
+  const comment = await prisma.comment.update({
+    where: {
+      id: id
+    },
+    data: {
+      ...data,
+    }
+  })
+
+  revalidatePath('/posts/:slug')
+
+  return comment
+}, z.object({
+  id: z.string(),
+  data: z.object({
+    body: z.string()
+  })
+}), { authed: true })

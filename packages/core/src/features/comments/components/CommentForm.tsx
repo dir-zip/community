@@ -1,28 +1,13 @@
 "use client";
 
-import { Controller, useFormContext } from "react-hook-form";
-import { Form, TextField } from "../../../components/Forms";
+import { Form } from "../../../components/Forms";
 import { createComment } from "../../posts/actions";
 import { CommentSchema } from "../schemas";
-import { Avatar, RichTextField } from "@dir/ui";
+import { Avatar } from "@dir/ui";
+import { FancyEditorField } from "~/components/Forms/FancyEditorField";
 
 
 
-const InputField = () => {
-  const {
-    control,
-  } = useFormContext();
-
-  return (
-    <Controller
-      name={'body'}
-      control={control}
-      render={({ field }) => (
-        <RichTextField value={field.value} placeholder="Write something spectacular..." onValueChange={(e) => field.onChange(e)} />
-      )}
-    />
-  )
-}
 
 
 export const CommentForm = ({ postSlug, parentId }: { postSlug: string, parentId: string | null }) => {
@@ -44,7 +29,7 @@ export const CommentForm = ({ postSlug, parentId }: { postSlug: string, parentId
           }
         }}
       >
-        <InputField />
+        <FancyEditorField name="body" />
       </Form>
     </div>
   )

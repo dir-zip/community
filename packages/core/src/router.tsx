@@ -29,7 +29,7 @@ import { AllPosts } from "./features/posts/screens";
 import { AllCategoriesPage, NewCategoryPage, SingleCategoryPage } from "./features/admin/screens/categories/page";
 import { NewPost } from "./features/posts/screens/new";
 import { SinglePost } from "./features/posts/screens/single";
-import { SingleCommentScreen } from "./features/comments/screens";
+import { EditComment, SingleCommentScreen } from "./features/comments/screens";
 import { ProfileScreen } from "./features/profile/screens";
 import { AllItemsPage, NewItemPage, SingleItemPage } from "./features/admin/screens/items/page";
 import { AllActionsPage, NewActionPage, SingleActionPage } from "./features/admin/screens/actions/page";
@@ -181,6 +181,10 @@ export async function PageInit<T>({
   router.addRoute("/posts/:slug/comments/:commentId", async ({ slug, commentId }) => {
     const session = await auth.getSession();
     return <SingleCommentScreen commentId={commentId} postSlug={slug} loggedIn={session ? true : false} />
+  })
+
+  router.addRoute("/posts/:slug/comments/:commentId/edit", async ({ commentId }) => {
+    return <EditComment commentId={commentId} />
   })
 
   router.addRoute("/profile/:username", async ({ username }) => {

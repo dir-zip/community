@@ -32,7 +32,7 @@ export const SelectField = forwardRef<HTMLInputElement, SelectFieldProps>(
     } = useFormContext();
 
     return (
-      <div className="flex flex-col space-y-1" {...outerProps}>
+      <div className="flex flex-col space-y-1 w-full" {...outerProps}>
         <label
           className="text-sm font-medium leading-none flex space-y-2 flex-col"
           {...labelProps}

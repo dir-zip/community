@@ -11,10 +11,14 @@ export const EditPost = async ({slug}: {slug: string}) => {
   }
   
   return (
-    <div>
-      <div className="flex justify-between items-center pb-6">
+    <div className="p-6">
+      <div className="flex flex-col gap-4 pb-6">
         <h2 className="text-2xl font-bold">Edit Post</h2>
+        <div className="flex w-full items-center justify-center">
+          <div className="border-t flex-grow" />
+        </div>
       </div>
+      
       <Suspense>
         <PostForm post={post} categories={categories}/>
       </Suspense>

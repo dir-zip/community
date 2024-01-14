@@ -52,10 +52,27 @@ export const PostPreview = (props: PostPreviewProps) => {
 
 
   const [showEdit, setShowEdit] = useState(false);
+  const divRef = useRef<HTMLDivElement>(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false) 
 
   const toggleShowEdit = () => {
     setShowEdit(prev => !prev);
   };
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (divRef.current && !divRef.current.contains(event.target as Node) && !isDropdownOpen) {
+        setShowEdit(false);
+      }
+    }
+
+    // Bind the event listener
+    document.addEventListener("mouseup", handleClickOutside);
+    return () => {
+      // Unbind the event listener on clean up
+      document.removeEventListener("mouseup", handleClickOutside);
+    };
+  }, [divRef, isDropdownOpen]);
 
   return (
     <div className="max-h-96 w-full overflow-hidden px-6 py-4 bg-primary-800 rounded border border-border-subtle relative">
@@ -71,21 +88,21 @@ export const PostPreview = (props: PostPreviewProps) => {
 
         <Link href={`/posts/${slug}`} className="text-link text-sm font-medium flex items-center space-x-2"><MessageSquare className='w-4 h-4' /> <span>{comments} replies</span></Link>
 
-        {currentUserId === userId ? <div className="bg-primary-700 px-2 py-2 rounded flex items-center space-x-8 transition-all duration-500 ease-in-out">
+        {currentUserId === userId ? <div ref={divRef} className="bg-primary-700 px-2 py-2 rounded flex items-center space-x-8 transition-all duration-500 ease-in-out">
           <div className="flex items-center gap-2">
             <Link href={`/posts/${slug}/edit`}><PenSquare className='text-link w-4 cursor-pointer h-4' /></Link>
             {showEdit ? <ChevronsLeft className="w-4 h-4 cursor-pointer"  onClick={toggleShowEdit}/> : <ChevronsRight className="w-4 h-4 cursor-pointer"  onClick={toggleShowEdit}/>}
           </div>
 
           {showEdit ? <div className="flex items-center space-x-4">
-            <DropdownMenu>
+            <DropdownMenu onOpenChange={(isOpen) => setIsDropdownOpen(isOpen)}>
               <DropdownMenuTrigger><Hash className="text-link w-4 h-4" /></DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem>Test</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <DropdownMenu>
+            <DropdownMenu onOpenChange={(isOpen) => setIsDropdownOpen(isOpen)}>
               <DropdownMenuTrigger><LucideSquareStack className="text-link w-4 h-4" /></DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 {categories.map((category, i) => {

@@ -5,21 +5,7 @@ import { Controller, useFormContext } from "react-hook-form";
 import { Form } from "~/components/Forms";
 import { createPost } from "~/features/posts/actions";
 import { toast } from "sonner";
-const InputField = () => {
-  const {
-    control,
-  } = useFormContext();
-
-  return (
-    <Controller
-      name={'feedInput'}
-      control={control}
-      render={({ field }) => (
-        <RichTextField value={field.value} placeholder="Write something spectacular..." onValueChange={(e) => field.onChange(e)} />
-      )}
-    />
-  )
-}
+import { FancyEditorField } from "~/components/Forms/FancyEditorField";
 
 export const FeedInput = ({ avatar, username }: { avatar: string, username: string }) => {
   return (
@@ -51,7 +37,7 @@ export const FeedInput = ({ avatar, username }: { avatar: string, username: stri
         className="w-full flex flex-col space-y-2 items-end"
         submitText="Post"
       >
-        <InputField />
+        <FancyEditorField name="feedInput" />
       </Form>
     </div>
   )

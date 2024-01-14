@@ -8,6 +8,7 @@ import {Suspense} from 'react'
 import { checkGuard, getCurrentUser } from "../auth/actions"
 import { Avatar, Divider, RichTextField } from "@dir/ui"
 import {ChevronLeftSquare, PenSquare, SeparatorHorizontal} from 'lucide-react'
+import { FullCommentForm } from "./components/FullCommentForm"
 
 
 
@@ -34,7 +35,7 @@ export const SingleCommentScreen = async({postSlug, commentId, loggedIn}: {postS
                   <RichTextField value={comment.parent.body} editable={false} onValueChange={undefined} />
                 </div>
               </div>
-              <div className="flex w-full"><Link href={`/posts/${postSlug}/comments/${comment.parentId}`}><ChevronLeftSquare className="w-4 h-4 text-link" /></Link></div>
+              <div className="w-fit"><Link href={`/posts/${postSlug}/comments/${comment.parentId}`}><ChevronLeftSquare className="w-4 h-4 text-link" /></Link></div>
             </div>
           </div>
         </div> : <div className="p-4">
@@ -49,7 +50,7 @@ export const SingleCommentScreen = async({postSlug, commentId, loggedIn}: {postS
                   <RichTextField value={comment.post.body} editable={false} onValueChange={undefined} />
                 </div>
               </div>
-              <div><Link href={`/posts/${comment.post.slug}`}><ChevronLeftSquare className="w-4 h-4 text-link" /></Link></div>
+              <div className="w-fit"><Link href={`/posts/${comment.post.slug}`}><ChevronLeftSquare className="w-4 h-4 text-link" /></Link></div>
               </div>
             </div>
         </div>  
@@ -98,6 +99,32 @@ export const Comments = async ({postSlug, loggedIn}: {loggedIn: boolean, postSlu
         <Suspense fallback={<div>Loading...</div>}>
           <CommentList comments={comments} mainPostSlug={postSlug} currentUserId={currentUser.id} />
         </Suspense>
+    </div>
+  )
+}
+
+
+
+export const EditComment = async ({commentId}: {commentId: string}) => {
+  const comment = await getComment({commentId: commentId})
+
+
+  if(!comment) {
+    throw new Error("Post not found")
+  }
+  
+  return (
+    <div className="p-6">
+      <div className="flex flex-col gap-4 pb-6">
+        <h2 className="text-2xl font-bold">Edit Comment</h2>
+        <div className="flex w-full items-center justify-center">
+          <div className="border-t flex-grow" />
+        </div>
+      </div>
+      
+      <Suspense>
+        <FullCommentForm comment={comment} postSlug={comment.post.slug} />
+      </Suspense>
     </div>
   )
 }
