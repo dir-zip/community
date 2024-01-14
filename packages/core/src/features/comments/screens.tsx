@@ -76,7 +76,7 @@ export const SingleCommentScreen = async({postSlug, commentId, loggedIn}: {postS
             <Divider text="Comments"/>
 
             <div className="w-full flex flex-col gap-8">
-            {loggedIn && <CommentForm postSlug={postSlug} parentId={null}/>}
+            {loggedIn && <CommentForm postSlug={comment.post.slug} parentId={comment.id}/>}
             <Suspense fallback={<div>Loading...</div>}>
               <CommentList comments={comment.replies} mainPostSlug={postSlug} currentUserId={currentUser.id} />
             </Suspense>
