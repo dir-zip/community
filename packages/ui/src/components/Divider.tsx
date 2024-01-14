@@ -1,3 +1,4 @@
+import React from 'react'
 export const Divider = ({ text, component }: { text?: string, component?: JSX.ElementType }) => {
   const Component = component
   return (

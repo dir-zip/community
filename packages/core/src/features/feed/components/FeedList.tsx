@@ -1,6 +1,7 @@
 "use client"
 import React, { useRef } from 'react'
-import { PostPreview, Avatar } from "@dir/ui"
+import { Avatar } from "@dir/ui"
+import { PostPreview } from '~/features/posts/components/PostPreview'
 import { Post, User, Comment, Category, Tag } from "@dir/db"
 import { updatePost } from '~/features/posts/actions'
 export const FeedList = ({ feed, currentUser, categories }: { feed: (Post & { user: User, comments: Comment[], category: Category, tags: Tag[] })[], currentUser: User, categories: Category[] }) => {

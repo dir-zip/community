@@ -4,7 +4,7 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {
-    "dev": "pnpm build:tailwind && pnpm dev:jobs",
+    "dev": "pnpm build:tailwind --watch && pnpm dev:jobs",
     "build": "pnpm build:tailwind",
     "start": "pnpm start:jobs",
     "dev:jobs": "pnpm with-env pnpm dlx tsx --watch ./src/jobs/index.ts",

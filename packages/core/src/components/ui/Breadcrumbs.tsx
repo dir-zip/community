@@ -35,7 +35,17 @@ export const Breadcrumbs = ({ ignore }: BreadcrumbsProps) => {
           const elPathParts = el.href.split("/");
           return (
             ignorePathParts.length === elPathParts.length &&
-            ignorePathParts.every((part, i) => part === elPathParts[i] || part.startsWith(":"))
+            ignorePathParts.every((part, i) => {
+              if (part.startsWith(":")) {
+                return true;
+              } else if (part.includes("*")) {
+                // Create a regex from the ignore path, replacing '*' with a regex wildcard
+                const regex = new RegExp("^" + part.replace(/\*/g, "[^/]+") + "$");
+                return regex.test(elPathParts[i] || "");
+              } else {
+                return part === elPathParts[i];
+              }
+            })
           );
         });
       });

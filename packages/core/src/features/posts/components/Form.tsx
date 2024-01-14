@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation"
 import { PostSchema } from "~/features/posts/schemas"
 import { createPost, updatePost } from "../actions"
 import { Category, Tag, type Post } from "packages/db"
+import { RichTextField } from "@dir/ui"
 
 const PostForm = ({ post, categories }: { post?: Post & { tags: Tag[], category: Category }, categories: Category[] }) => {
   const router = useRouter()
@@ -56,8 +57,6 @@ const PostForm = ({ post, categories }: { post?: Post & { tags: Tag[], category:
         return { value: c.slug, key: c.title }
       })} />
       <TextField name="tags" label="Tags" />
-
-
     </Form>
   )
 }
