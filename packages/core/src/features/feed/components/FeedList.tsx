@@ -26,11 +26,10 @@ export const FeedList = ({ feed, currentUser, categories }: { feed: (Post & { us
                   data: {
                     ...feed,
                     category: slug,
-                    tags: feed.tags.map(tag => tag.slug).join(', ')
+                    tags: feed.tags.map(tag => tag.slug)
                   },
                   slug: feed.slug
                 })
-                console.log(slug)
               }} 
             />
           </div>

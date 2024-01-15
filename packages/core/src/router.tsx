@@ -116,7 +116,6 @@ export async function PageInit<T>({
           <div className="pb-12 md:pb-6">
             <Breadcrumbs
               ignore={[
-                { href: "/posts", breadcrumb: "Posts" },
                 { href: "/posts/:slug/comments", breadcrumb: "Comments" }
               ]}
             />
@@ -134,6 +133,23 @@ export async function PageInit<T>({
     const user = await getCurrentUser()
     const settings = await prisma?.globalSetting.findFirst()
     const memberCount = await prisma?.user.findMany()
+    const tags = await prisma?.tag.findMany();
+    const tagsWithPostCount = tags ? await Promise.all(tags.map(async (tag) => {
+      const count = await prisma?.post.count({
+        where: {
+          tags: {
+            some: {
+              id: tag.id
+            }
+          }
+        }
+      });
+      return {
+        ...tag,
+        postCount: count ?? 0
+      };
+    })) : [];
+
     return (
       <div className="flex h-screen">
         <div className="md:flex md:flex-shrink-0">
@@ -141,6 +157,7 @@ export async function PageInit<T>({
             <Sidebar
               siteTitle={settings?.siteTitle!}
               memberCount={memberCount!.length}
+              tags={tagsWithPostCount}
               user={
                 {
                   username: user.username,
@@ -154,7 +171,7 @@ export async function PageInit<T>({
         <main className="flex flex-col w-0 flex-1 overflow-hidden">
           <div className="border-b border-b-border-subtle flex items-center">
             <div className="px-4 py-6">
-              <Breadcrumbs ignore={[{ href: "/posts", breadcrumb: "Posts" }, { href: "/posts/*/comments", breadcrumb: "Comments" }]} />
+              <Breadcrumbs ignore={[{ href: "/posts/*/comments", breadcrumb: "Comments" }]} />
             </div>
           </div>
           <div className="overflow-auto xl:mx-auto xl:w-[960px]">

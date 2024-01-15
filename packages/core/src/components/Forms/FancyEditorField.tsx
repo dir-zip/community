@@ -3,7 +3,7 @@ import React from 'react'
 import { RichTextField } from "@dir/ui";
 import { Controller, useFormContext } from "react-hook-form";
 
-export const FancyEditorField = ({ name, label }: { name: string, label: string }) => {
+export const FancyEditorField = ({ name, label }: { name: string, label?: string }) => {
   const {
     control,
   } = useFormContext();
@@ -13,7 +13,7 @@ export const FancyEditorField = ({ name, label }: { name: string, label: string 
       <label
         className="text-sm font-medium leading-none flex space-y-2 w-full flex-col"
       >
-        <span>{label}</span>
+        {label ? <span>{label}</span> : null}
         <Controller
           name={name}
           control={control}

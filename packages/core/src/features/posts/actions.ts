@@ -21,13 +21,42 @@ export const getAllPosts = createAction(async () => {
     include: {
       posts: {
         include: {
-          user: true
+          user: true,
+          comments: {
+            include: {
+              user: true,
+              replies: true
+            },
+            orderBy: {
+              createdAt: 'desc'
+            }
+          }
+        },
+        orderBy: {
+          createdAt: 'desc'
         }
       }
     }
   })
 
-  return categoryWithPosts
+  const categoryWithPostsAndComments = categoryWithPosts.map(category => {
+    const postsWithComments = category.posts.map(post => {
+      const replyCount = post.comments.length + post.comments.reduce((total, comment) => total + comment.replies.length, 0); // Calculate total reply count
+      const allCommentsAndReplies = post.comments.concat(
+        post.comments.flatMap(comment => comment.replies.map(reply => ({
+          ...reply,
+          user: comment.user,
+          replies: []
+        })))
+      );
+      const lastCommentOrReply = allCommentsAndReplies.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0]; // Get the latest comment or reply
+      const replies = post.comments.flatMap(comment => comment.replies); // Get all replies
+      return { ...post, replyCount, lastCommentOrReply, replies }; // Include replies here
+    });
+    return { ...category, posts: postsWithComments };
+  });
+
+  return categoryWithPostsAndComments;
 })
 
 
@@ -179,7 +208,8 @@ export const updatePost = createAction(async ({ validate, session }, { slug, dat
       tags: mappedTags
     }
   })
-
+  revalidatePath('/')
+  revalidatePath('/posts')
   return post
 }, z.object({
   slug: z.string(),

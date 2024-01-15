@@ -32,17 +32,7 @@ export const SiteInfo = ({ siteTitle, memberCount }: { siteTitle: string, member
   )
 }
 
-export const TagCloud = () => {
-  return (
-    <div className="flex flex-col px-4 space-y-2">
-      <h2 className="text-sm font-semibold">Tag cloud</h2>
-      <div className="flex flex-wrap gap-2">
-        <Badge>Next.js</Badge>
-        <Badge>React</Badge>
-      </div>
-    </div>
-  )
-}
+
 
 export const UserInfo = ({ username, avatar, points }: { username: string, avatar: string, points: number }) => {
   return (

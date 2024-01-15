@@ -20,7 +20,7 @@ export const FeedInput = ({ avatar, username }: { avatar: string, username: stri
               createPost({
                 title: '',
                 body: data.feedInput,
-                tags: 'feed',
+                tags: ['feed'],
                 category: 'general'
               })
 

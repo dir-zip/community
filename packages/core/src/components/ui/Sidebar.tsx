@@ -1,9 +1,11 @@
 "use client"
-import { SidebarContainer, UserInfo, TagCloud, SiteInfo, NavWrapper, InnerSidebarContainer, type SidebarProps } from "@dir/ui"
+import { SidebarContainer, UserInfo, SiteInfo, NavWrapper, InnerSidebarContainer, type SidebarProps } from "@dir/ui"
 import { usePathname } from "next/navigation"
 import Link from 'next/link'
 import { Layers, Settings, Users, LogOut, Store, FileText } from 'lucide-react'
 import { logoutAction } from "../../features/auth/actions"
+import { TagCloud } from "./TagCloud"
+import { Tag } from "@dir/db"
 
 const _sidebarLinks = [
   { icon: Layers, text: "Feed", link: '/feed' },
@@ -12,7 +14,7 @@ const _sidebarLinks = [
   { icon: Store, text: "Shop", link: '/shop' }
 ]
 
-export const Sidebar = (props: Omit<SidebarProps, 'children'>) => {
+export const Sidebar = (props: Omit<SidebarProps, 'children'> & {tags?: (Tag & {postCount: number})[]}) => {
   const pathname = usePathname()
   return (
     <SidebarContainer>
@@ -30,7 +32,7 @@ export const Sidebar = (props: Omit<SidebarProps, 'children'>) => {
 
       <InnerSidebarContainer>
         <div className="py-6">
-          <TagCloud />
+          <TagCloud tags={props.tags || []} />
         </div>
         <UserInfo username={props.user.username} avatar={props.user.avatar} points={props.user.points} />
         <NavWrapper>

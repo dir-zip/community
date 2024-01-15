@@ -1,21 +1,26 @@
 "use client"
 
 
-import { Avatar, Badge, Select, SelectTrigger, SelectValue, SelectContent, SelectItem, TagInputField, Button } from '@dir/ui'
+import { Avatar, Badge, Select, SelectTrigger, SelectValue, SelectContent, SelectItem, TagInputField, Button, buttonVariants } from '@dir/ui'
 import Link from 'next/link';
 import React from 'react'
-import { MessageSquare, Pin } from 'lucide-react'
+import { MessageSquare, Pin, Plus, PlusCircle } from 'lucide-react'
+import { Category, Post, User, Comment } from 'packages/db';
 
-export const PostList = () => {
-  const [selectedCategory, setSelectedCategory] = React.useState('general');
+export interface PostListProps {
+  posts: (Category & { posts: (Post & { comments: (Comment & { replies: Comment[] })[], replyCount: number, lastCommentOrReply?: (Comment & { user: User }), user: User })[] })[];
+}
+
+export const PostList = ({ posts }: PostListProps) => {
+  const [selectedCategory, setSelectedCategory] = React.useState(posts[0]?.slug);
   const [selectedTags, setSelectedTags] = React.useState<string[]>([]);
 
   return (
     <div className="flex flex-col gap-12">
-      <div className="flex gap-8">
+      <div className="flex justify-between items-center gap-8">
         <div className="w-4/12">
           <Select
-            value={'general'}
+            value={selectedCategory}
             onValueChange={(e) => {
               setSelectedCategory(e);
             }}
@@ -25,9 +30,9 @@ export const PostList = () => {
             </SelectTrigger>
             <SelectContent className='bg-primary-900 rounded'>
 
-              {[{ key: 'General', value: 'general' }].map((option) => (
-                <SelectItem key={option.key} value={option.value} className={`${option.value === selectedCategory ? 'bg-primary-700' : ''} rounded`}>
-                  {option.key}
+              {posts.map((option) => (
+                <SelectItem key={option.title} value={option.slug} className={`hover:bg-primary-700 rounded`}>
+                  {option.title}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -35,70 +40,53 @@ export const PostList = () => {
         </div>
 
         <div className="w-4/12">
-          <TagInputField onChange={setSelectedTags} />
+    
         </div>
-        <div className="w-4/12">
-          <Button>Clear All</Button>
+        <div className="w-4/12 flex gap-4 justify-end">
+          <Link href={`/posts/new`} className={`${buttonVariants({ variant: "default"})} flex items-center gap-2`}><PlusCircle className="h-4 w-4" />Post</Link>
         </div>
       </div>
 
       <div className="flex flex-col gap-4">
-        
-        {/* Pinned */}
-        <div className={`pt-4 bg-primary-700 relative border-b rounded pb-4 flex items-center gap-4 w-full justify-between pl-8 pr-8`}>
-          <Pin className="transform rotate-45 w-4 h-4 absolute top-2 left-2" />
-          <div className="flex gap-4">
-            <Avatar imageUrl={""} fallback={'dillonraphael'} />
-            <div className="flex flex-col">
-              <span className="text-link font-semibold">Post title</span>
-              <span className="text-xs"><span className="text-link">Henry Riverton</span> • <span className="text-xs">1d ago</span></span>
-            </div>
-          </div>
-          <Badge>
-            General
-          </Badge>
-          <Link href={`/posts`} className="text-link text-sm font-medium flex items-center space-x-2"><MessageSquare className='w-4 h-4' /> <span>{'1'} replies</span></Link>
-          <div className="flex flex-col justify-end">
-            <span className="text-primary-100 text-xs self-end">Last reply</span>
-            <div className="flex gap-4 justify-end">
-              <Avatar imageUrl={""} fallback={'dillonraphael'} />
-              <div className="flex flex-col">
-                <span className="text-link text-sm">Henry Riverton</span>
-                <span className="text-sm self-end">1d ago</span>
+        {posts
+          .find((category) => category.slug === selectedCategory)?.posts.map((post) => {
+            const category = posts.find((category) => category.posts.includes(post));
+            return (
+              <div key={post.id} className={`pt-4 bg-transparent relative border-b rounded pb-4 flex items-center gap-4 w-full justify-between pl-8 pr-8`}>
+                {/* 
+                //TODO: Add a field to post to set as pinned by admin only
+                <Pin className="transform rotate-45 w-4 h-4 absolute top-2 left-2" /> */}
+                <div className="flex gap-4 mr-4 min-w-0">
+                  <Avatar imageUrl={post.user.avatar} fallback={post.user.username} />
+                  <div className="flex flex-col">
+                    <Link href={`/posts/${post.slug}`}><span className="text-link font-semibold">{post.title}</span></Link>
+                    <span className="text-xs"><Link href={`/profile/${post.user.username}`}><span className="text-link">{post.user.username}</span></Link> • <span className="text-xs">{post.createdAt.toDateString()}</span></span>
+                  </div>
+                </div>
+                <div className="flex-1 min-w-0 flex items-center justify-center">
+                  <Badge>
+                    {category?.title}
+                  </Badge>
+                </div>
+                <div className="flex-1 min-w-0 flex items-center justify-center">
+                  <Link href={`/posts/${post.slug}`} className="text-link text-sm font-medium flex items-center space-x-2"><MessageSquare className='w-4 h-4' /> <span>{post.replyCount} replies</span></Link>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-col items-end">
+                    <span className="text-primary-100 text-xs self-end">Last reply</span>
+                    {post.lastCommentOrReply ? <div className="flex gap-4 justify-end">
+                      <Avatar imageUrl={post.lastCommentOrReply.user.avatar} fallback={post.lastCommentOrReply.user.username} />
+                      <div className="flex flex-col items-end">
+                        <Link href={`/profile/${post.lastCommentOrReply.user.username}`}><span className="text-link text-sm">{post.lastCommentOrReply.user.username}</span></Link>
+                        <span className="text-xs self-end">{post.lastCommentOrReply.createdAt.toDateString()}</span>
+                      </div>
+                    </div> : <div><span className="text-xs">No comments</span></div>}
+
+                  </div>
+                </div>
               </div>
-            </div>
-
-          </div>
-        </div>
-        
-
-        {/* Non Pinned */}
-        <div className={`pt-4 bg-transparent relative border-b rounded pb-4 flex items-center gap-4 w-full justify-between pl-8 pr-8`}>
-          {/* <Pin className="transform rotate-45 w-4 h-4 absolute top-2 left-2" /> */}
-          <div className="flex gap-4">
-            <Avatar imageUrl={""} fallback={'dillonraphael'} />
-            <div className="flex flex-col">
-              <span className="text-link font-semibold">Post title</span>
-              <span className="text-xs"><span className="text-link">Henry Riverton</span> • <span className="text-xs">1d ago</span></span>
-            </div>
-          </div>
-          <Badge>
-            General
-          </Badge>
-          <Link href={`/posts`} className="text-link text-sm font-medium flex items-center space-x-2"><MessageSquare className='w-4 h-4' /> <span>{'1'} replies</span></Link>
-          <div className="flex flex-col justify-end">
-            <span className="text-primary-100 text-xs self-end">Last reply</span>
-            <div className="flex gap-4 justify-end">
-              <Avatar imageUrl={""} fallback={'dillonraphael'} />
-              <div className="flex flex-col">
-                <span className="text-link text-sm">Henry Riverton</span>
-                <span className="text-sm self-end">1d ago</span>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
+            )
+          })}
 
       </div>
     </div>

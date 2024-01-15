@@ -90,17 +90,10 @@ export const CommentPreview = (props: CommentPreviewProps) => {
         {currentUserId === userId ? <div ref={divRef} className="bg-primary-700 px-2 py-2 rounded flex items-center space-x-8 transition-all duration-500 ease-in-out">
           <div className="flex items-center gap-2">
             <Link href={`/posts/${mainPostSlug}/comments/${slug}/edit`}><PenSquare className='text-link w-4 cursor-pointer h-4' /></Link>
-            {showEdit ? <ChevronsLeft className="w-4 h-4 cursor-pointer"  onClick={toggleShowEdit}/> : <ChevronsRight className="w-4 h-4 cursor-pointer"  onClick={toggleShowEdit}/>}
+            {/* {showEdit ? <ChevronsLeft className="w-4 h-4 cursor-pointer"  onClick={toggleShowEdit}/> : <ChevronsRight className="w-4 h-4 cursor-pointer"  onClick={toggleShowEdit}/>} */}
           </div>
-          {showEdit ? <div className="flex items-center space-x-4">
-            <DropdownMenu onOpenChange={(isOpen) => setIsDropdownOpen(isOpen)}>
-              <DropdownMenuTrigger><Hash className="text-link w-4 h-4" /></DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem>Test</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-          </div> : null}
+          {/* {showEdit ? <div className="flex items-center space-x-4">
+          </div> : null} */}
         </div> : null}
       </div>
     </div>

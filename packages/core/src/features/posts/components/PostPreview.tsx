@@ -96,13 +96,6 @@ export const PostPreview = (props: PostPreviewProps) => {
 
           {showEdit ? <div className="flex items-center space-x-4">
             <DropdownMenu onOpenChange={(isOpen) => setIsDropdownOpen(isOpen)}>
-              <DropdownMenuTrigger><Hash className="text-link w-4 h-4" /></DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem>Test</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <DropdownMenu onOpenChange={(isOpen) => setIsDropdownOpen(isOpen)}>
               <DropdownMenuTrigger><LucideSquareStack className="text-link w-4 h-4" /></DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 {categories.map((category, i) => {

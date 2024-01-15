@@ -18,8 +18,8 @@ const PostForm = ({ post, categories }: { post?: Post & { tags: Tag[], category:
   return (
     <div className="bg-primary-800 p-6 rounded-lg border border-border-subtle w-full">
       <Form
-        submitText={post ? "Update" : "Create"}
-        schema={PostSchema}
+        submitText={post ? "Update" : "Post"}
+        // schema={PostSchema}
         className="w-full flex flex-col gap-8 items-end"
         initialValues={post && {
           title: post.title,
@@ -31,20 +31,24 @@ const PostForm = ({ post, categories }: { post?: Post & { tags: Tag[], category:
           toast.promise(
             new Promise(async (resolve) => {
               if (!post) {
-                await createPost({
+                console.log(values)
+                const post = await createPost({
                   ...values
                 })
+                router.push(`/posts/${post.slug}`)
               } else {
-                await updatePost({
+                const updatedPost = await updatePost({
                   slug: post.slug,
                   data: {
                     ...values
                   }
                 })
+
+                router.push(`/posts/${updatedPost.slug}`)
               }
 
 
-              router.push(`/`)
+           
               router.refresh()
               resolve(null)
             }),

@@ -49,13 +49,13 @@ export const SelectField = forwardRef<HTMLInputElement, SelectFieldProps>(
                   field.onChange(e);
                 }}
               >
-                <SelectTrigger>
+                <SelectTrigger className="bg-primary-900 w-full rounded py-2">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className='bg-primary-900 rounded'>
 
                   {options.map((option) => (
-                    <SelectItem key={option.key} value={option.value}>
+                    <SelectItem key={option.key} value={option.value} className="hover:bg-primary-700 rounded">
                       {option.key}
                     </SelectItem>
                   ))}
