@@ -9,6 +9,7 @@ import { PostSchema } from "~/features/posts/schemas"
 import { createPost, updatePost } from "../actions"
 import { Category, Tag, type Post } from "packages/db"
 import { FancyEditorField } from "~/components/Forms/FancyEditorField"
+import { TagField } from "~/components/Forms/TagField"
 
 
 const PostForm = ({ post, categories }: { post?: Post & { tags: Tag[], category: Category }, categories: Category[] }) => {
@@ -24,7 +25,7 @@ const PostForm = ({ post, categories }: { post?: Post & { tags: Tag[], category:
           title: post.title,
           body: post.body,
           category: post.category.slug,
-          tags: post.tags.map(p => p.slug).join(', ')
+          tags: post.tags.map(p => p.slug)
         }}
         onSubmit={async (values) => {
           toast.promise(
@@ -37,7 +38,7 @@ const PostForm = ({ post, categories }: { post?: Post & { tags: Tag[], category:
                 await updatePost({
                   slug: post.slug,
                   data: {
-                    ...values,
+                    ...values
                   }
                 })
               }
@@ -59,11 +60,8 @@ const PostForm = ({ post, categories }: { post?: Post & { tags: Tag[], category:
         <SelectField label="Category" name="category" options={categories.map((c) => {
           return { value: c.slug, key: c.title }
         })} />
-        <TextField name="tags" label="Tags" />
-        <div className="w-full flex flex-col gap-1">
-          <span className="text-sm">Body</span>
-          <FancyEditorField name="body" />
-        </div>
+        <TagField name="tags" label="Tags" />
+        <FancyEditorField name="body" label="Body" />
       </Form>
     </div>
   )

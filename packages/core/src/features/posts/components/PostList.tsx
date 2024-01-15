@@ -43,7 +43,8 @@ export const PostList = () => {
       </div>
 
       <div className="flex flex-col gap-4">
-
+        
+        {/* Pinned */}
         <div className={`pt-4 bg-primary-700 relative border-b rounded pb-4 flex items-center gap-4 w-full justify-between pl-8 pr-8`}>
           <Pin className="transform rotate-45 w-4 h-4 absolute top-2 left-2" />
           <div className="flex gap-4">
@@ -69,7 +70,9 @@ export const PostList = () => {
 
           </div>
         </div>
+        
 
+        {/* Non Pinned */}
         <div className={`pt-4 bg-transparent relative border-b rounded pb-4 flex items-center gap-4 w-full justify-between pl-8 pr-8`}>
           {/* <Pin className="transform rotate-45 w-4 h-4 absolute top-2 left-2" /> */}
           <div className="flex gap-4">
@@ -96,9 +99,6 @@ export const PostList = () => {
           </div>
         </div>
 
-        
-
-        
 
       </div>
     </div>

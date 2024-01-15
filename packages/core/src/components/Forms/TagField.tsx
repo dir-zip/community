@@ -1,9 +1,9 @@
 "use client"
 import React from 'react'
-import { RichTextField } from "@dir/ui";
+import { TagInputField } from "@dir/ui";
 import { Controller, useFormContext } from "react-hook-form";
 
-export const FancyEditorField = ({ name, label }: { name: string, label: string }) => {
+export const TagField = ({ name, label }: { name: string, label: string }) => {
   const {
     control,
   } = useFormContext();
@@ -18,7 +18,7 @@ export const FancyEditorField = ({ name, label }: { name: string, label: string 
           name={name}
           control={control}
           render={({ field }) => (
-            <RichTextField value={field.value} placeholder="Write something spectacular..." onValueChange={(e) => field.onChange(e)} />
+            <TagInputField value={field.value} onChange={(e) => field.onChange(e)} />
           )}
         />
       </label>

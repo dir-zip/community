@@ -3,35 +3,42 @@ import React, { useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 
 interface TagInputFieldProps {
+  value?: string
   onChange: (tags: string[]) => void;
 }
 
-export const TagInputField: React.FC<TagInputFieldProps> = ({ onChange }) => {
-  const [tags, setTags] = useState<string[]>([]);
+export const TagInputField: React.FC<TagInputFieldProps> = ({ onChange, value: externalTags }) => {
+  const [internalTags, setInternalTags] = useState<string[]>([]);
   const [input, setInput] = useState<string>('');
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
 
+  const tags = externalTags ? Array.isArray(externalTags) ? externalTags : [externalTags] : internalTags;
+  const setTags = (newTags: string[]) => {
+    if (externalTags) {
+      onChange(newTags);
+    } else {
+      setInternalTags(newTags);
+    }
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       event.preventDefault()
       if (input) {
         const newTags = [...tags, input];
         setTags(newTags);
         setInput('');
-        onChange(newTags);
       }
     } else if (event.key === 'Backspace' && input === '') {
       const newTags = [...tags];
       newTags.pop();
       setTags(newTags);
-      onChange(newTags);
     }
   };
 
   const handleDelete = (tagToDelete: string) => {
     const newTags = tags.filter((tag) => tag !== tagToDelete);
     setTags(newTags);
-    onChange(newTags);
   };
 
   const inputRef = useRef<HTMLDivElement>(null);
