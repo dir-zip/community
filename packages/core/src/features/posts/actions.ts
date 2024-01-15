@@ -15,11 +15,17 @@ export const getCategories = createAction(async () => {
   return categories
 })
 
-export const getAllPosts = createAction(async () => {
+export const getAllPosts = createAction(async ({}, params) => {
+  if (!params) {
+    throw new Error('Parameters are undefined');
+  }
+  const { skip, take } = params;
 
-  const categoryWithPosts = await prisma.category.findMany({
+  const categories = await prisma.category.findMany({
     include: {
       posts: {
+        skip,
+        take,
         include: {
           user: true,
           comments: {
@@ -39,8 +45,12 @@ export const getAllPosts = createAction(async () => {
     }
   })
 
-  const categoryWithPostsAndComments = categoryWithPosts.map(category => {
-    const postsWithComments = category.posts.map(post => {
+  const categoryWithPostsAndCounts = await Promise.all(categories.map(async (category) => {
+    const count = await prisma.post.count({
+      where: { categoryId: category.id },
+    });
+
+    const postsWithCounts = category.posts.map(post => {
       const replyCount = post.comments.length + post.comments.reduce((total, comment) => total + comment.replies.length, 0); // Calculate total reply count
       const allCommentsAndReplies = post.comments.concat(
         post.comments.flatMap(comment => comment.replies.map(reply => ({
@@ -53,11 +63,16 @@ export const getAllPosts = createAction(async () => {
       const replies = post.comments.flatMap(comment => comment.replies); // Get all replies
       return { ...post, replyCount, lastCommentOrReply, replies }; // Include replies here
     });
-    return { ...category, posts: postsWithComments };
-  });
 
-  return categoryWithPostsAndComments;
-})
+    return { ...category, posts: postsWithCounts, count };
+  }));
+
+  return categoryWithPostsAndCounts;
+},   z.object({
+  skip: z.number().optional(),
+  take: z.number().optional(),
+}),
+{ authed: false })
 
 
 
