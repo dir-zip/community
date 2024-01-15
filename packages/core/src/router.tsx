@@ -154,7 +154,7 @@ export async function PageInit<T>({
         <main className="flex flex-col w-0 flex-1 overflow-hidden">
           <div className="border-b border-b-border-subtle flex items-center">
             <div className="px-4 py-6">
-              <Breadcrumbs ignore={[{ href: "/posts", breadcrumb: "Posts" }, {href: "/posts/*/comments", breadcrumb: "Comments"}]} />
+              <Breadcrumbs ignore={[{ href: "/posts", breadcrumb: "Posts" }, { href: "/posts/*/comments", breadcrumb: "Comments" }]} />
             </div>
           </div>
           <div className="overflow-auto xl:mx-auto xl:w-[960px]">
@@ -171,6 +171,10 @@ export async function PageInit<T>({
 
   router.addRoute("/feed", async () => {
     return <FeedScreen />
+  })
+
+  router.addRoute('/posts', async () => {
+    return <AllPosts />
   })
 
   router.addRoute("/posts/:slug", async ({ slug }) => {

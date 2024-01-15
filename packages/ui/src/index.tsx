@@ -9,6 +9,8 @@ export * from "./components/Avatar"
 export * from "./components/Divider"
 export * from "./components/Skeleton"
 export * from "./components/Select"
+export * from "./components/TagInputField"
+export * from "./components/Badge"
 
 export * from "./primitives/dropdown-menu"
 

@@ -1,14 +1,11 @@
-import Link from "next/link"
 import { getAllPosts } from "../actions"
-import { Button, PostPreview } from '@dir/ui'
-import { TestTable } from "../components/TestTable"
-import { Divider } from '@/components/Divider'
-
-export const AllPosts = async ({ loggedIn }: { loggedIn: boolean }) => {
+import { PostList } from "../components/PostList"
+export const AllPosts = async () => {
   const categories = await getAllPosts()
-
+  console.log(categories)
   return (
-    <div className="px-4">
+    <div className="p-6">
+      <PostList />
     </div>
   )
 }
