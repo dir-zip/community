@@ -1,7 +1,7 @@
 "use client"
 
 
-import { Avatar, Badge, Select, SelectTrigger, SelectValue, SelectContent, SelectItem, TagInputField, Button, buttonVariants } from '@dir/ui'
+import { Avatar, Badge, Select, SelectTrigger, SelectValue, SelectContent, SelectItem, Button, buttonVariants } from '@dir/ui'
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
 import { MessageSquare, Pin, ChevronLeft, ChevronRight, PlusCircle } from 'lucide-react'
@@ -16,7 +16,7 @@ export interface PostListProps {
 export const PostList = ({ posts }: PostListProps) => {
   const [selectedCategory, setSelectedCategory] = React.useState(posts[0]?.slug);
 
-  const ITEMS_PER_PAGE = 10
+  const ITEMS_PER_PAGE = 20
   const searchParams = useSearchParams()
   const pathname = usePathname();
   const page = Number(searchParams.get('page')) || 0;
@@ -131,11 +131,11 @@ export const PostList = ({ posts }: PostListProps) => {
       </div>
 
       <div className="flex gap-4 w-full justify-center">
-        <Button disabled={!(tablePage !== 0)} onClick={() => router.push(`?page=${page - 1}`)}><ChevronLeft className="w-4 h-4"/></Button>
+        <Button disabled={!(tablePage !== 0)} onClick={() => router.push(`?page=${page - 1}`)}><ChevronLeft className="w-4 h-4" /></Button>
         <div className="flex">
           {pageNumbers.map((pageNumber, index) => (
             <button
-            className={`py-2 px-4 bg-primary text-primary-foreground border-y shadow-emerald-900/40 shadow-inner saturate-150 hover:saturate-100 inline-flex items-center justify-center text-xs font-medium disabled:pointer-events-none disabled:opacity-50 
+              className={`py-2 px-4 bg-primary text-primary-foreground border-y shadow-emerald-900/40 shadow-inner saturate-150 hover:saturate-100 inline-flex items-center justify-center text-xs font-medium disabled:pointer-events-none disabled:opacity-50 
             ${index === 0 ? 'rounded-l border border-border-subtle' : ''} 
             ${index !== 0 && index !== pageNumbers.length - 1 ? 'border-r border-border-subtle' : ''} 
             ${index === pageNumbers.length - 1 ? 'rounded-r border-r border-border-subtle' : ''}`}
@@ -148,7 +148,7 @@ export const PostList = ({ posts }: PostListProps) => {
           ))}
         </div>
 
-        <Button disabled={!(skip + ITEMS_PER_PAGE < count)} onClick={() => router.push(`?page=${page + 1}`)}><ChevronRight className="w-4 h-4"/></Button>
+        <Button disabled={!(skip + ITEMS_PER_PAGE < count)} onClick={() => router.push(`?page=${page + 1}`)}><ChevronRight className="w-4 h-4" /></Button>
       </div>
 
     </div>
