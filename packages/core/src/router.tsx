@@ -36,11 +36,11 @@ import { AllActionsPage, NewActionPage, SingleActionPage } from "./features/admi
 import { AllBadgesPage, NewBadgePage, SingleBadgePage } from "./features/admin/screens/badges/page";
 import { EditPost } from "./features/posts/screens/edit";
 import { ShopPage } from "./features/shop/screens";
-import { AllBroadcasts, NewBroadcastPage, SingleBroadcastPage } from "./features/admin/screens/broadcasts/page";
-import { AllBroadcastsPage, BroadcastPage } from "./features/broadcasts/screens";
+
+
 import { redirect } from 'next/navigation'
 import { FeedScreen } from "./features/feed/screens";
-
+import { UserInventoryScreen, UserSettingsScreen } from "./features/user/screens";
 
 const router = new Router();
 
@@ -178,6 +178,7 @@ export async function PageInit<T>({
             {children}
           </div>
         </main>
+        <ToastProvider />
       </div>
     );
   })
@@ -210,6 +211,42 @@ export async function PageInit<T>({
 
   router.addRoute("/profile/:username", async ({ username }) => {
     return <ProfileScreen username={username} />
+  })
+
+  router.addRoute("/settings", async() => {
+    return <UserSettingsScreen />
+  })
+
+  router.addRoute("/settings/inventory", async() => {
+    return <UserInventoryScreen />
+  })
+
+
+  router.addRoute('/posts/new', async () => {
+    const session = await auth.getSession();
+    if (!session) {
+      throw new Error("You do not belong here.")
+    }
+
+    return <NewPost />
+  })
+
+  router.addRoute('/posts/:slug/edit', async ({ slug }) => {
+    const session = await auth.getSession();
+    if (!session) {
+      throw new Error("You do not belong here.")
+    }
+
+    return <EditPost slug={slug} />
+  })
+
+  router.addRoute('/shop', async () => {
+    const session = await auth.getSession();
+    if (!session) {
+      throw new Error("You do not belong here.")
+    }
+
+    return <ShopPage />
   })
 
   /**
@@ -296,50 +333,8 @@ export async function PageInit<T>({
    **/
 
 
-  router.addRoute('/posts/new', async () => {
-    const session = await auth.getSession();
-    if (!session) {
-      throw new Error("You do not belong here.")
-    }
 
-    return <NewPost />
-  })
 
-  router.addRoute('/posts/:slug/edit', async ({ slug }) => {
-    const session = await auth.getSession();
-    if (!session) {
-      throw new Error("You do not belong here.")
-    }
-
-    return <EditPost slug={slug} />
-  })
-
-  router.addRoute('/shop', async () => {
-    const session = await auth.getSession();
-    if (!session) {
-      throw new Error("You do not belong here.")
-    }
-
-    return <ShopPage />
-  })
-
-  router.addRoute('/broadcasts', async () => {
-    const session = await auth.getSession();
-    if (!session) {
-      throw new Error("You do not belong here.")
-    }
-
-    return <AllBroadcastsPage />
-  })
-
-  router.addRoute('/broadcasts/:slug', async ({ slug }) => {
-    const session = await auth.getSession();
-    if (!session) {
-      throw new Error("You do not belong here.")
-    }
-
-    return <BroadcastPage slug={slug} />
-  })
 
   router.addRoute("/admin", async () => {
     return <Admin />;
@@ -355,18 +350,6 @@ export async function PageInit<T>({
 
   router.addRoute('/admin/categories/:id', async ({ id }) => {
     return <SingleCategoryPage id={id} />
-  })
-
-  router.addRoute('/admin/broadcasts', async () => {
-    return <AllBroadcasts />
-  })
-
-  router.addRoute('/admin/broadcasts/new', async () => {
-    return <NewBroadcastPage />
-  })
-
-  router.addRoute('/admin/broadcasts/:slug', async ({ slug }) => {
-    return <SingleBroadcastPage slug={slug} />
   })
 
   router.addRoute('/admin/items', async () => {

@@ -40,6 +40,14 @@ export const guards: TCreateGuard<BaseSessionData> = async ({sessionData, can, c
 
       return comment && comment.userId === sessionData.userId ? true : false
     });
+
+    can("UPDATE", "user", async (args) => {
+      const user = await prisma.user.findFirst({
+        where: { OR: [{ id: args }, { id: args }] }
+      });
+
+      return user && user.id === sessionData.userId ? true : false
+    });
   }
 
 

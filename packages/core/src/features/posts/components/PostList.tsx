@@ -57,7 +57,7 @@ export const PostList = ({ posts }: PostListProps) => {
   return (
     <div className="flex flex-col gap-12">
       <div className="flex justify-between items-center gap-8">
-        <div className="w-4/12">
+        <div className="pl-4 w-4/12">
           <Select
             value={selectedCategory}
             onValueChange={(e) => {

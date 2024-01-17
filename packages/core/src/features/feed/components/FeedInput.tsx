@@ -1,13 +1,14 @@
 "use client";
 
-import { RichTextField, Avatar } from "@dir/ui";
-import { Controller, useFormContext } from "react-hook-form";
+import { Avatar } from "@dir/ui";
 import { Form } from "~/components/Forms";
 import { createPost } from "~/features/posts/actions";
 import { toast } from "sonner";
 import { FancyEditorField } from "~/components/Forms/FancyEditorField";
+import { useRouter } from "next/navigation";
 
 export const FeedInput = ({ avatar, username }: { avatar: string, username: string }) => {
+  const router = useRouter()
   return (
     <div className="flex w-full space-x-4">
       <Avatar imageUrl={avatar} fallback={username} />
@@ -23,7 +24,7 @@ export const FeedInput = ({ avatar, username }: { avatar: string, username: stri
                 tags: ['feed'],
                 category: 'general'
               })
-
+              router.push(`/feed?lastUpdated=${encodeURIComponent(new Date().toISOString())}`)
               resolve(null);
             }),
             {

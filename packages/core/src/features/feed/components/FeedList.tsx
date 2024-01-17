@@ -12,7 +12,7 @@ import { getAllCategories } from '~/features/admin/screens/categories/actions'
 export const FeedList = ({  currentUser }: {  currentUser: User }) => {
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const ITEMS_PER_PAGE = 20
+  const ITEMS_PER_PAGE = 10
   const searchParams = useSearchParams()
   const pathname = usePathname();
   const page = Number(searchParams.get('page')) || 0;
@@ -37,7 +37,6 @@ export const FeedList = ({  currentUser }: {  currentUser: User }) => {
   useEffect(() => {
     (async () => {
 
-
       const feed = await getFeed({ skip: (page) * pageSize, take: pageSize })
 
       setData(feed.data);
@@ -48,7 +47,7 @@ export const FeedList = ({  currentUser }: {  currentUser: User }) => {
 
     })()
     router.refresh()
-  }, [pathname, page, searchQuery, router, pageSize])
+  }, [pathname, page, searchQuery, router, pageSize, searchParams])
 
 
 

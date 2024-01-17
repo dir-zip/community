@@ -1,14 +1,18 @@
 
-import { getAllItems } from "../admin/screens/items/actions"
 import { ListItems } from "./components/ListItems"
 
 export const ShopPage = async () => {
-  const items = await getAllItems({skip: 0, take: 100})
 
   return (
-    <div>
-      <h3>Shop</h3>
-      <ListItems items={items.items}/>
+    <div className="py-6">
+      <div className="flex flex-col gap-4 pb-6">
+        <h2 className="text-2xl font-bold">Shop</h2>
+        <div className="flex w-full items-center justify-center">
+          <div className="border-t flex-grow" />
+        </div>
+      </div>
+
+      <ListItems />
     </div>
   )
 }
