@@ -21,7 +21,7 @@ export const SingleCommentScreen = async ({ postSlug, commentId, loggedIn }: { p
   }
 
   return (
-    <>
+    <div className="xl:mx-auto xl:w-[960px]">
       {comment.parent ?
         <div className="p-4">
           <div className="border rounded p-6 bg-primary-800 flex flex-col gap-3">
@@ -83,7 +83,7 @@ export const SingleCommentScreen = async ({ postSlug, commentId, loggedIn }: { p
           </Suspense>
         </div>
       </div>
-    </>
+    </div>
   )
 }
 
@@ -94,12 +94,14 @@ export const Comments = async ({ postSlug, loggedIn }: { loggedIn: boolean, post
   const currentUser = await getCurrentUser()
 
   return (
-    <div className="w-full flex flex-col gap-16">
-      {loggedIn && <CommentForm postSlug={postSlug} parentId={null} />}
-      <Suspense fallback={<div>Loading...</div>}>
-        <CommentList comments={comments} mainPostSlug={postSlug} currentUserId={currentUser.id} />
-      </Suspense>
-    </div>
+
+      <div className="w-full flex flex-col gap-16">
+        {loggedIn && <CommentForm postSlug={postSlug} parentId={null} />}
+        <Suspense fallback={<div>Loading...</div>}>
+          <CommentList comments={comments} mainPostSlug={postSlug} currentUserId={currentUser.id} />
+        </Suspense>
+      </div>
+
   )
 }
 
@@ -114,17 +116,19 @@ export const EditComment = async ({ commentId }: { commentId: string }) => {
   }
 
   return (
-    <div className="p-6">
-      <div className="flex flex-col gap-4 pb-6">
-        <h2 className="text-2xl font-bold">Edit Comment</h2>
-        <div className="flex w-full items-center justify-center">
-          <div className="border-t flex-grow" />
+    <div className="xl:mx-auto xl:w-[960px]">
+      <div className="p-6">
+        <div className="flex flex-col gap-4 pb-6">
+          <h2 className="text-2xl font-bold">Edit Comment</h2>
+          <div className="flex w-full items-center justify-center">
+            <div className="border-t flex-grow" />
+          </div>
         </div>
-      </div>
 
-      <Suspense>
-        <FullCommentForm comment={comment} postSlug={comment.post.slug} />
-      </Suspense>
+        <Suspense>
+          <FullCommentForm comment={comment} postSlug={comment.post.slug} />
+        </Suspense>
+      </div>
     </div>
   )
 }

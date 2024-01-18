@@ -26,6 +26,13 @@ export const getAllPosts = createAction(async ({}, params) => {
       posts: {
         skip,
         take,
+        where: {
+          tags: {
+            none: {
+              slug: 'feed'
+            }
+          }
+        },
         include: {
           user: true,
           comments: {
@@ -47,7 +54,7 @@ export const getAllPosts = createAction(async ({}, params) => {
 
   const categoryWithPostsAndCounts = await Promise.all(categories.map(async (category) => {
     const count = await prisma.post.count({
-      where: { categoryId: category.id },
+      where: { categoryId: category.id, tags: { none: { slug: 'feed' } } },
     });
 
     const postsWithCounts = category.posts.map(post => {

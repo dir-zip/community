@@ -174,8 +174,8 @@ export async function PageInit<T>({
               <Breadcrumbs ignore={[{ href: "/posts/*/comments", breadcrumb: "Comments" }]} />
             </div>
           </div>
-          <div className="overflow-auto xl:mx-auto xl:w-[960px]">
-            {children}
+          <div className="overflow-auto">
+          {children}
           </div>
         </main>
         <ToastProvider />
@@ -213,11 +213,11 @@ export async function PageInit<T>({
     return <ProfileScreen username={username} />
   })
 
-  router.addRoute("/settings", async() => {
+  router.addRoute("/settings", async () => {
     return <UserSettingsScreen />
   })
 
-  router.addRoute("/settings/inventory", async() => {
+  router.addRoute("/settings/inventory", async () => {
     return <UserInventoryScreen />
   })
 
