@@ -47,7 +47,7 @@ const PostForm = ({ post, categories }: { post?: Post & { tags: Tag[], category:
               }
 
 
-           
+
               router.refresh()
               resolve(null)
             }),
@@ -60,13 +60,13 @@ const PostForm = ({ post, categories }: { post?: Post & { tags: Tag[], category:
         }}
       >
         <TextField name="title" label="Title" />
-        <div className="bg-primary-900 w-full h-px" />
+        <div className="bg-border-subtle w-full h-px" />
         <SelectField label="Category" name="category" options={categories.map((c) => {
           return { value: c.slug, key: c.title }
         })} />
-              <div className="bg-primary-900 w-full h-px" />
+        <div className="bg-border-subtle w-full h-px" />
         <TagField name="tags" label="Tags" />
-        <div className="bg-primary-900 w-full h-px" />
+        <div className="bg-border-subtle w-full h-px" />
         <FancyEditorField name="body" label="Body" />
       </Form>
     </div>
