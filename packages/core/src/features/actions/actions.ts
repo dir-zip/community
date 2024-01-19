@@ -1,4 +1,4 @@
-import { createAction } from "@/lib/createAction";
+import { createAction } from "~/lib/createAction";
 import {z} from 'zod'
 import {prisma} from '@dir/db'
 import { assignBadge } from "../badges/actions";

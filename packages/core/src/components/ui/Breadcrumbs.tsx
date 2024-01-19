@@ -3,7 +3,7 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { HomeIcon } from "lucide-react";
-import { Skeleton } from "./Skeleton";
+import { Skeleton } from "@dir/ui";
 
 type BreadcrumbsProps = {
   ignore?: { breadcrumb: string | undefined; href: string }[];
@@ -20,14 +20,14 @@ export const Breadcrumbs = ({ ignore }: BreadcrumbsProps) => {
   const buildBreadcrumbs = () => {
     const linkPath = pathname.split("/");
     linkPath.shift();
-  
+
     const pathArray = linkPath.map((path, i) => {
       return {
         breadcrumb: path.split("?")[0] as string,
         href: "/" + linkPath.slice(0, i + 1).join("/"),
       };
     });
-  
+
     if (ignore && ignore.length) {
       const filtered = pathArray.filter((el) => {
         return !ignore.some((rm) => {
@@ -35,11 +35,21 @@ export const Breadcrumbs = ({ ignore }: BreadcrumbsProps) => {
           const elPathParts = el.href.split("/");
           return (
             ignorePathParts.length === elPathParts.length &&
-            ignorePathParts.every((part, i) => part === elPathParts[i] || part.startsWith(":"))
+            ignorePathParts.every((part, i) => {
+              if (part.startsWith(":")) {
+                return true;
+              } else if (part.includes("*")) {
+                // Create a regex from the ignore path, replacing '*' with a regex wildcard
+                const regex = new RegExp("^" + part.replace(/\*/g, "[^/]+") + "$");
+                return regex.test(elPathParts[i] || "");
+              } else {
+                return part === elPathParts[i];
+              }
+            })
           );
         });
       });
-  
+
       setBreadcrumbs(filtered);
     } else {
       setBreadcrumbs(pathArray);
@@ -54,11 +64,11 @@ export const Breadcrumbs = ({ ignore }: BreadcrumbsProps) => {
   }, [pathname]);
 
   return (
-    <ul className="flex items-center space-x-4 w-full overflow-x-auto py-6 top-0 fixed bg-white z-20 md:relative md:py-0 pr-12 md:pr-0">
+    <ul className="flex items-center space-x-4 w-full">
       <li>
         <Link href={"/"}>
           <HomeIcon
-            className={pathname === "/" ? "h-5 w-5 text-slate-900" : "h-5 w-5 text-slate-400 hover:text-gray-500"}
+            className={pathname === "/" ? "h-5 w-5 text-foreground" : "h-5 w-5 text-link hover:text-foregroud"}
             aria-hidden="true"
           />
         </Link>
@@ -71,7 +81,7 @@ export const Breadcrumbs = ({ ignore }: BreadcrumbsProps) => {
                 {pathname === breadcrumb.href ? (
                   <div className="flex items-center">
                     <svg
-                      className="text-gray-400 mr-2 w-4 h-4"
+                      className="text-foreground mr-2 w-4 h-4"
                       viewBox="0 0 24 24"
                       fill="none"
                     >
@@ -80,8 +90,8 @@ export const Breadcrumbs = ({ ignore }: BreadcrumbsProps) => {
                         fill="currentColor"
                       />
                     </svg>
-  
-                    <span className="text-sm font-medium text-gray-800">
+
+                    <span className="text-sm font-medium text-foreground">
                       {breadcrumb.breadcrumb.charAt(0).toUpperCase() +
                         breadcrumb.breadcrumb.slice(1)}
                     </span>
@@ -89,7 +99,7 @@ export const Breadcrumbs = ({ ignore }: BreadcrumbsProps) => {
                 ) : (
                   <div className="flex items-center">
                     <svg
-                      className="text-gray-400 mr-2 w-4 h-4"
+                      className="text-foreground mr-2 w-4 h-4"
                       viewBox="0 0 24 24"
                       fill="none"
                     >
@@ -100,7 +110,7 @@ export const Breadcrumbs = ({ ignore }: BreadcrumbsProps) => {
                     </svg>
                     <Link
                       href={breadcrumb.href}
-                      className="text-sm font-medium text-gray-500 hover:text-gray-700"
+                      className="text-sm font-medium text-foreground hover:text-link"
                     >
                       {breadcrumb.breadcrumb.charAt(0).toUpperCase() +
                         breadcrumb.breadcrumb.slice(1)}

@@ -1,0 +1,95 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer base {
+  :root {
+    --background: #3E4640;
+    --foreground: #EAFFF0;
+
+    --border: #465a4c; 
+    --border-subtle: #415046;
+
+    --primary: #2D3730;
+    --primary-foreground: #EAFFF0;
+    --primary-darkest: #242D27;
+    --primary-container: #2D3730;
+    --primary-subtle: #506055;
+    --primary-medium: #415046;
+
+    --link: #67B27C;
+
+
+
+
+    --radius: 4px;
+
+  }
+
+  .dark {
+
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+.tiptap {
+  @apply w-full;
+}
+
+.tiptap h1 {
+  @apply text-3xl font-bold;
+}
+
+.tiptap h2 {
+  @apply text-xl;
+}
+
+.tiptap h3 {
+  @apply text-lg;
+}
+
+.tiptap p {
+  @apply text-sm;
+}
+
+.tiptap ul {
+  @apply list-disc list-outside px-4;
+}
+
+.tiptap li {
+  @apply py-1;
+}
+
+.tiptap ol {
+  @apply list-decimal list-outside px-4;
+}
+
+.tiptap pre {
+  @apply bg-white px-2 py-1 rounded my-2 w-fit;
+}
+
+.tiptap pre > code {
+  @apply text-black;
+}
+
+.tiptap code {
+  @apply text-white;
+}
+
+.tiptap p.is-editor-empty:first-child::before {
+  @apply text-primary-400;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}

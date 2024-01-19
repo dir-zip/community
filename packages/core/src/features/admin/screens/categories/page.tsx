@@ -4,33 +4,55 @@ import CategoryForm from './components/Form'
 import Link from 'next/link'
 import { CategoryTable } from './components/CategoryTable'
 import { getSingleCategory } from './actions'
-import { cn } from '@/lib/utils'
-import { buttonVariants } from '@/components/ui/Button'
+import { cn } from '@/utils'
+import { buttonVariants } from '@/components/Button'
 
 export const AllCategoriesPage = async () => {
   return (
-    <div>
-      <div className="flex justify-between items-center pb-4">
-        <h3 className="text-xl font-bold">Categories</h3>
-        <Link className={cn(
-          buttonVariants({ variant: "default", size: "sm" })
-        )} href="/admin/categories/new">New</Link>
+    <div className="xl:mx-auto xl:w-[960px]">
+    <div className="py-6">
+
+      <div className="flex flex-col gap-4 pb-6">
+        <div className="flex justify-between">
+          <h2 className="text-2xl font-bold">Categories</h2>
+          <Link className={cn(
+            buttonVariants({ variant: "default" })
+          )} href="/admin/categories/new">New</Link>
+        </div>
+        <div className="flex w-full items-center justify-center">
+          <div className="border-t flex-grow" />
+        </div>
       </div>
+
       <Suspense>
         <CategoryTable />
       </Suspense>
+
     </div>
+  </div>
   )
 }
 
 export const NewCategoryPage = async () => {
   return (
-    <div>
-      <h3 className="text-xl font-bold pb-4">New Category</h3>
+    <div className="xl:mx-auto xl:w-[960px]">
+    <div className="py-6">
+
+      <div className="flex flex-col gap-4 pb-6">
+        <div className="flex justify-between">
+          <h2 className="text-2xl font-bold">New Category</h2>
+        </div>
+        <div className="flex w-full items-center justify-center">
+          <div className="border-t flex-grow" />
+        </div>
+      </div>
+
       <Suspense>
       <CategoryForm />
-     </Suspense>
+      </Suspense>
+
     </div>
+  </div>
   )
 }
 
@@ -40,9 +62,24 @@ export const SingleCategoryPage = async ({id}: {id: string}) => {
     throw new Error("Category not found")
   }
   return (
-    <div>
+    <div className="xl:mx-auto xl:w-[960px]">
+    <div className="py-6">
+
+      <div className="flex flex-col gap-4 pb-6">
+        <div className="flex justify-between">
+          <h2 className="text-2xl font-bold">New Category</h2>
+        </div>
+        <div className="flex w-full items-center justify-center">
+          <div className="border-t flex-grow" />
+        </div>
+      </div>
+
+      <Suspense>
       <CategoryForm category={category}/>
+      </Suspense>
+
     </div>
+  </div>
   )
 }
 

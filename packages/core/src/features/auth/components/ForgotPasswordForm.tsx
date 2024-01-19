@@ -1,11 +1,11 @@
 "use client";
 
-import { FORM_ERROR, Form, TextField } from "@/components/Forms";
+import { FORM_ERROR, Form, TextField } from "../../../components/Forms";
 import { ForgotPasswordSchema } from "../schemas";
 import Link from "next/link";
-import { buttonVariants } from "@/components/ui/Button";
-import { cn } from "@/lib/utils";
-import {forgotPasswordAction} from '../actions'
+import { buttonVariants } from "@dir/ui";
+import { cn } from "@/utils";
+import { forgotPasswordAction } from '../actions'
 
 
 export default function ForgotPasswordForm() {
@@ -17,9 +17,9 @@ export default function ForgotPasswordForm() {
           await forgotPasswordAction({
             email: data.email
           });
-        } catch(err: any) {
+        } catch (err: any) {
           console.log(err)
-          return {[FORM_ERROR]: err.toString()}
+          return { [FORM_ERROR]: err.toString() }
         }
       }}>
         <TextField label="Email" name="email" type="text" />
@@ -27,7 +27,7 @@ export default function ForgotPasswordForm() {
           <Link
             href="/login"
             className={cn(
-              buttonVariants({ variant: "ghost", size: "sm" })
+              buttonVariants({ variant: "outline" })
             )}
           >
             Go back to login

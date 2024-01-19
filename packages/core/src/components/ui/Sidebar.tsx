@@ -1,189 +1,59 @@
-"use client";
+"use client"
+import { SidebarContainer, UserInfo, SiteInfo, NavWrapper, InnerSidebarContainer, type SidebarProps as _SidebarProps } from "@dir/ui"
+import { usePathname } from "next/navigation"
+import Link from 'next/link'
+import { Layers, Settings, LogOut, Store, FileText } from 'lucide-react'
+import { logoutAction } from "../../features/auth/actions"
+import { TagCloud } from "./TagCloud"
+import { Tag } from "@dir/db"
 
-import { Menu, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { cn } from "../../lib/utils";
-import { Button, buttonVariants } from "./Button";
-import Link from "./Link";
-import { Resources } from "../../index";
-import type { User } from "packages/db";
-import { logoutAction } from "@/features/auth/actions";
+const _sidebarLinks = [
+  { icon: Layers, text: "Feed", link: '/feed' },
+  { icon: FileText, text: "Posts", link: '/posts' },
+  { icon: Store, text: "Shop", link: '/shop' }
+]
 
-const MainNav = ({root}: {root?: string}) => {
+export type SidebarProps = Omit<_SidebarProps, 'children'> & { tags?: (Tag & { postCount: number })[], open?: boolean }
+
+export const Sidebar = (props: SidebarProps) => {
+  const pathname = usePathname()
   return (
-    <div className="flex flex-col">
-      <ul className="flex flex-col py-2 space-y-4">
-        <li>
-          <Link href={root || "/"}>Posts</Link>
-        </li>
-        <li>
-          <Link href={"/shop"}>Shop</Link>
-        </li>
-        <li>
-          <Link href={"/broadcasts"}>Broadcasts</Link>
-        </li>
-      </ul>
-    </div>
-  );
-};
+    <SidebarContainer open={props.open}>
+      <InnerSidebarContainer>
+        <SiteInfo siteTitle={props.siteTitle} memberCount={props.memberCount} open={props.open} />
+        <NavWrapper open={props.open}>
+          {_sidebarLinks.map((link, i) => {
+            const Icon = link['icon'];
+            return (
+              <Link href={link.link} key={i} className={`${pathname === link.link || pathname.startsWith(`${link.link}/`) ? 'bg-primary-900' : null} text-sm rounded px-4 py-2 flex items-center space-x-2`}>
+                <Icon className="w-4 h-4" />
+                {props.open && <span>{link.text}</span>}
+              </Link>
+            );
+          })}
+        </NavWrapper>
+      </InnerSidebarContainer>
 
-const AdminNav = ({resources}: {resources?: Resources}) => {
-  return (
-    <div className="flex flex-col bg-slate-100 p-2 border border-slate-200 rounded">
-      <ul className="flex flex-col p-2 space-y-4">
-        <li>
-          <Link href={"/admin"}>Settings</Link>
-        </li>
-        <li>
-          <Link href={"/admin/items"}>Items</Link>
-        </li>
-        <li>
-          <Link href={"/admin/actions"}>Actions</Link>
-        </li>
-        <li>
-          <Link href={"/admin/badges"}>Badges</Link>
-        </li>
-        <li>
-          <Link href={"/admin/broadcasts"}>Broadcasts</Link>
-        </li>
-        <li>
-          <Link href={"/admin/categories"}>Categories</Link>
-        </li>
-        <li>
-          <Link href={"/admin/users"}>Users</Link>
-        </li>
+      <InnerSidebarContainer>
+        {props.open ? <div className="py-6">
+          <TagCloud tags={props.tags || []} />
+        </div> : null}
 
-
-        {resources?.map((resource, i) => {
-          return (
-            <li key={i}>
-              <Link href={`/admin/${resource.name.toLowerCase()}`}>{resource.name.charAt(0).toUpperCase() + resource.name.slice(1).toLowerCase()}</Link>
-            </li>
-          )
-        })}
-      </ul>
-    </div>
-  );
-};
-
-const Sidebar = ({
-  adminSidebarComponent,
-  root,
-  sidebarLinks,
-  resources,
-  currentUser
-}: {
-  adminSidebarComponent?: boolean;
-  root: string;
-  sidebarLinks?: {icon?: React.ElementType, url: string, text:string}[];
-  resources?: Resources
-  currentUser?: User
-}) => {
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const mobileNavRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        mobileNavRef.current &&
-        !mobileNavRef.current.contains(event.target as Node)
-      ) {
-        setMobileSidebarOpen(false);
-      }
-    };
-
-    document.addEventListener("click", handleClickOutside);
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
-  }, [mobileNavRef]);
-
-
-  return (
-    <>
-      <div className="hidden w-[200px] md:flex md:flex-col p-2 border-r-slate-200 border-r">
-        <div className="space-y-4">
-
-          {adminSidebarComponent && <AdminNav resources={resources}/>}
-          {sidebarLinks && sidebarLinks.length ? <div className="flex flex-col">
-            <ul className="flex flex-col py-2 space-y-4">
-              {sidebarLinks.map((link, index) => {
-                const Icon = link.icon
-                return (
-                  <li key={index}>
-                    <Link className="font-medium" href={link.url === "/" ? root ? root : "/" : link.url}>{Icon && <Icon />}  {link.text}</Link>
-                  </li>
-                )
-              })}
-            </ul>
-          </div> : <MainNav root={root} />}
-          
-          <div>
-            {currentUser ? 
-              <div>
-                <Link href={`/profile/${currentUser.username}`}><p>{currentUser.username}</p></Link>
-                <p>Points: {currentUser.points}</p>
-                <button onClick={(e) => {
-                  e.preventDefault()
-                  logoutAction()
-                }} className={cn(buttonVariants({variant: 'ghost'}))}>Logout</button>
-                {currentUser.role === "ADMIN" ? <Link className={cn(buttonVariants({variant: 'ghost'}))} href='/admin'>Admin</Link> : null}
-              </div> : <div>You're not logged in</div>}
-          </div>
-
-        </div>
-      </div>
-
-      {/* Mobile */}
-      <div
-        ref={mobileNavRef}
-        className={cn(
-          "border border-t-slate-200 flex fixed bottom-0 left-0 w-full bg-slate-50 z-10 md:hidden transition-all",
-          mobileSidebarOpen
-            ? "h-[500px]"
-            : "h-[55px] justify-center items-center",
-        )}
-      >
-        <Button
-          className={cn(mobileSidebarOpen ? "hidden" : "block")}
-          variant={"ghost"}
-          onClick={() => setMobileSidebarOpen(true)}
-        >
-          <Menu className="w-5 h-5" />
-        </Button>
-
-        <div
-          className={cn("p-4 w-full", mobileSidebarOpen ? "flex" : "hidden")}
-        >
-          <div className="py-1 flex flex-col space-y-6 w-full">
-            <Button
-              variant={"ghost"}
-              className={cn("w-fit", mobileSidebarOpen ? "block" : "hidden")}
-              onClick={() => setMobileSidebarOpen(false)}
-            >
-              <X className="w-5 h-5" />
-            </Button>
-
-            <div className="max-h-[500px] overflow-y-auto space-y-4">
-              {adminSidebarComponent && <AdminNav resources={resources} />}
-              {sidebarLinks && sidebarLinks.length ? <div className="flex flex-col">
-            <ul className="flex flex-col py-2 space-y-4">
-              {sidebarLinks.map((link, index) => {
-                const Icon = link.icon
-                return (
-                  <li key={index}>
-                    <Link className="font-medium" href={link.url}>{Icon && <Icon />} {link.text}</Link>
-                  </li>
-                )
-              })}
-            </ul>
-          </div> : <MainNav />}
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-};
-
-export default Sidebar;
+        <UserInfo open={props.open} username={props.user.username} avatar={props.user.avatar} points={props.user.points} />
+        <NavWrapper open={props.open}>
+          <Link href={`/settings`} className={`${pathname === '/settings' || pathname.startsWith('/settings/') ? 'bg-primary-900' : null} text-sm rounded px-4 py-2 flex items-center space-x-2`}>
+            <Settings className="w-4 h-4" />
+            {props.open && <span>Settings</span>}
+          </Link>
+          <button onClick={(e) => {
+            e.preventDefault();
+            logoutAction();
+          }} className="text-sm rounded px-4 py-2 flex items-center space-x-2">
+            <LogOut className="w-4 h-4" />
+            {props.open && <span>Logout</span>}
+          </button>
+        </NavWrapper>
+      </InnerSidebarContainer>
+    </SidebarContainer>
+  )
+}

@@ -1,5 +1,5 @@
 "use server"
-import "server-only"
+
 import { prisma, type Item } from "@dir/db";
 import {z} from 'zod'
 

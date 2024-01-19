@@ -1,5 +1,4 @@
 "use server";
-import 'server-only'
 
 import { revalidatePath } from 'next/cache'
 import { prisma } from "@dir/db";
@@ -40,7 +39,7 @@ export const updateSiteSettings = createAction(
               feature: 'private'
             },
             data: {
-              isActive: params.isPrivate === "true" ? true : false
+              isActive: params.isPrivate
             }
           }
         }
@@ -52,7 +51,7 @@ export const updateSiteSettings = createAction(
   },
   z.object({
     siteTitle: z.string(),
-    isPrivate: z.string()
+    isPrivate: z.boolean()
   }),
   {authed: true}
 )

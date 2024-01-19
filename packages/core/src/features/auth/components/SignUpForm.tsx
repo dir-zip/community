@@ -1,11 +1,11 @@
 "use client";
 
-import { FORM_ERROR, Form, TextField } from "@/components/Forms";
+import { FORM_ERROR, Form, TextField } from "../../../components/Forms";
 import { SignupSchema } from "../schemas";
 import { signUpAction } from "../actions";
 import { useRouter } from "next/navigation";
 
-export default function SignUpForm({nextUrl}: {nextUrl: string}) {
+export default function SignUpForm({ nextUrl }: { nextUrl: string }) {
   const router = useRouter();
   return (
     <Form

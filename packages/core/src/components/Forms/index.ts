@@ -1,4 +1,4 @@
 export { Form, FORM_ERROR } from "./Form";
 export { TextField } from "./TextField";
-export {RadioGroupField} from "./RadioGroupField";
+export {SwitchField} from "./SwitchField";
 export { SelectField } from "./SelectField";

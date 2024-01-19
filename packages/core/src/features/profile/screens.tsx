@@ -1,12 +1,14 @@
 import { redirect } from "next/navigation"
 import { getInventory, getUser } from "./actions"
 import Link from "next/link"
-import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/components/ui/Button"
+import { Suspense } from 'react'
+import { cn } from "~/lib/utils"
+import { buttonVariants } from "@/components/Button"
 import { InventoryProfile } from "./components/Inventory"
-
-export const ProfileScreen = async ({username}: {username: string}) => {
-  const user = await getUser({username})
+import { Avatar } from "@dir/ui"
+import { UserPostsList } from "./components/UserPostsList"
+export const ProfileScreen = async ({ username }: { username: string }) => {
+  const user = await getUser({ username })
   if (!user) {
     return redirect('/404')
   }
@@ -17,16 +19,35 @@ export const ProfileScreen = async ({username}: {username: string}) => {
 
 
   return (
-    <div>
-      <p>{user.username}</p>
-      {user.posts.map((post) => {
-        return (
-          <div key={post.id}>
-            <Link href={`/posts/${post.slug}`}>{post.title}</Link>
+
+    <div className="pb-8 flex flex-col">
+      <img
+        alt="Header"
+        className="h-56 w-full aspect-[3/1] object-cover"
+        src={user.avatar as string}
+      />
+      <div className="xl:mx-auto xl:w-[960px]">
+        <div className="flex relative gap-8 w-full justify-start pl-14 bottom-[100px]">
+          <Avatar imageUrl={user.avatar} fallback={user.username} className="w-48 h-48" />
+          <div className="flex flex-col gap-2 bottom-[-120px] relative">
+            <div className="rounded px-4 py-2 bg-primary-900">
+              <span className="text-lg font-bold">{user.username}</span>
+            </div>
+            <div className="flex">
+              <div className="rounded px-4 py-2 bg-primary-900">
+                <span>🌐</span>
+              </div>
+            </div>
           </div>
-        )
-      })}
-      <InventoryProfile inventory={inventory} />
+        </div>
+
+        <div className="flex flex-col gap-6">
+          <h3 className="text-lg font-bold">Posts</h3>
+          <Suspense fallback="Loading...">
+            <UserPostsList username={user.username} />
+          </Suspense>
+        </div>
+      </div>
     </div>
   )
 }

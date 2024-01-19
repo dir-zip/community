@@ -1,5 +1,5 @@
 "use server";
-import 'server-only'
+
 import {FileUploader} from "@dir/files"
 
 export const remove = async ({ key }: {key: string}) => {

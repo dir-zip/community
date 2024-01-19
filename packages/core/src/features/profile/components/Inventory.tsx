@@ -1,6 +1,6 @@
 "use client"
-import { buttonVariants } from "@/components/ui/Button";
-import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/Button";
+import { cn } from "@/utils";
 import { Badge, Inventory, Item, type InventoryItem } from "packages/db";
 import { equipAndUnequipItem } from "../actions";
 import { toast } from "sonner";

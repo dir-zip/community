@@ -4,7 +4,7 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {
-    "dev": "pnpm build:tailwind && pnpm dev:jobs",
+    "dev": "pnpm build:tailwind --watch && pnpm dev:jobs",
     "build": "pnpm build:tailwind",
     "start": "pnpm start:jobs",
     "dev:jobs": "pnpm with-env pnpm dlx tsx --watch ./src/jobs/index.ts",
@@ -16,12 +16,13 @@
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
-    "@1upsaas/1uprouter": "^0.2.1",
     "@creatorsneverdie/prepare-array-for-prisma": "^0.1.2",
+    "@dir.zip/central-router": "^0.2.3",
     "@dir/auth": "workspace:*",
     "@dir/db": "workspace:*",
     "@dir/files": "workspace:*",
     "@dir/mailer": "workspace:*",
+    "@dir/ui": "workspace:*",
     "@hookform/error-message": "^2.0.1",
     "@hookform/resolvers": "^3.1.0",
     "@radix-ui/react-dialog": "^1.0.4",
@@ -68,7 +69,7 @@
     "dotenv-cli": "^6.0.0",
     "eslint": "^8.30.0",
     "eslint-plugin-tailwindcss": "^3.11.0",
-    "next": "^14.0.2",
+    "next": "^14.0.4",
     "tailwindcss-animate": "^1.0.5",
     "typescript": "^5.1.6"
   },

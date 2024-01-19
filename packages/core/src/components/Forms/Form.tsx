@@ -4,7 +4,7 @@ import { useState, type ReactNode, type PropsWithoutRef } from "react";
 import { FormProvider, useForm, type UseFormProps } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { type z } from "zod";
-import { Button } from "../ui/Button";
+import { Button } from "@dir/ui";
 
 export interface FormProps<S extends z.ZodType<any, any>>
   extends Omit<PropsWithoutRef<JSX.IntrinsicElements["form"]>, "onSubmit"> {
@@ -58,7 +58,7 @@ export function Form<S extends z.ZodType<any, any>>({
             }
           }
         })}
-        className="form space-y-4 py-2 pb-4"
+        className="form space-y-4 py-2 pb-4 w-full flex flex-col gap-8 items-end"
         {...props}
       >
         {children}

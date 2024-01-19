@@ -7,7 +7,6 @@ export interface SingleFileUploadProps {
   /** Field name. */
   name: string;
   /** Field label. */
-  label: string;
 
   acceptedFileTypes?: string[];
 
@@ -25,7 +24,7 @@ export interface SingleFileUploadProps {
 }
 
 
-export const SingleFileUploadField: React.FC<SingleFileUploadProps> = ({ label, value, urlEndpoint, onUpload, onChange, remove, submitted, acceptedFileTypes = [], ...props }) => {
+export const SingleFileUploadField: React.FC<SingleFileUploadProps> = ({  value, urlEndpoint, onUpload, onChange, remove, submitted, acceptedFileTypes = [], ...props }) => {
   
 
   const [file, setFile] = React.useState<string | null>(null || value);
@@ -141,9 +140,6 @@ export const SingleFileUploadField: React.FC<SingleFileUploadProps> = ({ label, 
       <>
         {file && file !== "" ? (
           <div className="w-full flex flex-col space-y-2">
-            <label className="text-sm font-medium leading-none flex space-y-2 flex-col">
-              {label}
-            </label>
             <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border border-input rounded">
               <div className="flex items-center space-x-4 w-full">
 
@@ -160,7 +156,7 @@ export const SingleFileUploadField: React.FC<SingleFileUploadProps> = ({ label, 
                           fill="currentColor"
                         />
                     </svg>
-                    <span className="text-gray-400">{previewFileType || getFileType(file)}</span>
+                    <span className="text-foreground">{previewFileType || getFileType(file)}</span>
                   </div> : <div
                         className="w-full h-full rounded"
                         style={{
@@ -172,7 +168,7 @@ export const SingleFileUploadField: React.FC<SingleFileUploadProps> = ({ label, 
                       / >}
 
                   </div>
-                  <p className="text-xs text-gray-400 w-full truncate">{previewFileName || (file as string).match(/\/([^\/]+)$/)?.[1]}</p>
+                  <p className="text-xs text-foreground w-full truncate">{previewFileName || (file as string).match(/\/([^\/]+)$/)?.[1]}</p>
                 </div>
               
     
@@ -200,7 +196,7 @@ export const SingleFileUploadField: React.FC<SingleFileUploadProps> = ({ label, 
               }
 
                 <button
-                  className="bg-gray-200 text-white p-2 rounded-full hover:bg-rose-800 m-2 w-8 h-6 flex items-center justify-center"
+                  className="bg-primary-700 text-foreground p-2 rounded-full hover:bg-rose-800 m-2 w-8 h-6 flex items-center justify-center"
                   type="button"
                   onClick={async (e) => {
                     e.preventDefault();
@@ -241,16 +237,13 @@ export const SingleFileUploadField: React.FC<SingleFileUploadProps> = ({ label, 
           </div>
         ) : (
           <div {...getRootProps({ className: "btn-dropzone" })}>
-            <label className="text-sm font-medium leading-none flex space-y-2 flex-col">
-              {label}
-            </label>
             <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border border-input rounded">
               <div className="flex flex-col text-center text-sm text-gray-600">
                 <div className="flex flex-col lg:flex-row">
-                  <p className="lg:mr-1">Drag and drop file here, </p>
+                  <p className="lg:mr-1 text-foreground">Drag and drop file here, </p>
                   <label
                     htmlFor="file-upload"
-                    className="cursor-pointer font-medium text-indigo-600 hover:text-indigo-500"
+                    className="cursor-pointer font-medium text-link saturate-100 hover:saturate-200"
                   >
                     <button onClick={(e) => e.preventDefault()}>
                       {" "}

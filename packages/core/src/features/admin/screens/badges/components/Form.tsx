@@ -1,6 +1,6 @@
 "use client"
 
-import { Form, TextField } from "@/components/Forms"
+import { Form, TextField } from "../../../../../components/Forms"
 
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
@@ -10,20 +10,15 @@ import { createBadge, deleteBadge, updateBadge } from "../actions"
 import type { Action, Badge, Condition } from "packages/db"
 import { CreateBadgeSchema } from "../schema"
 import { ConditionInputField } from "./ConditionInputField"
-import SingleFileUploadField from "@/features/files/components/SingleFileUpload"
-import { cn } from "@/lib/utils"
-import { buttonVariants } from "@/components/ui/Button"
+import SingleFileUploadField from "../../../../../features/files/components/SingleFileUpload"
+import { cn } from "@/utils"
+import { buttonVariants } from "@/components/Button"
 
 export const BadgeForm = ({badge, actions}: {badge?: Badge & {condition: (Condition & {actions: Action[]}) | null}, actions: Action[]}) => {
   const router = useRouter()
 
   return (
-    <>
-    {badge && <button onClick={(e) => {
-      e.preventDefault()
-      deleteBadge({id: badge!.id})
-      router.push('/admin/badges')
-    }}className={cn(buttonVariants({variant: 'destructive'}))}>Delete</button> }
+    <div className="bg-primary-800 p-6 rounded-lg border border-border-subtle w-full">
     <Form
     submitText={badge ? "Update" : "Create"}
     schema={CreateBadgeSchema}
@@ -60,10 +55,13 @@ export const BadgeForm = ({badge, actions}: {badge?: Badge & {condition: (Condit
     }}
   >
     <TextField name="title" label="Title"/>
+    <div className="bg-primary-900 w-full h-px" />
     <TextField name="description" label="Description"/>
+    <div className="bg-primary-900 w-full h-px" />
     <SingleFileUploadField name="image" label="Image" />
+    <div className="bg-primary-900 w-full h-px" />
     <ConditionInputField name="condition" label="Condition" actions={actions}/>
   </Form>
-  </>
+  </div>
   )
 }

@@ -1,42 +1,12 @@
-import { buttonVariants } from "@/components/ui/Button"
-import { cn } from "@/lib/utils"
-import Link from "next/link"
 import { getAllPosts } from "../actions"
-
-
-export const AllPosts = async ({loggedIn}: {loggedIn: boolean}) => {
-  const categories = await getAllPosts()
-
+import { PostList } from "../components/PostList"
+export const AllPosts = async () => {
+  const categories = await getAllPosts({ skip: 0, take: 10 })
 
   return (
-    <div>
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">All Posts</h2>
-
-        {loggedIn && <Link className={cn(
-          buttonVariants({variant: 'default'})
-        )} href="/posts/new">New Post</Link>}
-
-      </div>
-      <div>
-        {categories.map((c,i) => {
-          return (
-            <div key={i}>
-              <div className="py-4">
-                <h3 className="text-xl font">{c.title}</h3>
-              </div>
-              {c.posts.map((p, i) => {
-                return (
-                  <div key={i}>
-                    <Link href={`/posts/${p.slug}`}><p>{p.title}</p></Link>
-                    <Link href={`/profile/${p.user.username}`}><p>{p.user.username}</p></Link>
-                    <p>{p.createdAt.toDateString()}</p>
-                  </div>
-                )
-              })}
-            </div>
-          )
-        })}
+    <div className="xl:mx-auto xl:w-[960px]">
+      <div className="py-6">
+        <PostList posts={categories} />
       </div>
     </div>
   )

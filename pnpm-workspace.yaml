@@ -1,9 +1,9 @@
 packages:
   - apps/web
+  - packages/ui
   - packages/core
   - packages/jobs
   - packages/auth
   - packages/mailer
   - packages/db
   - packages/files
-
