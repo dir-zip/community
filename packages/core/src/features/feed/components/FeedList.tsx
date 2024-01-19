@@ -6,10 +6,10 @@ import { Post, User, Comment, Category, Tag } from "@dir/db"
 import { updatePost } from '~/features/posts/actions'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { getFeed } from '../actions'
-import {ChevronRight, ChevronLeft} from 'lucide-react'
+import { ChevronRight, ChevronLeft } from 'lucide-react'
 import { getAllCategories } from '~/features/admin/screens/categories/actions'
 
-export const FeedList = ({  currentUser }: {  currentUser: User }) => {
+export const FeedList = ({ currentUser }: { currentUser: User }) => {
   const contentRef = useRef<HTMLDivElement>(null);
 
   const ITEMS_PER_PAGE = 10
@@ -42,7 +42,7 @@ export const FeedList = ({  currentUser }: {  currentUser: User }) => {
       setData(feed.data);
       setCount(feed.count)
 
-      const categories = await getAllCategories({skip: 0, take: 20})
+      const categories = await getAllCategories({ skip: 0, take: 20 })
       setCategoriesSelect(categories.categories)
 
     })()
@@ -59,14 +59,14 @@ export const FeedList = ({  currentUser }: {  currentUser: User }) => {
         return (
           <div className="flex flex-row space-x-4 w-full" key={feed.id} ref={contentRef}>
             <Avatar imageUrl={feed.user.avatar} fallback={feed.user.username} />
-            <PostPreview 
-              content={feed.body} 
+            <PostPreview
+              content={feed.body}
               slug={feed.slug}
-              category={feed.category.slug} 
-              comments={feed.comments.length} 
-              currentUserId={currentUser.id} 
+              category={feed.category.slug}
+              comments={feed.comments.length}
+              currentUserId={currentUser.id}
               userId={feed.user.id}
-              categories={categoriesSelect.map((c) => { return {title: c.title, slug: c.slug}})}
+              categories={categoriesSelect.map((c) => { return { title: c.title, slug: c.slug } })}
               onCategorySelect={async (slug) => {
                 await updatePost({
                   data: {
@@ -76,13 +76,13 @@ export const FeedList = ({  currentUser }: {  currentUser: User }) => {
                   },
                   slug: feed.slug
                 })
-              }} 
+              }}
             />
           </div>
         )
       })}
 
-<div className="flex gap-4 w-full justify-center">
+      <div className="flex gap-4 w-full justify-center">
         <Button disabled={!(tablePage !== 0)} onClick={() => router.push(`?page=${page - 1}`)}><ChevronLeft className="w-4 h-4" /></Button>
         <div className="flex">
           {pageNumbers.map((pageNumber, index) => (

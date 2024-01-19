@@ -101,13 +101,22 @@ export async function PageInit<T>({
     const user = await getCurrentUser()
     const settings = await prisma?.globalSetting.findFirst()
     const memberCount = await prisma?.user.findMany()
-    const tags = await prisma?.tag.findMany();
+    const tags = await prisma?.tag.findMany({
+      where: {
+        slug: {
+          not: 'feed'
+        }
+      }
+    });
     const tagsWithPostCount = tags ? await Promise.all(tags.map(async (tag) => {
       const count = await prisma?.post.count({
         where: {
           tags: {
             some: {
               id: tag.id
+            },
+            none: {
+              slug: 'feed'
             }
           }
         }
@@ -165,13 +174,22 @@ export async function PageInit<T>({
     const user = await getCurrentUser()
     const settings = await prisma?.globalSetting.findFirst()
     const memberCount = await prisma?.user.findMany()
-    const tags = await prisma?.tag.findMany();
+    const tags = await prisma?.tag.findMany({
+      where: {
+        slug: {
+          not: 'feed'
+        }
+      }
+    });
     const tagsWithPostCount = tags ? await Promise.all(tags.map(async (tag) => {
       const count = await prisma?.post.count({
         where: {
           tags: {
             some: {
               id: tag.id
+            },
+            none: {
+              slug: 'feed'
             }
           }
         }
