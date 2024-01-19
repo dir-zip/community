@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation"
 import { createItem, updateItem } from "../actions"
 import type { Item } from "packages/db"
 import { CreateItemSchema } from "../schema"
-import { SingleFileUploadField } from "../../../../../features/files/components/SingleFileUpload"
+import { SingleFileUploadField } from "~/features/files/components/SingleFileUpload"
 
 export const ItemForm = ({ item }: { item?: Item }) => {
   const router = useRouter()
@@ -17,6 +17,7 @@ export const ItemForm = ({ item }: { item?: Item }) => {
 
 
   return (
+    <div className="bg-primary-800 p-6 rounded-lg border border-border-subtle w-full">
     <Form
       submitText={item ? "Update" : "Create"}
       schema={CreateItemSchema}
@@ -50,9 +51,13 @@ export const ItemForm = ({ item }: { item?: Item }) => {
       }}
     >
       <TextField name="title" label="Title" />
+      <div className="bg-primary-900 w-full h-px" />
       <TextField name="description" label="Description" />
+      <div className="bg-primary-900 w-full h-px" />
       <TextField type="number" name="price" label="Price" />
+      <div className="bg-primary-900 w-full h-px" />
       <SingleFileUploadField name="image" label="Image" />
     </Form>
+    </div>
   )
 }

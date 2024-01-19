@@ -67,6 +67,11 @@ const UsersTable = () => {
       }
     },
     {
+      accessorKey: 'username',
+      id: 'username',
+      cell: (info: any) => info.getValue()
+    },
+    {
       accessorKey: 'email',
       id: 'email',
       cell: (info: any) => info.getValue()

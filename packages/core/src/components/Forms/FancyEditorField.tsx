@@ -11,9 +11,9 @@ export const FancyEditorField = ({ name, label }: { name: string, label?: string
   return (
     <div className="w-full">
       <label
-        className="text-sm font-medium leading-none flex space-y-2 w-full flex-col"
+        className="text-sm font-medium leading-none flex w-full flex-row items-center"
       >
-        {label ? <span>{label}</span> : null}
+        {label ? <span className="w-1/2">{label}</span> : null}
         <Controller
           name={name}
           control={control}

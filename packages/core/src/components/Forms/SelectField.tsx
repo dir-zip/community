@@ -19,13 +19,14 @@ export interface SelectFieldProps
   extends PropsWithoutRef<JSX.IntrinsicElements["input"]> {
   name: string;
   label: string;
+  description?: string;
   outerProps?: PropsWithoutRef<JSX.IntrinsicElements["div"]>;
   labelProps?: ComponentPropsWithoutRef<"label">;
   options: { value: string; key: string }[];
 }
 
 export const SelectField = forwardRef<HTMLInputElement, SelectFieldProps>(
-  ({ label, outerProps, labelProps, name, options, ...props }, _) => {
+  ({ label, description, outerProps, labelProps, name, options, ...props }, _) => {
     const {
       control,
       formState: { isSubmitting, errors },
@@ -34,10 +35,13 @@ export const SelectField = forwardRef<HTMLInputElement, SelectFieldProps>(
     return (
       <div className="flex flex-col space-y-1 w-full" {...outerProps}>
         <label
-          className="text-sm font-medium leading-none flex space-y-2 flex-col"
+          className="text-sm font-medium leading-none flex flex-row items-center"
           {...labelProps}
         >
-          <span>{label}</span>
+          <div className="flex flex-col gap-4 w-1/2">
+            <span>{label}</span>
+            {description ? <span className="text-xs antialiased text-primary-400">{description}</span> : null}
+          </div>
           <Controller
             name={name}
             control={control}

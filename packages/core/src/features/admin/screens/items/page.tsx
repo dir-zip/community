@@ -1,6 +1,6 @@
 
-import {Suspense} from 'react'
-import {ItemForm} from './components/Form'
+import { Suspense } from 'react'
+import { ItemForm } from './components/Form'
 import Link from 'next/link'
 
 import { cn } from '@/utils'
@@ -10,39 +10,77 @@ import { ItemsTable } from './components/ItemsTable'
 
 export const AllItemsPage = async () => {
   return (
-    <div>
-      <div className="flex justify-between items-center pb-4">
-        <h3 className="text-xl font-bold">Items</h3>
-        <Link className={cn(
-          buttonVariants({ variant: "default"})
-        )} href="/admin/items/new">New</Link>
-      </div>
-      <Suspense>
+    <div className="xl:mx-auto xl:w-[960px]">
+      <div className="py-6">
+
+        <div className="flex flex-col gap-4 pb-6">
+          <div className="flex justify-between">
+            <h2 className="text-2xl font-bold">Items</h2>
+            <Link className={cn(
+              buttonVariants({ variant: "default" })
+            )} href="/admin/items/new">New</Link>
+          </div>
+          <div className="flex w-full items-center justify-center">
+            <div className="border-t flex-grow" />
+          </div>
+        </div>
+
+        <Suspense>
           <ItemsTable />
-      </Suspense>
+        </Suspense>
+
+      </div>
     </div>
+
   )
 }
 
 export const NewItemPage = async () => {
   return (
-    <div>
-      <h3 className="text-xl font-bold pb-4">New Item</h3>
-      <Suspense>
-      <ItemForm />
-     </Suspense>
+    <div className="xl:mx-auto xl:w-[960px]">
+      <div className="py-6">
+
+        <div className="flex flex-col gap-4 pb-6">
+          <div className="flex justify-between">
+            <h2 className="text-2xl font-bold">New Item</h2>
+          </div>
+          <div className="flex w-full items-center justify-center">
+            <div className="border-t flex-grow" />
+          </div>
+        </div>
+
+        <Suspense>
+          <ItemForm />
+        </Suspense>
+
+      </div>
     </div>
   )
 }
 
-export const SingleItemPage = async ({id}: {id: string}) => {
+export const SingleItemPage = async ({ id }: { id: string }) => {
   const item = await getSingleItem({ id: id })
-  if(!item) {
+  if (!item) {
     throw new Error("Item not found")
   }
   return (
-    <div>
-      <ItemForm item={item}/>
+    <div className="xl:mx-auto xl:w-[960px]">
+      <div className="py-6">
+
+        <div className="flex flex-col gap-4 pb-6">
+          <div className="flex justify-between">
+            <h2 className="text-2xl font-bold">Edit {item.title}</h2>
+          </div>
+          <div className="flex w-full items-center justify-center">
+            <div className="border-t flex-grow" />
+          </div>
+        </div>
+
+        <Suspense>
+          <ItemForm item={item}/>
+        </Suspense>
+
+      </div>
     </div>
   )
 }

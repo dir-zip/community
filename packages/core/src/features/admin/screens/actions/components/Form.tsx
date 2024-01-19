@@ -17,6 +17,7 @@ export const ActionForm = ({ action }: { action?: Action }) => {
 
 
   return (
+    <div className="bg-primary-800 p-6 rounded-lg border border-border-subtle w-full">
     <Form
       submitText={action ? "Update" : "Create"}
       schema={CreateActionSchema}
@@ -50,8 +51,10 @@ export const ActionForm = ({ action }: { action?: Action }) => {
       }}
     >
       <TextField name="title" label="Title" />
+      <div className="bg-primary-900 w-full h-px" />
       <TextField type="number" name="value" label="Value" />
 
     </Form>
+    </div>
   )
 }

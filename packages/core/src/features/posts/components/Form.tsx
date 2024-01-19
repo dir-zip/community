@@ -20,7 +20,6 @@ const PostForm = ({ post, categories }: { post?: Post & { tags: Tag[], category:
       <Form
         submitText={post ? "Update" : "Post"}
         // schema={PostSchema}
-        className="w-full flex flex-col gap-8 items-end"
         initialValues={post && {
           title: post.title,
           body: post.body,
@@ -61,10 +60,13 @@ const PostForm = ({ post, categories }: { post?: Post & { tags: Tag[], category:
         }}
       >
         <TextField name="title" label="Title" />
+        <div className="bg-primary-900 w-full h-px" />
         <SelectField label="Category" name="category" options={categories.map((c) => {
           return { value: c.slug, key: c.title }
         })} />
+              <div className="bg-primary-900 w-full h-px" />
         <TagField name="tags" label="Tags" />
+        <div className="bg-primary-900 w-full h-px" />
         <FancyEditorField name="body" label="Body" />
       </Form>
     </div>

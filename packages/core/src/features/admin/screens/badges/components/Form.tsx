@@ -18,12 +18,7 @@ export const BadgeForm = ({badge, actions}: {badge?: Badge & {condition: (Condit
   const router = useRouter()
 
   return (
-    <>
-    {badge && <button onClick={(e) => {
-      e.preventDefault()
-      deleteBadge({id: badge!.id})
-      router.push('/admin/badges')
-    }}className={cn(buttonVariants({variant: 'destructive'}))}>Delete</button> }
+    <div className="bg-primary-800 p-6 rounded-lg border border-border-subtle w-full">
     <Form
     submitText={badge ? "Update" : "Create"}
     schema={CreateBadgeSchema}
@@ -60,10 +55,13 @@ export const BadgeForm = ({badge, actions}: {badge?: Badge & {condition: (Condit
     }}
   >
     <TextField name="title" label="Title"/>
+    <div className="bg-primary-900 w-full h-px" />
     <TextField name="description" label="Description"/>
+    <div className="bg-primary-900 w-full h-px" />
     <SingleFileUploadField name="image" label="Image" />
+    <div className="bg-primary-900 w-full h-px" />
     <ConditionInputField name="condition" label="Condition" actions={actions}/>
   </Form>
-  </>
+  </div>
   )
 }

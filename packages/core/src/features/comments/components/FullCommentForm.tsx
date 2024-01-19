@@ -34,8 +34,7 @@ export const FullCommentForm = ({comment, postSlug}: {comment: Comment, postSlug
       >
 
         <div className="w-full flex flex-col gap-1">
-          <span className="text-sm">Body</span>
-          <FancyEditorField name="body" />
+          <FancyEditorField name="body" label="Body" />
         </div>
       </Form>
     </div>

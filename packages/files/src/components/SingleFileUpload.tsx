@@ -7,7 +7,6 @@ export interface SingleFileUploadProps {
   /** Field name. */
   name: string;
   /** Field label. */
-  label: string;
 
   acceptedFileTypes?: string[];
 
@@ -25,7 +24,7 @@ export interface SingleFileUploadProps {
 }
 
 
-export const SingleFileUploadField: React.FC<SingleFileUploadProps> = ({ label, value, urlEndpoint, onUpload, onChange, remove, submitted, acceptedFileTypes = [], ...props }) => {
+export const SingleFileUploadField: React.FC<SingleFileUploadProps> = ({  value, urlEndpoint, onUpload, onChange, remove, submitted, acceptedFileTypes = [], ...props }) => {
   
 
   const [file, setFile] = React.useState<string | null>(null || value);
@@ -141,9 +140,6 @@ export const SingleFileUploadField: React.FC<SingleFileUploadProps> = ({ label, 
       <>
         {file && file !== "" ? (
           <div className="w-full flex flex-col space-y-2">
-            <label className="text-sm font-medium leading-none flex space-y-2 flex-col">
-              {label}
-            </label>
             <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border border-input rounded">
               <div className="flex items-center space-x-4 w-full">
 
@@ -241,9 +237,6 @@ export const SingleFileUploadField: React.FC<SingleFileUploadProps> = ({ label, 
           </div>
         ) : (
           <div {...getRootProps({ className: "btn-dropzone" })}>
-            <label className="text-sm font-medium leading-none flex space-y-2 flex-col">
-              {label}
-            </label>
             <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border border-input rounded">
               <div className="flex flex-col text-center text-sm text-gray-600">
                 <div className="flex flex-col lg:flex-row">

@@ -11,28 +11,50 @@ import { ActionsTable } from './components/ActionsTable'
 
 export const AllActionsPage = async () => {
   return (
-    <div>
-      <div className="flex justify-between items-center pb-4">
-        <h3 className="text-xl font-bold">Actions</h3>
-        <Link className={cn(
-          buttonVariants({ variant: "default"})
-        )} href="/admin/actions/new">New</Link>
+    <div className="xl:mx-auto xl:w-[960px]">
+    <div className="py-6">
+
+      <div className="flex flex-col gap-4 pb-6">
+        <div className="flex justify-between">
+          <h2 className="text-2xl font-bold">Actions</h2>
+          <Link className={cn(
+            buttonVariants({ variant: "default" })
+          )} href="/admin/actions/new">New</Link>
+        </div>
+        <div className="flex w-full items-center justify-center">
+          <div className="border-t flex-grow" />
+        </div>
       </div>
+
       <Suspense>
-          <ActionsTable />
+        <ActionsTable />
       </Suspense>
+
     </div>
+  </div>
   )
 }
 
 export const NewActionPage = async () => {
   return (
-    <div>
-      <h3 className="text-xl font-bold pb-4">New Action</h3>
+    <div className="xl:mx-auto xl:w-[960px]">
+    <div className="py-6">
+
+      <div className="flex flex-col gap-4 pb-6">
+        <div className="flex justify-between">
+          <h2 className="text-2xl font-bold">New Action</h2>
+        </div>
+        <div className="flex w-full items-center justify-center">
+          <div className="border-t flex-grow" />
+        </div>
+      </div>
+
       <Suspense>
-        <ActionForm />
-     </Suspense>
+      <ActionForm />
+      </Suspense>
+
     </div>
+  </div>
   )
 }
 
@@ -42,9 +64,24 @@ export const SingleActionPage = async ({id}: {id: string}) => {
     throw new Error("Action not found")
   }
   return (
-    <div>
+    <div className="xl:mx-auto xl:w-[960px]">
+    <div className="py-6">
+
+      <div className="flex flex-col gap-4 pb-6">
+        <div className="flex justify-between">
+          <h2 className="text-2xl font-bold">New Action</h2>
+        </div>
+        <div className="flex w-full items-center justify-center">
+          <div className="border-t flex-grow" />
+        </div>
+      </div>
+
+      <Suspense>
       <ActionForm action={action}/>
+      </Suspense>
+
     </div>
+  </div>
   )
 }
 

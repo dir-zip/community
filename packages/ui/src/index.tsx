@@ -13,4 +13,5 @@ export * from "./components/TagInputField"
 export * from "./components/Badge"
 
 export * from "./primitives/dropdown-menu"
+export * from "./primitives/switch-primitive"
 

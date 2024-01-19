@@ -58,7 +58,7 @@ export function Form<S extends z.ZodType<any, any>>({
             }
           }
         })}
-        className="form space-y-4 py-2 pb-4"
+        className="form space-y-4 py-2 pb-4 w-full flex flex-col gap-8 items-end"
         {...props}
       >
         {children}

@@ -1,11 +1,11 @@
 "use client"
 
-import { Form, TextField } from "../../../../../components/Forms"
+import { Form, TextField } from "~/components/Forms"
 
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 
-import { CategorySchema } from "../../../../../features/posts/schemas"
+import { CategorySchema } from "~/features/posts/schemas"
 import { createCategory, updateCategory } from "../actions"
 import { Category } from "packages/db"
 
@@ -15,6 +15,7 @@ const CategoryForm = ({ category }: { category?: Category }) => {
 
 
   return (
+    <div className="bg-primary-800 p-6 rounded-lg border border-border-subtle w-full">
     <Form
       submitText={category ? "Update" : "Create"}
       schema={CategorySchema}
@@ -46,6 +47,7 @@ const CategoryForm = ({ category }: { category?: Category }) => {
     >
       <TextField name="title" label="Title" />
     </Form>
+    </div>
   )
 }
 

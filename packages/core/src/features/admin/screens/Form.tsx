@@ -1,6 +1,6 @@
 "use client"
 
-import { Form, RadioGroupField, TextField } from "../../../components/Forms"
+import { Form, SwitchField, TextField } from "~/components/Forms"
 
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
@@ -15,11 +15,12 @@ export const SiteForm = ({ site }: { site: GlobalSetting & { features: FeatureTo
   const isPrivate = site.features.find(f => f.feature === 'private')!.isActive
 
   return (
+    <div className="bg-primary-800 p-6 rounded-lg border border-border-subtle w-full">
     <Form
       submitText={"Save"}
       initialValues={{
         siteTitle: site.siteTitle,
-        isPrivate: isPrivate ? "true" : "false"
+        isPrivate: isPrivate
       }}
       onSubmit={async (values) => {
         toast.promise(
@@ -42,8 +43,10 @@ export const SiteForm = ({ site }: { site: GlobalSetting & { features: FeatureTo
         )
       }}
     >
-      <TextField name="siteTitle" label="Site Title" />
-      <RadioGroupField name="isPrivate" label="Private" options={['true', 'false']} />
+      <TextField name="siteTitle" label="Site Title" description="The title of your site" />
+      <div className="bg-primary-900 w-full h-px" />
+      <SwitchField name="isPrivate" label="Private" description="Require an account to view posts" />
     </Form>
+    </div>
   )
 }

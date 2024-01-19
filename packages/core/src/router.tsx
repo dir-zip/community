@@ -13,10 +13,7 @@ import { Sidebar } from './components/ui/Sidebar'
 
 import UsersAdminPage from "./features/admin/screens/users/page";
 import SingleUserAdminPage from "./features/admin/screens/users/[id]/page";
-import TokensAdminPage from "./features/admin/screens/tokens/page";
-import SingleTokenAdminPage from "./features/admin/screens/tokens/[id]/page";
-import SessionsAdminPage from "./features/admin/screens/sessions/page";
-import SingleSessionAdminPage from "./features/admin/screens/sessions/[id]/page";
+
 
 import { BaseSessionData, type Resources, Routes } from ".";
 
@@ -41,6 +38,7 @@ import { ShopPage } from "./features/shop/screens";
 import { redirect } from 'next/navigation'
 import { FeedScreen } from "./features/feed/screens";
 import { UserInventoryScreen, UserSettingsScreen } from "./features/user/screens";
+import { AdminSidebar } from "./components/ui/AdminSidebar";
 
 const router = new Router();
 
@@ -97,8 +95,28 @@ export async function PageInit<T>({
     })
   }
 
-  await router.createLayout("/admin/*", async ({ children }) => {
-    const user = await getCurrentUser();
+
+
+  router.createLayout("/admin/*", async ({ children }) => {
+    const user = await getCurrentUser()
+    const settings = await prisma?.globalSetting.findFirst()
+    const memberCount = await prisma?.user.findMany()
+    const tags = await prisma?.tag.findMany();
+    const tagsWithPostCount = tags ? await Promise.all(tags.map(async (tag) => {
+      const count = await prisma?.post.count({
+        where: {
+          tags: {
+            some: {
+              id: tag.id
+            }
+          }
+        }
+      });
+      return {
+        ...tag,
+        postCount: count ?? 0
+      };
+    })) : [];
 
     const session = await auth.getSession();
     if (!session) {
@@ -111,23 +129,37 @@ export async function PageInit<T>({
     }
 
     return (
-      <div className="min-h-screen flex">
-        <main className="flex-1 min-w-0 overflow-auto p-8 pt-6">
-          <div className="pb-12 md:pb-6">
-            <Breadcrumbs
-              ignore={[
-                { href: "/posts/:slug/comments", breadcrumb: "Comments" }
-              ]}
-            />
+      <div className="flex h-screen">
+        <Sidebar
+          siteTitle={settings?.siteTitle!}
+          memberCount={memberCount!.length}
+          tags={tagsWithPostCount}
+          open={false}
+          user={{
+            username: user.username,
+            points: user.points,
+            avatar: user.avatar || ""
+          }}
+        />
+        <div className="flex min-w-0 flex-1">
+          <div className="ml-20">
+            <AdminSidebar />
           </div>
-          {children}
-          <ToastProvider />
-        </main>
+          <main className="flex flex-col w-0 flex-1 overflow-hidden">
+            <div className="border-b border-b-border-subtle flex items-center">
+              <div className="px-4 py-6">
+                <Breadcrumbs ignore={[{ href: "/posts/*/comments", breadcrumb: "Comments" }]} />
+              </div>
+            </div>
+            <div className="overflow-auto">
+              {children}
+            </div>
+          </main>
+        </div>
+        <ToastProvider />
       </div>
     );
   })
-
-
 
   router.createLayout("/*", async ({ children }) => {
     const user = await getCurrentUser()
@@ -158,6 +190,7 @@ export async function PageInit<T>({
               siteTitle={settings?.siteTitle!}
               memberCount={memberCount!.length}
               tags={tagsWithPostCount}
+              open={true}
               user={
                 {
                   username: user.username,
@@ -175,13 +208,15 @@ export async function PageInit<T>({
             </div>
           </div>
           <div className="overflow-auto">
-          {children}
+            {children}
           </div>
         </main>
         <ToastProvider />
       </div>
     );
   })
+
+
 
   router.addRoute('/', async () => {
     redirect('/feed')
@@ -397,21 +432,7 @@ export async function PageInit<T>({
     return <SingleUserAdminPage id={params.id} />
   })
 
-  router.addRoute('/admin/tokens', async () => {
-    return <TokensAdminPage />
-  })
 
-  router.addRoute('/admin/tokens/:id', async (params) => {
-    return <SingleTokenAdminPage id={params.id} />
-  })
-
-  router.addRoute('/admin/sessions', async () => {
-    return <SessionsAdminPage />
-  })
-
-  router.addRoute('/admin/sessions/:id', async (params) => {
-    return <SingleSessionAdminPage id={params.id} />
-  })
 
 
   router.addRoute('/activateAccount', async (_, request) => {
