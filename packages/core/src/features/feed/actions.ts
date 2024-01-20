@@ -17,7 +17,22 @@ export const getFeed = createAction(async ({ }, params) => {
       title: undefined
     },
     include: {
-      user: true,
+      user: {
+        include: {
+          inventory: {
+            include: {
+              collection: {
+                where: {
+                  equipped: true
+                },
+                include: {
+                  item: true
+                }
+              }
+            }
+          }
+        }
+      },
       comments: true,
       category: true,
       tags: true

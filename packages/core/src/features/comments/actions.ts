@@ -12,7 +12,22 @@ export const getComment = createAction(async({}, {commentId}) => {
     include: {
       replies: {
         include: {
-          user: true
+          user: {
+            include: {
+              inventory: {
+                include: {
+                  collection: {
+                    where: {
+                      equipped: true
+                    },
+                    include: {
+                      item: true
+                    }
+                  }
+                }
+              }
+            }
+          }
         },
         orderBy: {
           createdAt: 'desc'
@@ -20,13 +35,58 @@ export const getComment = createAction(async({}, {commentId}) => {
       },
       parent: {
         include: {
-          user: true
+          user: {
+            include: {
+              inventory: {
+                include: {
+                  collection: {
+                    where: {
+                      equipped: true
+                    },
+                    include: {
+                      item: true
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       },
-      user: true,
+      user: {
+        include: {
+          inventory: {
+            include: {
+              collection: {
+                where: {
+                  equipped: true
+                },
+                include: {
+                  item: true
+                }
+              }
+            }
+          }
+        }
+      },
       post: {
         include: {
-          user: true
+          user: {
+            include: {
+              inventory: {
+                include: {
+                  collection: {
+                    where: {
+                      equipped: true
+                    },
+                    include: {
+                      item: true
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -98,7 +158,22 @@ export const getCommentsForPost = createAction(async({}, {postSlug}) => {
       ]
     },
     include: {
-      user: true
+      user: {
+        include: {
+          inventory: {
+            include: {
+              collection: {
+                where: {
+                  equipped: true
+                },
+                include: {
+                  item: true
+                }
+              }
+            }
+          }
+        }
+      }
     },
     orderBy: {
       createdAt: 'desc'
@@ -118,7 +193,22 @@ export const getCommentsForPost = createAction(async({}, {postSlug}) => {
         parentId: comment.id
       },
       include: {
-        user: true
+        user: {
+          include: {
+            inventory: {
+              include: {
+                collection: {
+                  where: {
+                    equipped: true
+                  },
+                  include: {
+                    item: true
+                  }
+                }
+              }
+            }
+          }
+        }
       },
       orderBy: {
         createdAt: 'desc'

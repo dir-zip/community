@@ -49,7 +49,7 @@ export const ListItems = () => {
     router.refresh()
   }, [pathname, page, searchQuery, router, pageSize])
 
-  const [purchaseSuccess, setPurchaseSuccess] = useState(false);
+  const [purchaseSuccess, setPurchaseSuccess] = useState<Record<string, boolean>>({});
 
   return (
     <div>
@@ -73,8 +73,8 @@ export const ListItems = () => {
                         new Promise(async (resolve, reject) => {
                           try {
                             await buyItem({ itemId: item.id })
-                            setPurchaseSuccess(true);
-                            setTimeout(() => setPurchaseSuccess(false), 2000);
+                            setPurchaseSuccess(prevState => ({ ...prevState, [item.id]: true }));
+                            setTimeout(() => setPurchaseSuccess(prevState => ({ ...prevState, [item.id]: false })), 2000);
                             resolve(null)
                           } catch (err) {
                             reject(err)
@@ -91,15 +91,15 @@ export const ListItems = () => {
                     }}>
                         <div className="flex justify-center items-center">
     <span 
-      className={`transition-opacity duration-100 ${purchaseSuccess ? 'opacity-0' : 'opacity-100'}`}
-      aria-hidden={purchaseSuccess}
+      className={`transition-opacity duration-100 ${purchaseSuccess[item.id] ? 'opacity-0' : 'opacity-100'}`}
+      aria-hidden={purchaseSuccess[item.id]}
     >
       Buy now
     </span>
     {purchaseSuccess && (
       <Check 
         className="absolute w-4 h-4 transition-opacity duration-300 opacity-100" 
-        style={{ opacity: purchaseSuccess ? 1 : 0 }}
+        style={{ opacity: purchaseSuccess[item.id] ? 1 : 0 }}
       />
     )}
   </div>

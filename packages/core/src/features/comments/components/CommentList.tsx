@@ -4,6 +4,7 @@ import { User, Comment } from "packages/db"
 import { Avatar } from "@dir/ui"
 import Link from 'next/link'
 import { CommentPreview } from "./CommentPreview"
+import { applyEffects } from '~/itemEffects'
 
 export type CommentsListProps = {
   comments: (Comment & {user: User, replyCount: number})[],
@@ -17,8 +18,8 @@ export const CommentList = ({comments, mainPostSlug, currentUserId}: CommentsLis
       return (
         <div key={comment.id} className="flex w-full gap-8">
           <div className="flex flex-col items-center gap-2">
-            <Avatar imageUrl={comment.user.avatar} fallback={comment.user.username} />
-            <Link href={`/profile/${comment.user.username}`}><p className="text-link">{comment.user.username}</p></Link>
+            {applyEffects('avatar', {avatar: comment.user.avatar || "", username: comment.user.username}, comment.user.inventory)}
+            <Link href={`/profile/${comment.user.username}`}>{applyEffects('username', {username: comment.user.username}, comment.user.inventory)}</Link>
           </div>
           <CommentPreview 
             content={comment.body} 

@@ -8,6 +8,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { getFeed } from '../actions'
 import { ChevronRight, ChevronLeft } from 'lucide-react'
 import { getAllCategories } from '~/features/admin/screens/categories/actions'
+import { applyEffects } from '~/itemEffects'
 
 export const FeedList = ({ currentUser }: { currentUser: User }) => {
   const contentRef = useRef<HTMLDivElement>(null);
@@ -58,7 +59,9 @@ export const FeedList = ({ currentUser }: { currentUser: User }) => {
       {data.map((feed) => {
         return (
           <div className="flex flex-row space-x-4 w-full" key={feed.id} ref={contentRef}>
-            <Avatar imageUrl={feed.user.avatar} fallback={feed.user.username} />
+            <div>
+            {applyEffects('avatar', {username: feed.user.username, avatar: feed.user.avatar || ""}, feed.user.inventory)}
+            </div>
             <PostPreview
               content={feed.body}
               slug={feed.slug}

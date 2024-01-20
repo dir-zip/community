@@ -1,5 +1,6 @@
 "use client";
 
+import { applyEffects } from "~/itemEffects";
 import { Form } from "../../../components/Forms";
 import { createComment } from "../../posts/actions";
 import { CommentSchema } from "../schemas";
@@ -14,7 +15,8 @@ export const CommentForm = ({ postSlug, parentId }: { postSlug: string, parentId
   return (
     <div className="flex w-full space-x-4 pl-8">
       <div className="flex flex-col items-center gap-2">
-        <Avatar imageUrl={""} fallback={"dillonraphael"} />
+        {/* <Avatar imageUrl={""} fallback={"dillonraphael"} />
+        {applyEffects('avatar', {avatar: comment.post.user.avatar || "", username: comment.post.user.username}, comment.post.user.inventory)} */}
       </div>
       <Form
         submitText="Post"

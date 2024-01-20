@@ -5,12 +5,36 @@ import { Avatar, Badge, Select, SelectTrigger, SelectValue, SelectContent, Selec
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
 import { MessageSquare, Pin, ChevronLeft, ChevronRight, PlusCircle } from 'lucide-react'
-import { Category, Post, User, Comment } from 'packages/db';
+import { Category, Post, User, Comment, Inventory, InventoryItem, Item } from '@dir/db';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { getAllPosts } from '../actions';
+import { applyEffects } from '~/itemEffects';
+
+interface ExtendedComment extends Comment {
+  user: User & {
+    inventory: Inventory & {
+      collection: InventoryItem[];
+    } | null;
+  };
+}
+
+interface ExtendedPost extends Post {
+  comments: ExtendedComment[];
+  replyCount: number;
+  lastCommentOrReply?: ExtendedComment;
+  user: User & {
+    inventory: Inventory & {
+      collection: InventoryItem[];
+    } | null;
+  };
+}
+
+interface ExtendedCategory extends Category {
+  posts: ExtendedPost[];
+}
 
 export interface PostListProps {
-  posts: (Category & { posts: (Post & { comments: (Comment & { replies: Comment[] })[], replyCount: number, lastCommentOrReply?: (Comment & { user: User }), user: User })[] })[];
+  posts: ExtendedCategory[];
 }
 
 export const PostList = ({ posts }: PostListProps) => {
@@ -28,10 +52,11 @@ export const PostList = ({ posts }: PostListProps) => {
   let endPage = startPage - 1 + ITEMS_PER_PAGE
   const [pageSize, setPageSize] = useState(ITEMS_PER_PAGE);
 
-  const [data, setData] = useState<(Category & { posts: (Post & { comments: (Comment & { replies: Comment[] })[], replyCount: number, lastCommentOrReply?: (Comment & { user: User }), user: User })[] })[]>([])
+  const [data, setData] = useState<ExtendedCategory[]>([])
   const [count, setCount] = useState(0)
   const totalPages = Math.ceil(count / ITEMS_PER_PAGE);
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+
 
   if (endPage > count) {
     endPage = count
@@ -97,10 +122,10 @@ export const PostList = ({ posts }: PostListProps) => {
                 //TODO: Add a field to post to set as pinned by admin only
                 <Pin className="transform rotate-45 w-4 h-4 absolute top-2 left-2" /> */}
                 <div className="flex gap-4 mr-4 min-w-0">
-                  <Avatar imageUrl={post.user.avatar} fallback={post.user.username} />
+                  {applyEffects('avatar', {avatar: post.user.avatar || "", username: post.user.username}, post.user.inventory)}
                   <div className="flex flex-col">
                     <Link href={`/posts/${post.slug}`}><span className="text-link font-semibold">{post.title}</span></Link>
-                    <span className="text-xs"><Link href={`/profile/${post.user.username}`}><span className="text-link">{post.user.username}</span></Link> • <span className="text-xs">{post.createdAt.toDateString()}</span></span>
+                    <span className="text-xs flex items-center gap-2"><Link href={`/profile/${post.user.username}`}>{applyEffects('username', {username: post.user.username}, post.user.inventory)}</Link> • <span className="text-xs">{post.createdAt.toDateString()}</span></span>
                   </div>
                 </div>
                 <div className="flex-1 min-w-0 flex items-center justify-center">
@@ -115,9 +140,9 @@ export const PostList = ({ posts }: PostListProps) => {
                   <div className="flex flex-col items-end">
                     <span className="text-primary-100 text-xs self-end">Last reply</span>
                     {post.lastCommentOrReply ? <div className="flex gap-4 justify-end">
-                      <Avatar imageUrl={post.lastCommentOrReply.user.avatar} fallback={post.lastCommentOrReply.user.username} />
+                      {applyEffects('avatar', {avatar: post.lastCommentOrReply.user.avatar || "", username: post.lastCommentOrReply.user.username}, post.lastCommentOrReply.user.inventory)}
                       <div className="flex flex-col items-end">
-                        <Link href={`/profile/${post.lastCommentOrReply.user.username}`}><span className="text-link text-sm">{post.lastCommentOrReply.user.username}</span></Link>
+                        <Link href={`/profile/${post.lastCommentOrReply.user.username}`}><span className="text-link text-sm">{applyEffects('username',{username:  post.lastCommentOrReply.user.username || ""}, post.lastCommentOrReply.user.inventory)}</span></Link>
                         <span className="text-xs self-end">{post.lastCommentOrReply.createdAt.toDateString()}</span>
                       </div>
                     </div> : <div><span className="text-xs">No comments</span></div>}

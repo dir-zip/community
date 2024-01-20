@@ -6,13 +6,16 @@ import { createPost } from "~/features/posts/actions";
 import { toast } from "sonner";
 import { FancyEditorField } from "~/components/Forms/FancyEditorField";
 import { useRouter } from "next/navigation";
+import { User } from "@dir/db";
+import { applyEffects } from "~/itemEffects";
 
-export const FeedInput = ({ avatar, username }: { avatar: string, username: string }) => {
+export const FeedInput = ({ user }: { user: User }) => {
   const router = useRouter()
   return (
     <div className="flex w-full space-x-4">
-      <Avatar imageUrl={avatar} fallback={username} />
-
+      <div>
+        {applyEffects('avatar', {username:user.username, avatar:user.avatar || ""}, user.inventory)}
+      </div>
       <Form
         reset={true}
         onSubmit={async (data) => {

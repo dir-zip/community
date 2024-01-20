@@ -35,14 +35,15 @@ export const getAllItems = createAction(
 );
 
 
-export const createItem = createAction(async({}, {title, description, price, image}) => {
+export const createItem = createAction(async({}, {title, description, price, image, effect}) => {
 
   const item = await prisma.item.create({
     data: {
       title,
       description,
       price: Number(price),
-      image
+      image,
+      effect
     }
   })
 

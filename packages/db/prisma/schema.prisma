@@ -125,6 +125,7 @@ model Item {
   image       String?
   price       Int
   purchasedItems   InventoryItem[]
+  effect      String? @unique
 }
 
 model Badge {

@@ -7,6 +7,13 @@ import { cn } from '@/utils'
 import { buttonVariants } from '@/components/Button'
 import { getSingleItem } from './actions'
 import { ItemsTable } from './components/ItemsTable'
+import { effects } from '~/itemEffects'
+
+const buildEffects = effects.map(effect => {
+  return (
+    {key: effect.name, value: effect.name}
+  )
+})
 
 export const AllItemsPage = async () => {
   return (
@@ -36,6 +43,7 @@ export const AllItemsPage = async () => {
 }
 
 export const NewItemPage = async () => {
+
   return (
     <div className="xl:mx-auto xl:w-[960px]">
       <div className="py-6">
@@ -50,7 +58,7 @@ export const NewItemPage = async () => {
         </div>
 
         <Suspense>
-          <ItemForm />
+          <ItemForm effects={buildEffects}/>
         </Suspense>
 
       </div>
@@ -77,7 +85,7 @@ export const SingleItemPage = async ({ id }: { id: string }) => {
         </div>
 
         <Suspense>
-          <ItemForm item={item}/>
+          <ItemForm item={item} effects={buildEffects}/>
         </Suspense>
 
       </div>

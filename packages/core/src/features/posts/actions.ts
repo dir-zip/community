@@ -1,6 +1,6 @@
 'use server'
 
-import { prisma, type Post, Tag } from "@dir/db";
+import { prisma, type Post, Tag, Inventory } from "@dir/db";
 import { z } from "zod";
 import { createAction } from '../../lib/createAction';
 import { PostSchema } from "../../features/posts/schemas";
@@ -8,6 +8,12 @@ import { findFreeSlug } from "@/utils";
 import { revalidatePath } from 'next/cache'
 import { prepareArrayField } from "@creatorsneverdie/prepare-array-for-prisma"
 import { triggerAction } from '../actions/actions';
+
+
+//TODO: Move this to a helper
+
+
+
 
 
 export const getCategories = createAction(async () => {
@@ -34,11 +40,60 @@ export const getAllPosts = createAction(async ({}, params) => {
           }
         },
         include: {
-          user: true,
+          user: {
+            include: {
+              inventory: {
+                include: {
+                  collection: {
+                    where: {
+                      equipped: true
+                    },
+                    include: {
+                      item: true
+                    }
+                  }
+                }
+              }
+            }
+          },
           comments: {
             include: {
-              user: true,
-              replies: true
+              user: {
+                include: {
+                  inventory: {
+                    include: {
+                      collection: {
+                        where: {
+                          equipped: true
+                        },
+                        include: {
+                          item: true
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              replies: {
+                include: {
+                  user: {
+                    include: {
+                      inventory: {
+                        include: {
+                          collection: {
+                            where: {
+                              equipped: true
+                            },
+                            include: {
+                              item: true
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             },
             orderBy: {
               createdAt: 'desc'
@@ -62,7 +117,8 @@ export const getAllPosts = createAction(async ({}, params) => {
       const allCommentsAndReplies = post.comments.concat(
         post.comments.flatMap(comment => comment.replies.map(reply => ({
           ...reply,
-          user: comment.user,
+          user: {...comment.user, inventory: comment.user.inventory,},
+        
           replies: []
         })))
       );
@@ -151,7 +207,22 @@ export const getSinglePost = createAction(async ({ }, { slug }) => {
       slug: slug
     },
     include: {
-      user: true,
+      user: {
+        include: {
+          inventory: {
+            include: {
+              collection: {
+                where: {
+                  equipped: true
+                },
+                include: {
+                  item: true
+                }
+              }
+            }
+          }
+        }
+      },
       category: true,
       tags: true
     }
