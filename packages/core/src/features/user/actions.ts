@@ -126,3 +126,39 @@ export const equipAndUnequipItem = createAction(async({session}, {itemId}) => {
 }, z.object({
   itemId: z.string(),
 }), {authed: true})
+
+export const getUsersPosts = createAction(async ({ }, { username, skip, take }) => {
+  const posts = await prisma.post.findMany({
+    skip,
+    take,
+    where: {
+      user: {
+        username: username
+      },
+      tags: {
+        none: {
+          slug: 'feed'
+        }
+      }
+    }
+  })
+
+  const count = await prisma.post.count({
+    where: {
+      user: {
+        username: username
+      },
+      tags: {
+        none: {
+          slug: 'feed'
+        }
+      }
+    }
+  })
+
+  return { data: posts, count }
+}, z.object({
+  username: z.string(),
+  skip: z.number().optional(),
+  take: z.number().optional(),
+}), { authed: false })

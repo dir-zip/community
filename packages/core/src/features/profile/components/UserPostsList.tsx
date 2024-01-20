@@ -1,13 +1,13 @@
 "use client"
 
 
-import { Avatar, Badge, Select, SelectTrigger, SelectValue, SelectContent, SelectItem, Button, buttonVariants } from '@dir/ui'
+import { Button } from '@dir/ui'
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
-import { MessageSquare, Pin, ChevronLeft, ChevronRight, PlusCircle } from 'lucide-react'
-import { Category, Post, User, Comment } from 'packages/db';
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { Post } from '@dir/db';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { getUsersPosts } from '../actions';
+import { getUsersPosts } from '~/features/user/actions';
 
 
 

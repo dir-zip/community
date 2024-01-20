@@ -158,21 +158,7 @@ export const getCurrentUser = cache(createAction(async ({ session }) => {
   }
 
   const user = await prisma.user.findUnique({
-    where: { id: userId },
-    include: {
-      inventory: {
-        include: {
-          collection: {
-            where: {
-              equipped: true
-            },
-            include: {
-              item: true
-            }
-          }
-        }
-      }
-    }
+    where: { id: userId }
   });
 
   if(!user) {

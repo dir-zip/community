@@ -10,12 +10,6 @@ import { prepareArrayField } from "@creatorsneverdie/prepare-array-for-prisma"
 import { triggerAction } from '../actions/actions';
 
 
-//TODO: Move this to a helper
-
-
-
-
-
 export const getCategories = createAction(async () => {
   const categories = await prisma.category.findMany()
   return categories
@@ -137,8 +131,6 @@ export const getAllPosts = createAction(async ({}, params) => {
 }),
 { authed: false })
 
-
-
 export const createPost = createAction(async ({ session }, { title, body, category, tags }) => {
   const createSlug = await findFreeSlug<Post>(
     title.toLowerCase().replace(/[^a-z0-9]/g, "-"),
@@ -207,22 +199,6 @@ export const getSinglePost = createAction(async ({ }, { slug }) => {
       slug: slug
     },
     include: {
-      user: {
-        include: {
-          inventory: {
-            include: {
-              collection: {
-                where: {
-                  equipped: true
-                },
-                include: {
-                  item: true
-                }
-              }
-            }
-          }
-        }
-      },
       category: true,
       tags: true
     }

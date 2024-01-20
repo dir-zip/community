@@ -1,9 +1,8 @@
 import { redirect } from "next/navigation"
-import { getInventory, getUser } from "./actions"
-import Link from "next/link"
+import {  getUser } from "./actions"
+
 import { Suspense } from 'react'
-import { InventoryProfile } from "./components/Inventory"
-import { Avatar } from "@dir/ui"
+
 import { UserPostsList } from "./components/UserPostsList"
 import { applyEffects, effects } from "~/itemEffects"
 import { getUserInventory } from "../user/actions"

@@ -10,85 +10,7 @@ export const getComment = createAction(async({}, {commentId}) => {
       id: commentId
     },
     include: {
-      replies: {
-        include: {
-          user: {
-            include: {
-              inventory: {
-                include: {
-                  collection: {
-                    where: {
-                      equipped: true
-                    },
-                    include: {
-                      item: true
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        orderBy: {
-          createdAt: 'desc'
-        }
-      },
-      parent: {
-        include: {
-          user: {
-            include: {
-              inventory: {
-                include: {
-                  collection: {
-                    where: {
-                      equipped: true
-                    },
-                    include: {
-                      item: true
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      user: {
-        include: {
-          inventory: {
-            include: {
-              collection: {
-                where: {
-                  equipped: true
-                },
-                include: {
-                  item: true
-                }
-              }
-            }
-          }
-        }
-      },
-      post: {
-        include: {
-          user: {
-            include: {
-              inventory: {
-                include: {
-                  collection: {
-                    where: {
-                      equipped: true
-                    },
-                    include: {
-                      item: true
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+      replies: true
     }
   })
 
@@ -157,24 +79,6 @@ export const getCommentsForPost = createAction(async({}, {postSlug}) => {
         { postId: postId }
       ]
     },
-    include: {
-      user: {
-        include: {
-          inventory: {
-            include: {
-              collection: {
-                where: {
-                  equipped: true
-                },
-                include: {
-                  item: true
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     orderBy: {
       createdAt: 'desc'
     }
@@ -191,24 +95,6 @@ export const getCommentsForPost = createAction(async({}, {postSlug}) => {
     const replies = await prisma.comment.findMany({
       where: {
         parentId: comment.id
-      },
-      include: {
-        user: {
-          include: {
-            inventory: {
-              include: {
-                collection: {
-                  where: {
-                    equipped: true
-                  },
-                  include: {
-                    item: true
-                  }
-                }
-              }
-            }
-          }
-        }
       },
       orderBy: {
         createdAt: 'desc'
