@@ -3,6 +3,7 @@
 import { createAction } from "~/lib/createAction"
 import { prisma } from '@dir/db'
 import {z} from 'zod'
+import { userInventoryIncludes } from "~/lib/includes"
 
 export const getFeed = createAction(async ({ }, params) => {
   if (!params) {
@@ -17,22 +18,7 @@ export const getFeed = createAction(async ({ }, params) => {
       title: undefined
     },
     include: {
-      user: {
-        include: {
-          inventory: {
-            include: {
-              collection: {
-                where: {
-                  equipped: true
-                },
-                include: {
-                  item: true
-                }
-              }
-            }
-          }
-        }
-      },
+      user: userInventoryIncludes.user,
       comments: true,
       category: true,
       tags: true

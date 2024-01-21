@@ -1,32 +1,25 @@
 "use client"
 
 
-import { Avatar, Badge, Select, SelectTrigger, SelectValue, SelectContent, SelectItem, Button, buttonVariants } from '@dir/ui'
+import { Badge, Select, SelectTrigger, SelectValue, SelectContent, SelectItem, Button, buttonVariants } from '@dir/ui'
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
-import { MessageSquare, Pin, ChevronLeft, ChevronRight, PlusCircle } from 'lucide-react'
-import { Category, Post, User, Comment, Inventory, InventoryItem, Item } from '@dir/db';
+import { MessageSquare, ChevronLeft, ChevronRight, PlusCircle } from 'lucide-react'
+import { Category, Post, User, Comment, Inventory, InventoryItem } from '@dir/db';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { getAllPosts } from '../actions';
 import { applyEffects } from '~/itemEffects';
+import { UserWithInventory } from '~/lib/types';
 
 interface ExtendedComment extends Comment {
-  user: User & {
-    inventory: Inventory & {
-      collection: InventoryItem[];
-    } | null;
-  };
+  user: UserWithInventory
 }
 
 interface ExtendedPost extends Post {
   comments: ExtendedComment[];
   replyCount: number;
   lastCommentOrReply?: ExtendedComment;
-  user: User & {
-    inventory: Inventory & {
-      collection: InventoryItem[];
-    } | null;
-  };
+  user: UserWithInventory
 }
 
 interface ExtendedCategory extends Category {

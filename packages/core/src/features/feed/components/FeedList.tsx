@@ -9,7 +9,7 @@ import { getFeed } from '../actions'
 import { ChevronRight, ChevronLeft } from 'lucide-react'
 import { getAllCategories } from '~/features/admin/screens/categories/actions'
 import { applyEffects } from '~/itemEffects'
-import {  UserWithInventory } from '~/features/types'
+import {  UserWithInventory } from '~/lib/types'
 
 
 export const FeedList = ({ currentUser }: { currentUser: User }) => {

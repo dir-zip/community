@@ -1,15 +1,14 @@
 "use client";
 
-import { Avatar } from "@dir/ui";
 import { Form } from "~/components/Forms";
 import { createPost } from "~/features/posts/actions";
 import { toast } from "sonner";
 import { FancyEditorField } from "~/components/Forms/FancyEditorField";
 import { useRouter } from "next/navigation";
-import { User } from "@dir/db";
 import { applyEffects } from "~/itemEffects";
+import { UserWithInventory } from "~/lib/types";
 
-export const FeedInput = ({ user }: { user: User }) => {
+export const FeedInput = ({ user }: { user: UserWithInventory }) => {
   const router = useRouter()
   return (
     <div className="flex w-full space-x-4">

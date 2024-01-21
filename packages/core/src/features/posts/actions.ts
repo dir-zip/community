@@ -2,12 +2,13 @@
 
 import { prisma, type Post, Tag, Inventory } from "@dir/db";
 import { z } from "zod";
-import { createAction } from '../../lib/createAction';
-import { PostSchema } from "../../features/posts/schemas";
+import { createAction } from '~/lib/createAction';
+import { PostSchema } from "~/features/posts/schemas";
 import { findFreeSlug } from "@/utils";
 import { revalidatePath } from 'next/cache'
 import { prepareArrayField } from "@creatorsneverdie/prepare-array-for-prisma"
 import { triggerAction } from '../actions/actions';
+import { userInventoryIncludes } from "~/lib/includes";
 
 
 export const getCategories = createAction(async () => {
@@ -34,58 +35,13 @@ export const getAllPosts = createAction(async ({}, params) => {
           }
         },
         include: {
-          user: {
-            include: {
-              inventory: {
-                include: {
-                  collection: {
-                    where: {
-                      equipped: true
-                    },
-                    include: {
-                      item: true
-                    }
-                  }
-                }
-              }
-            }
-          },
+          user: userInventoryIncludes.user,
           comments: {
             include: {
-              user: {
-                include: {
-                  inventory: {
-                    include: {
-                      collection: {
-                        where: {
-                          equipped: true
-                        },
-                        include: {
-                          item: true
-                        }
-                      }
-                    }
-                  }
-                }
-              },
+              user: userInventoryIncludes.user,
               replies: {
                 include: {
-                  user: {
-                    include: {
-                      inventory: {
-                        include: {
-                          collection: {
-                            where: {
-                              equipped: true
-                            },
-                            include: {
-                              item: true
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
+                  user: userInventoryIncludes.user
                 }
               }
             },
@@ -199,6 +155,7 @@ export const getSinglePost = createAction(async ({ }, { slug }) => {
       slug: slug
     },
     include: {
+      user: userInventoryIncludes.user,
       category: true,
       tags: true
     }

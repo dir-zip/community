@@ -5,7 +5,7 @@ import { redirect } from "next/navigation"
 import { Suspense } from 'react'
 import Link from "next/link"
 import { checkGuard } from "~/features/auth/actions"
-import { Avatar, Divider, RichTextField } from "@dir/ui"
+import { Divider, RichTextField } from "@dir/ui"
 import { PenSquare } from 'lucide-react'
 import { applyEffects } from "~/itemEffects"
 export const SinglePost = async ({ slug, loggedIn }: { slug: string, loggedIn: boolean }) => {

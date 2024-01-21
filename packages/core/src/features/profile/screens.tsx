@@ -4,7 +4,7 @@ import {  getUser } from "./actions"
 import { Suspense } from 'react'
 
 import { UserPostsList } from "./components/UserPostsList"
-import { applyEffects, effects } from "~/itemEffects"
+import { applyEffects } from "~/itemEffects"
 import { getUserInventory } from "../user/actions"
 
 export const ProfileScreen = async ({ username }: { username: string }) => {

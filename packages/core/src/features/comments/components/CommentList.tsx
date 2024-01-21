@@ -1,13 +1,13 @@
 "use client"
 import React from 'react'
-import { User, Comment } from "packages/db"
-import { Avatar } from "@dir/ui"
+import { Comment } from "packages/db"
 import Link from 'next/link'
 import { CommentPreview } from "./CommentPreview"
 import { applyEffects } from '~/itemEffects'
+import { UserWithInventory } from '~/lib/types'
 
 export type CommentsListProps = {
-  comments: (Comment & {user: User, replyCount: number})[],
+  comments: (Comment & {user: UserWithInventory, replyCount: number})[],
   mainPostSlug: string,
   currentUserId: string
 }

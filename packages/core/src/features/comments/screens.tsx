@@ -6,7 +6,7 @@ import { getCommentsForPost } from "./actions"
 import { CommentList } from "./components/CommentList";
 import { Suspense } from 'react'
 import { checkGuard, getCurrentUser } from "../auth/actions"
-import { Avatar, Divider, RichTextField } from "@dir/ui"
+import { Divider, RichTextField } from "@dir/ui"
 import { ChevronLeftSquare, PenSquare, SeparatorHorizontal } from 'lucide-react'
 import { FullCommentForm } from "./components/FullCommentForm"
 import { applyEffects } from "~/itemEffects"
@@ -78,7 +78,7 @@ export const SingleCommentScreen = async ({ postSlug, commentId, loggedIn }: { p
         <Divider text="Comments" />
 
         <div className="w-full flex flex-col gap-8">
-          {loggedIn && <CommentForm postSlug={comment.post.slug} parentId={comment.id} />}
+          {loggedIn && <CommentForm postSlug={comment.post.slug} parentId={comment.id} user={currentUser} />}
           <Suspense fallback={<div>Loading...</div>}>
             <CommentList comments={comment.replies} mainPostSlug={postSlug} currentUserId={currentUser.id} />
           </Suspense>
@@ -97,7 +97,7 @@ export const Comments = async ({ postSlug, loggedIn }: { loggedIn: boolean, post
   return (
 
       <div className="w-full flex flex-col gap-16">
-        {loggedIn && <CommentForm postSlug={postSlug} parentId={null} />}
+        {loggedIn && <CommentForm postSlug={postSlug} parentId={null} user={currentUser} />}
         <Suspense fallback={<div>Loading...</div>}>
           <CommentList comments={comments} mainPostSlug={postSlug} currentUserId={currentUser.id} />
         </Suspense>

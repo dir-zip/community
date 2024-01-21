@@ -30,6 +30,7 @@ import { authInit } from '../../lib/auth';
 import authDriver from '../../authDriver';
 import { guards } from '../../guards';
 import { redirect } from 'next/navigation';
+import { userInventoryIncludes } from "~/lib/includes";
 
 
 
@@ -158,7 +159,10 @@ export const getCurrentUser = cache(createAction(async ({ session }) => {
   }
 
   const user = await prisma.user.findUnique({
-    where: { id: userId }
+    where: { id: userId },
+    include: {
+      inventory: userInventoryIncludes.user.include.inventory
+    }
   });
 
   if(!user) {
