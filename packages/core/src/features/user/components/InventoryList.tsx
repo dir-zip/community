@@ -23,7 +23,7 @@ export const InventoryList = ({ currentUser }: { currentUser: User }) => {
       <p className="antialiased text-sm">Manage your inventory</p>
       <div>
 
-      <div className="grid grid-cols-3 py-4">
+      <div className="grid grid-cols-2 py-4 gap-4">
         {data?.collection.filter(t => t.type === "ITEM").map((item, i) => {
           return (
             <div key={i} className="flex flex-col gap-4 border rounded p-4">

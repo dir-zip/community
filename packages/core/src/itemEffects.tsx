@@ -86,9 +86,23 @@ const specialAvatar = new EffectClass(
   }
 );
 
+const gradientAvatarBorder = new EffectClass(
+  'gradientAvatarBorder',
+  'avatar',
+  (props) => {
+
+    return (
+      <div className={cn("border-4 border-red-500 rounded-full flex items-center h-10 w-10 justify-center", props.className)}>
+        <Avatar className="w-full h-full" imageUrl={props.avatar as string} fallback={props.username as string} />
+      </div>
+    )
+  }
+);
+
 
 export const effects = [
   rainbowUsername,
+  gradientAvatarBorder,
   specialAvatar
 ]
 

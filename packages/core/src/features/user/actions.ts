@@ -3,6 +3,7 @@ import {z} from 'zod'
 import { createAction } from "~/lib/createAction"
 import {InventoryItem, Item, prisma} from "@dir/db"
 import { revalidatePath } from 'next/cache'
+import { effects } from '~/itemEffects'
 
 export const updateUser = createAction(async({validate}, {avatar, userId}) => {
   await validate(['UPDATE', "user", userId])
@@ -81,12 +82,18 @@ export const equipAndUnequipItem = createAction(async({session}, {itemId}) => {
   const findItem = await prisma.inventoryItem.findFirst({
     where: {
       id: itemId
+    },
+    include: {
+      item: true
     }
   })
 
   if (!findItem) {
     throw new Error('Item not found');
   }
+
+  const itemEffect = findItem.item?.effect;
+  const effectModifier = effects.find(effect => effect.name === itemEffect)?.modifies;
 
   if (findItem.equipped) {
     await prisma.inventoryItem.update({
@@ -108,6 +115,36 @@ export const equipAndUnequipItem = createAction(async({session}, {itemId}) => {
 
     if (sameItemEquipped) {
       throw new Error('Another item with the same ID is already equipped');
+    }
+
+    const effectNamesWithSameModifier = effects
+    .filter(effect => effect.modifies === effectModifier)
+    .map(effect => effect.name);
+
+    const sameModifierEquipped = await prisma.inventoryItem.findMany({
+      where: {
+        equipped: true,
+        item: {
+          effect: {
+            in: effectNamesWithSameModifier
+          }
+        }
+      },
+      include: {
+        item: true
+      }
+    });
+
+
+    for (const itemToUnequip of sameModifierEquipped) { // Corrected variable name
+      await prisma.inventoryItem.update({
+        where: {
+          id: itemToUnequip.id // Corrected reference to the variable
+        },
+        data: {
+          equipped: false
+        }
+      });
     }
 
 
