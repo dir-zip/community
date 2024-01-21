@@ -1,11 +1,30 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
+
+type UserWithInventory = Prisma.UserGetPayload<{
+  include: { inventory: { include: { collection: true } } };
+}>;
+
+type PostWithUserAndInventory = Prisma.PostGetPayload<{
+  include: {
+    user: {
+      include: {
+        inventory: {
+          include: {
+            collection: true
+          }
+        }
+      }
+    }
+  }
+}>
+
 
 const prismaClient = new PrismaClient({
   log:
     process.env.NODE_ENV === "development"
       ? ["query", "error", "warn"]
       : ["error"],
-}).$extends({ 
+}).$extends({
   query: { 
     user: {
       async findFirst({ model, operation, args, query }) {
@@ -80,8 +99,9 @@ const prismaClient = new PrismaClient({
         }}
         return query(args)
       },
-      async findMany({ model, operation, args, query }) {
-        args.include = { ...args.include, user: {
+      async findMany({ model, operation, args, query })  {
+        args.include = { ...args.include, 
+          user: {
           include: {
             inventory: {
               include: {
@@ -97,7 +117,7 @@ const prismaClient = new PrismaClient({
             }
           }
         }}
-        return query(args)
+        return query(args);
       }
     },
     comment: {
@@ -283,7 +303,8 @@ declare global {
   var prisma: ExtendedPrismaClient | undefined;
 }
 
-export const prisma =prismaClient
+export const prisma = prismaClient
+
 
 
 export * from "@prisma/client";

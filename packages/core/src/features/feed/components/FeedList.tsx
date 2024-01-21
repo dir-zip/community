@@ -1,6 +1,6 @@
 "use client"
 import React, { useEffect, useRef, useState } from 'react'
-import { Avatar, Button } from "@dir/ui"
+import {  Button } from "@dir/ui"
 import { PostPreview } from '~/features/posts/components/PostPreview'
 import { Post, User, Comment, Category, Tag } from "@dir/db"
 import { updatePost } from '~/features/posts/actions'
@@ -9,6 +9,8 @@ import { getFeed } from '../actions'
 import { ChevronRight, ChevronLeft } from 'lucide-react'
 import { getAllCategories } from '~/features/admin/screens/categories/actions'
 import { applyEffects } from '~/itemEffects'
+import {  UserWithInventory } from '~/features/types'
+
 
 export const FeedList = ({ currentUser }: { currentUser: User }) => {
   const contentRef = useRef<HTMLDivElement>(null);
@@ -25,7 +27,7 @@ export const FeedList = ({ currentUser }: { currentUser: User }) => {
   let endPage = startPage - 1 + ITEMS_PER_PAGE
   const [pageSize, setPageSize] = useState(ITEMS_PER_PAGE);
   const [categoriesSelect, setCategoriesSelect] = useState<Category[]>([])
-  const [data, setData] = useState<(Post & { user: User, comments: Comment[], category: Category, tags: Tag[] })[]>([])
+  const [data, setData] = useState<(Post & { user: UserWithInventory, comments: Comment[], category: Category, tags: Tag[] })[]>([])
   const [count, setCount] = useState(0)
   const totalPages = Math.ceil(count / ITEMS_PER_PAGE);
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -39,6 +41,7 @@ export const FeedList = ({ currentUser }: { currentUser: User }) => {
     (async () => {
 
       const feed = await getFeed({ skip: (page) * pageSize, take: pageSize })
+
 
       setData(feed.data);
       setCount(feed.count)

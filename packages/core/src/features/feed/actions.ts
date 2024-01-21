@@ -17,6 +17,22 @@ export const getFeed = createAction(async ({ }, params) => {
       title: undefined
     },
     include: {
+      user: {
+        include: {
+          inventory: {
+            include: {
+              collection: {
+                where: {
+                  equipped: true
+                },
+                include: {
+                  item: true
+                }
+              }
+            }
+          }
+        }
+      },
       comments: true,
       category: true,
       tags: true
@@ -26,14 +42,13 @@ export const getFeed = createAction(async ({ }, params) => {
     }
   })
 
-
   const count = await prisma.post.count({
     where: {
       title: undefined
     },
   }); 
 
-  return {data: [...feed], count: count}
+  return {data: feed, count: count}
 
 },  z.object({
   skip: z.number().optional(),
