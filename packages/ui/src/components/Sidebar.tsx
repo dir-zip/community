@@ -35,15 +35,17 @@ export const SiteInfo = ({ siteTitle, memberCount, open }: { open?: boolean, sit
 
 
 
-export const UserInfo = ({ username, avatar, points, open }: { open?: boolean, username: string, avatar: string, points: number }) => {
+export const UserInfo = ({ customUsernameComponent, username, avatar, points, open }: {customUsernameComponent?: React.ReactNode | null, open?: boolean, username: string, avatar: React.ReactNode, points: number }) => {
+
   return (
     <div className={cn("flex bg-primary-700 rounded p-4", open ? "" : "items-center justify-center")}>
-      <Avatar imageUrl={avatar} fallback={username} />
-
-      {open ? <div className="flex px-4 flex-col space-y-2">
-        <a href={`/profile/${username}`}><h3 className="text-sm text-link font-semibold">{username}</h3></a>
-        <p className="text-xs flex space-x-1 items-center"><GoldCoinIcon /><span>{points} points</span></p>
-      </div> : null}
+      {avatar}
+      {open ? (
+        <div className="flex px-4 flex-col space-y-2">
+          <a href={`/profile/${username}`}>{customUsernameComponent || username}</a>
+          <p className="text-xs flex space-x-1 items-center"><GoldCoinIcon /><span>{points} points</span></p>
+        </div>
+      ) : null}
     </div>
   )
 }

@@ -1,6 +1,6 @@
 "use client"
 
-import { Form, TextField } from "../../../../../components/Forms"
+import { Form, SelectField, TextField } from "~/components/Forms"
 
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
@@ -11,8 +11,8 @@ import type { Item } from "packages/db"
 import { CreateItemSchema } from "../schema"
 import { SingleFileUploadField } from "~/features/files/components/SingleFileUpload"
 
-export const ItemForm = ({ item }: { item?: Item }) => {
-  const router = useRouter()
+export const ItemForm = ({ item, effects }: { item?: Item, effects: { key: string, value: string }[] }) => {
+  const router = useRouter();
 
 
 
@@ -57,6 +57,8 @@ export const ItemForm = ({ item }: { item?: Item }) => {
         <TextField type="number" name="price" label="Price" />
         <div className="bg-border-subtle w-full h-px" />
         <SingleFileUploadField name="image" label="Image" />
+        <div className="bg-border-subtle w-full h-px" />
+        <SelectField name="effect" label="Effect" options={effects}/>
       </Form>
     </div>
   )

@@ -3,6 +3,7 @@ import { createAction } from "~/lib/createAction"
 import { prisma } from "packages/db"
 import {z} from 'zod'
 import { revalidatePath } from "next/cache"
+import { userInventoryIncludes } from "~/lib/includes"
 
 export const getComment = createAction(async({}, {commentId}) => {
   const comment = await prisma.comment.findFirst({
@@ -12,7 +13,7 @@ export const getComment = createAction(async({}, {commentId}) => {
     include: {
       replies: {
         include: {
-          user: true
+          user: userInventoryIncludes.user
         },
         orderBy: {
           createdAt: 'desc'
@@ -20,15 +21,16 @@ export const getComment = createAction(async({}, {commentId}) => {
       },
       parent: {
         include: {
-          user: true
+          user: userInventoryIncludes.user
         }
       },
-      user: true,
+      user: userInventoryIncludes.user,
       post: {
         include: {
-          user: true
+          user: userInventoryIncludes.user
         }
       }
+
     }
   })
 
@@ -98,7 +100,7 @@ export const getCommentsForPost = createAction(async({}, {postSlug}) => {
       ]
     },
     include: {
-      user: true
+      user: userInventoryIncludes.user,
     },
     orderBy: {
       createdAt: 'desc'
@@ -118,7 +120,7 @@ export const getCommentsForPost = createAction(async({}, {postSlug}) => {
         parentId: comment.id
       },
       include: {
-        user: true
+        user: userInventoryIncludes.user
       },
       orderBy: {
         createdAt: 'desc'

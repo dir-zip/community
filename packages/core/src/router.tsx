@@ -39,6 +39,7 @@ import { redirect } from 'next/navigation'
 import { FeedScreen } from "./features/feed/screens";
 import { UserInventoryScreen, UserSettingsScreen } from "./features/user/screens";
 import { AdminSidebar } from "./components/ui/AdminSidebar";
+import { getUserInventory } from "./features/user/actions";
 
 const router = new Router();
 
@@ -99,6 +100,9 @@ export async function PageInit<T>({
 
   router.createLayout("/admin/*", async ({ children }) => {
     const user = await getCurrentUser()
+    const inventory = await getUserInventory({
+      userId: user.id
+    })
     const settings = await prisma?.globalSetting.findFirst()
     const memberCount = await prisma?.user.findMany()
     const tags = await prisma?.tag.findMany({
@@ -147,7 +151,8 @@ export async function PageInit<T>({
           user={{
             username: user.username,
             points: user.points,
-            avatar: user.avatar || ""
+            avatar: user.avatar || "",
+            inventory: inventory
           }}
         />
         <div className="flex min-w-0 flex-1">
@@ -172,6 +177,9 @@ export async function PageInit<T>({
 
   router.createLayout("/*", async ({ children }) => {
     const user = await getCurrentUser()
+    const inventory = await getUserInventory({
+      userId: user.id
+    })
     const settings = await prisma?.globalSetting.findFirst()
     const memberCount = await prisma?.user.findMany()
     const tags = await prisma?.tag.findMany({
@@ -213,7 +221,8 @@ export async function PageInit<T>({
                 {
                   username: user.username,
                   points: user.points,
-                  avatar: user.avatar || ""
+                  avatar: user.avatar || "",
+                  inventory: inventory
                 }
               }
             />

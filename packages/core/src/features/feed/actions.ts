@@ -3,6 +3,7 @@
 import { createAction } from "~/lib/createAction"
 import { prisma } from '@dir/db'
 import {z} from 'zod'
+import { userInventoryIncludes } from "~/lib/includes"
 
 export const getFeed = createAction(async ({ }, params) => {
   if (!params) {
@@ -17,7 +18,7 @@ export const getFeed = createAction(async ({ }, params) => {
       title: undefined
     },
     include: {
-      user: true,
+      user: userInventoryIncludes.user,
       comments: true,
       category: true,
       tags: true
@@ -27,14 +28,13 @@ export const getFeed = createAction(async ({ }, params) => {
     }
   })
 
-
   const count = await prisma.post.count({
     where: {
       title: undefined
     },
   }); 
 
-  return {data: [...feed], count: count}
+  return {data: feed, count: count}
 
 },  z.object({
   skip: z.number().optional(),

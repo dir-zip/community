@@ -17,7 +17,7 @@ export const FeedScreen = async () => {
       <div className="flex items-center gap-20 justify-center p-6 flex-col">
         <Suspense>
           <div className="w-full pt-20">
-            <FeedInput username={currentUser.username} avatar={currentUser.avatar || ""} />
+            <FeedInput user={currentUser} />
           </div>
         </Suspense>
         <Divider component={() => {

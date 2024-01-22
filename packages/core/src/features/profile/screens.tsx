@@ -1,21 +1,25 @@
 import { redirect } from "next/navigation"
-import { getInventory, getUser } from "./actions"
-import Link from "next/link"
+import {  getUser } from "./actions"
+
 import { Suspense } from 'react'
-import { cn } from "~/lib/utils"
-import { buttonVariants } from "@/components/Button"
-import { InventoryProfile } from "./components/Inventory"
-import { Avatar } from "@dir/ui"
+
 import { UserPostsList } from "./components/UserPostsList"
+import { applyEffects } from "~/itemEffects"
+import { getUserInventory } from "../user/actions"
+
 export const ProfileScreen = async ({ username }: { username: string }) => {
   const user = await getUser({ username })
   if (!user) {
     return redirect('/404')
   }
 
-  const inventory = await getInventory({
+  const inventory = await getUserInventory({
     userId: user.id
   })
+
+
+  const usernameWithEffect = applyEffects("username", {username: user.username}, inventory);
+  const avatarWithEffect = applyEffects('avatar', {username: user.username, avatar: user.avatar || "", className:"p-2 w-48 h-48"}, inventory);
 
 
   return (
@@ -28,10 +32,12 @@ export const ProfileScreen = async ({ username }: { username: string }) => {
       />
       <div className="xl:mx-auto xl:w-[960px]">
         <div className="flex relative gap-8 w-full justify-start pl-14 bottom-[100px]">
-          <Avatar imageUrl={user.avatar} fallback={user.username} className="w-48 h-48" />
+
+          {avatarWithEffect}
+
           <div className="flex flex-col gap-2 bottom-[-120px] relative">
             <div className="rounded px-4 py-2 bg-primary-900">
-              <span className="text-lg font-bold">{user.username}</span>
+              <span className="text-lg font-bold">{usernameWithEffect}</span>
             </div>
             <div className="flex">
               <div className="rounded px-4 py-2 bg-primary-900">

@@ -5,8 +5,9 @@ import { redirect } from "next/navigation"
 import { Suspense } from 'react'
 import Link from "next/link"
 import { checkGuard } from "~/features/auth/actions"
-import { Avatar, Divider, RichTextField } from "@dir/ui"
+import { Divider, RichTextField } from "@dir/ui"
 import { PenSquare } from 'lucide-react'
+import { applyEffects } from "~/itemEffects"
 export const SinglePost = async ({ slug, loggedIn }: { slug: string, loggedIn: boolean }) => {
   const post = await getSinglePost({ slug: slug })
   const can = await checkGuard({ rule: ["UPDATE", "post", slug] });
@@ -22,8 +23,8 @@ export const SinglePost = async ({ slug, loggedIn }: { slug: string, loggedIn: b
 
         <div className="flex gap-8 w-full">
           <div className="flex flex-col items-center gap-2">
-            <Avatar imageUrl={post.user.avatar} fallback={post.user.username} />
-            <Link href={`/profile/${post.user.username}`}><p className="text-link">{post.user.username}</p></Link>
+            {applyEffects('avatar', {avatar: post.user.avatar || "", username: post.user.username}, post.user.inventory)}
+            <Link href={`/profile/${post.user.username}`}>{applyEffects('username',{username: post.user.username}, post.user.inventory)}</Link>
           </div>
           <div className="w-full bg-primary-900 rounded p-6 border-border-subtle">
             <RichTextField value={post.body} editable={false} onValueChange={undefined} />

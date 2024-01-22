@@ -6,9 +6,10 @@ import { getCommentsForPost } from "./actions"
 import { CommentList } from "./components/CommentList";
 import { Suspense } from 'react'
 import { checkGuard, getCurrentUser } from "../auth/actions"
-import { Avatar, Divider, RichTextField } from "@dir/ui"
+import { Divider, RichTextField } from "@dir/ui"
 import { ChevronLeftSquare, PenSquare, SeparatorHorizontal } from 'lucide-react'
 import { FullCommentForm } from "./components/FullCommentForm"
+import { applyEffects } from "~/itemEffects"
 
 
 
@@ -28,8 +29,8 @@ export const SingleCommentScreen = async ({ postSlug, commentId, loggedIn }: { p
             <div className="flex flex-col w-full gap-4">
               <div className="flex gap-8">
                 <div className="flex flex-col items-center gap-2">
-                  <Avatar imageUrl={comment.parent.user.avatar} fallback={comment.parent.user.username} />
-                  <Link href={`/profile/${comment.parent.user.username}`}><p className="text-link">{comment.parent.user.username}</p></Link>
+                  {applyEffects('avatar', {avatar: comment.parent.user.avatar || "", username: comment.parent.user.username}, comment.parent.user.inventory)}
+                  <Link href={`/profile/${comment.parent.user.username}`}>{applyEffects('username', {username: comment.parent.user.username}, comment.parent.user.inventory)}</Link>
                 </div>
                 <div className="flex items-center gap-8 w-full bg-primary-900 rounded p-6 border-border-subtle">
                   <RichTextField value={comment.parent.body} editable={false} onValueChange={undefined} />
@@ -43,8 +44,8 @@ export const SingleCommentScreen = async ({ postSlug, commentId, loggedIn }: { p
             <div className="flex flex-col gap-4 w-full">
               <div className="flex gap-8">
                 <div className="flex flex-col items-center gap-2">
-                  <Avatar imageUrl={comment.post.user.avatar} fallback={comment.post.user.username} />
-                  <Link href={`/profile/${comment.post.user.username}`}><p className="text-link">{comment.post.user.username}</p></Link>
+                  {applyEffects('avatar', {avatar: comment.post.user.avatar || "", username: comment.post.user.username}, comment.post.user.inventory)}
+                  <Link href={`/profile/${comment.post.user.username}`}>{applyEffects('username', {username: comment.post.user.username}, comment.post.user.inventory)}</Link>
                 </div>
                 <div className="flex items-center gap-8 w-full bg-primary-900 rounded p-6 border-border-subtle">
                   <RichTextField value={comment.post.body} editable={false} onValueChange={undefined} />
@@ -62,8 +63,8 @@ export const SingleCommentScreen = async ({ postSlug, commentId, loggedIn }: { p
       <div className="flex items-center gap-8 justify-center p-6 flex-col">
         <div className="flex gap-8 w-full">
           <div className="flex flex-col items-center gap-2">
-            <Avatar imageUrl={comment.user.avatar} fallback={comment.user.username} />
-            <Link href={`/profile/${comment.user.username}`}><p className="text-link">{comment.user.username}</p></Link>
+            {applyEffects('avatar', {avatar: comment.user.avatar || "", username: comment.user.username}, comment.user.inventory)}
+            <Link href={`/profile/${comment.user.username}`}>{applyEffects('username', {username: comment.user.username}, comment.user.inventory)}</Link>
           </div>
           <div className="w-full bg-primary-900 rounded p-6 border-border-subtle">
             <RichTextField value={comment.body} editable={false} onValueChange={undefined} />
@@ -77,7 +78,7 @@ export const SingleCommentScreen = async ({ postSlug, commentId, loggedIn }: { p
         <Divider text="Comments" />
 
         <div className="w-full flex flex-col gap-8">
-          {loggedIn && <CommentForm postSlug={comment.post.slug} parentId={comment.id} />}
+          {loggedIn && <CommentForm postSlug={comment.post.slug} parentId={comment.id} user={currentUser} />}
           <Suspense fallback={<div>Loading...</div>}>
             <CommentList comments={comment.replies} mainPostSlug={postSlug} currentUserId={currentUser.id} />
           </Suspense>
@@ -96,7 +97,7 @@ export const Comments = async ({ postSlug, loggedIn }: { loggedIn: boolean, post
   return (
 
       <div className="w-full flex flex-col gap-16">
-        {loggedIn && <CommentForm postSlug={postSlug} parentId={null} />}
+        {loggedIn && <CommentForm postSlug={postSlug} parentId={null} user={currentUser} />}
         <Suspense fallback={<div>Loading...</div>}>
           <CommentList comments={comments} mainPostSlug={postSlug} currentUserId={currentUser.id} />
         </Suspense>

@@ -1,13 +1,14 @@
 'use server'
 
-import { prisma, type Post, Tag } from "@dir/db";
+import { prisma, type Post, Tag, Inventory } from "@dir/db";
 import { z } from "zod";
-import { createAction } from '../../lib/createAction';
-import { PostSchema } from "../../features/posts/schemas";
+import { createAction } from '~/lib/createAction';
+import { PostSchema } from "~/features/posts/schemas";
 import { findFreeSlug } from "@/utils";
 import { revalidatePath } from 'next/cache'
 import { prepareArrayField } from "@creatorsneverdie/prepare-array-for-prisma"
 import { triggerAction } from '../actions/actions';
+import { userInventoryIncludes } from "~/lib/includes";
 
 
 export const getCategories = createAction(async () => {
@@ -34,11 +35,15 @@ export const getAllPosts = createAction(async ({}, params) => {
           }
         },
         include: {
-          user: true,
+          user: userInventoryIncludes.user,
           comments: {
             include: {
-              user: true,
-              replies: true
+              user: userInventoryIncludes.user,
+              replies: {
+                include: {
+                  user: userInventoryIncludes.user
+                }
+              }
             },
             orderBy: {
               createdAt: 'desc'
@@ -62,7 +67,8 @@ export const getAllPosts = createAction(async ({}, params) => {
       const allCommentsAndReplies = post.comments.concat(
         post.comments.flatMap(comment => comment.replies.map(reply => ({
           ...reply,
-          user: comment.user,
+          user: {...comment.user, inventory: comment.user.inventory,},
+        
           replies: []
         })))
       );
@@ -80,8 +86,6 @@ export const getAllPosts = createAction(async ({}, params) => {
   take: z.number().optional(),
 }),
 { authed: false })
-
-
 
 export const createPost = createAction(async ({ session }, { title, body, category, tags }) => {
   const createSlug = await findFreeSlug<Post>(
@@ -151,7 +155,7 @@ export const getSinglePost = createAction(async ({ }, { slug }) => {
       slug: slug
     },
     include: {
-      user: true,
+      user: userInventoryIncludes.user,
       category: true,
       tags: true
     }
