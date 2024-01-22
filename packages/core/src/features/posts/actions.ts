@@ -88,6 +88,8 @@ export const getAllPosts = createAction(async ({}, params) => {
 { authed: false })
 
 export const createPost = createAction(async ({ session }, { title, body, category, tags }) => {
+  
+  
   const createSlug = await findFreeSlug<Post>(
     title.toLowerCase().replace(/[^a-z0-9]/g, "-"),
     async (slug: string) =>
@@ -142,6 +144,18 @@ export const createPost = createAction(async ({ session }, { title, body, catego
       ),
     }
   })
+
+  if(post.title === "") {
+    await prisma.post.update({
+      where: {
+        id: post.id
+      },
+      data: {
+        title: post.id,
+        slug: post.id
+      }
+    })
+  }
 
   await triggerAction({ title: "CREATE_POST" })
   revalidatePath('/feed')

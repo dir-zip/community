@@ -38,7 +38,7 @@ export const SiteInfo = ({ siteTitle, memberCount, open }: { open?: boolean, sit
 export const UserInfo = ({ customUsernameComponent, username, avatar, points, open }: {customUsernameComponent?: React.ReactNode | null, open?: boolean, username: string, avatar: React.ReactNode, points: number }) => {
 
   return (
-    <div className={cn("flex bg-primary-700 rounded p-4", open ? "" : "items-center justify-center")}>
+    <div className={cn("flex bg-primary-700 rounded", open ? "p-4" : "p-2 items-center justify-center")}>
       {avatar}
       {open ? (
         <div className="flex px-4 flex-col space-y-2">

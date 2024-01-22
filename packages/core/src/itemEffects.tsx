@@ -52,7 +52,10 @@ export const applyEffects = <T extends modifiers>(
     );
   }
 
-  return property === 'username' ? value.username : null;
+  if(property === 'username') {
+    return <span className="text-link">{value.username}</span>
+  }
+  return null;
 };
 
 
@@ -73,26 +76,28 @@ const rainbowUsername = new EffectClass(
   }
 );
 
-const specialAvatar = new EffectClass(
-  'specialAvatar',
+
+const glitchAvatarBorder = new EffectClass(
+  'glitchAvatarBorder',
   'avatar',
   (props) => {
 
     return (
-      <div className={cn("border-4 border-gradient rounded-full flex items-center h-10 w-10 justify-center", props.className)} style={{borderImageSource: 'url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/652/hearts-border-image.png)', borderImageSlice: '21', borderImageWidth: '30px', borderImageRepeat: 'round'}}>
-        <Avatar className="w-full h-full" imageUrl={props.avatar as string} fallback={props.username as string} />
+      <div className={cn("border-4 border-gradient rounded-full flex items-center h-10 w-10 justify-center", props.className)} style={{borderImage: 'url(https://i.ibb.co/WDknxfN/0-2-1.webp) 329 245 227 297 stretch stretch'}}>
+        <Avatar className="w-full h-full rounded-none" imageUrl={props.avatar as string} fallback={props.username as string} />
       </div>
     )
   }
 );
 
-const gradientAvatarBorder = new EffectClass(
-  'gradientAvatarBorder',
+
+const greenAvatarBorder = new EffectClass(
+  'greenAvatarBorder',
   'avatar',
   (props) => {
 
     return (
-      <div className={cn("border-4 border-red-500 rounded-full flex items-center h-10 w-10 justify-center", props.className)}>
+      <div className={cn("border-4 border-emerald-500 rounded-full flex items-center h-10 w-10 justify-center", props.className)}>
         <Avatar className="w-full h-full" imageUrl={props.avatar as string} fallback={props.username as string} />
       </div>
     )
@@ -102,7 +107,7 @@ const gradientAvatarBorder = new EffectClass(
 
 export const effects = [
   rainbowUsername,
-  gradientAvatarBorder,
-  specialAvatar
+  greenAvatarBorder,
+  glitchAvatarBorder,
 ]
 
