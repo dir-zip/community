@@ -3,6 +3,7 @@
 
 dir.zip is an open source community platform inspired by the 90's and early 2000's forum era. Discourse and communication has become more important than ever and feel the current platforms don't facilitate the current landscape.
 
+![dir_zip](https://github.com/dir-zip/community/assets/3496193/fce16ca9-10fb-4d16-95d2-d741a604f7b0)
 
 
 ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/dir-zip/community/main)
@@ -64,7 +65,7 @@ pnpm dev
 
 ## 🤝 Contributing
 
-Contributions of all types are more than welcome; if you are interested in contributing code, feel free to check out our GitHub [Issues][github-issues-link] and [Projects][github-project-link].
+Contributions of all types are more than welcome; if you are interested in contributing code, feel free to check out our GitHub Issues.
 
 ## 📝 License
 
