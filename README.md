@@ -69,5 +69,5 @@ Contributions of all types are more than welcome; if you are interested in contr
 
 ## 📝 License
 
-Copyright © 2023 [Dillon Raphael](https://twitter.com/dillonraphael).
+Copyright © 2024 [Dillon Raphael](https://twitter.com/dillonraphael).
 This project is licensed under the GNU Affero General Public License v3.0.
