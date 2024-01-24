@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@dir/ui";
+import { cn } from "@/utils";
 
 export interface SelectFieldProps
   extends PropsWithoutRef<JSX.IntrinsicElements["input"]> {
@@ -23,10 +24,11 @@ export interface SelectFieldProps
   outerProps?: PropsWithoutRef<JSX.IntrinsicElements["div"]>;
   labelProps?: ComponentPropsWithoutRef<"label">;
   options: { value: string; key: string }[];
+  fullWidth?: boolean
 }
 
 export const SelectField = forwardRef<HTMLInputElement, SelectFieldProps>(
-  ({ label, description, outerProps, labelProps, name, options, ...props }, _) => {
+  ({ label, fullWidth, description, outerProps, labelProps, name, options, ...props }, _) => {
     const {
       control,
       formState: { isSubmitting, errors },
@@ -35,10 +37,10 @@ export const SelectField = forwardRef<HTMLInputElement, SelectFieldProps>(
     return (
       <div className="flex flex-col space-y-1 w-full" {...outerProps}>
         <label
-          className="text-sm font-medium leading-none flex flex-row items-center"
+          className={cn("text-sm font-medium leading-none flex flex-row items-center", fullWidth ? "gap-4" : null)}
           {...labelProps}
         >
-          <div className="flex flex-col gap-4 w-1/2">
+          <div className={cn("flex flex-col gap-4", fullWidth ? null : 'w-1/2')}>
             <span>{label}</span>
             {description ? <span className="text-xs antialiased text-primary-400">{description}</span> : null}
           </div>

@@ -4,10 +4,9 @@ import { useFormContext, useFieldArray } from "react-hook-form"
 
 import { Action, Condition } from "@dir/db"
 
-import { cn } from "@/utils"
-import { Button, buttonVariants } from "@dir/ui"
+import { Button } from "@dir/ui"
 import { X } from "lucide-react"
-import { SelectField } from "~/components/Forms"
+import { SelectField, TextField } from "~/components/Forms"
 
 
 export interface ConditionInputFieldProps extends PropsWithoutRef<JSX.IntrinsicElements["input"]> {
@@ -43,8 +42,18 @@ export const ConditionInputField = React.forwardRef<HTMLInputElement, ConditionI
             return (
               <div className="mt-2 gap-4 sm:flex sm:justify-between sm:items-end bg-primary-900 rounded p-2 items-center" key={i}>
 
-                <div className="w-full">
-                  <SelectField name={`${props.name}.${i}` as const} placeholder="Select an action that's required" label={`${i+1}. `} options={actions.map(action => { return { value: action.id, key: action.title } })} />
+                <div className="w-full flex items-center gap-4">
+                  <div className="flex-1">
+                    <SelectField
+                      name={`${props.name}.${i}.action` as const}
+                      placeholder="Select an action that's required"
+                      label={`${i + 1}. `}
+                      fullWidth={true}
+                      options={actions.map(action => { return { value: action.id, key: action.title } })} />
+                  </div>
+                  <div>
+                    <TextField type="number" name={`${props.name}.${i}.quantity` as const} label={'Quantity'} />
+                  </div>
                 </div>
 
                 <Button

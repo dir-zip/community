@@ -1,5 +1,5 @@
 import { createAction } from "~/lib/createAction";
-import {prisma} from "@dir/db"
+import { prisma } from "@dir/db"
 
 export const assignBadge = createAction(async({session}) => {
 
@@ -25,65 +25,65 @@ export const assignBadge = createAction(async({session}) => {
       }
     }
   })
-  
-  const conditions = await prisma.condition.findMany({
-    where: {
-      actions: {
-        some: {
-          OR: user?.events.map((e) => {
-            return {
-              id: e.action.id,
-            }
-          }),
-        },
-      },
-    },
+
+  const badges = await prisma.badge.findMany({
     include: {
-      badge: true,
+      conditions: true,
     },
-  })
-  
+  });
 
-  conditions.forEach(async (item) => {
-    // Check if the user already has the item in their inventory
-    const existingItem = await prisma.inventoryItem.findFirst({
-      where: {
-        AND: [
-          { badgeId: item?.badgeId },
-          {type: "BADGE"},
-          { inventoryId: user?.inventory?.id },
-        ],
-      },
+  for (const badge of badges) {
+    const allConditionsMet = badge.conditions.every(condition => {
+      const actionCount = user?.events.filter(event => event.actionId === condition.actionId).length || 0;
+      return actionCount >= condition.quantity;
     });
+  
+    if (allConditionsMet) {
 
-    if(!existingItem) {
-      await prisma.inventoryItem.create({
-        data: {
-          type: "BADGE",
-          badge: {
-            connect: {
-              id: item?.badgeId,
-            },
-          },
-          equipped: true,
-          inventory: {
-            connectOrCreate: {
-              where: {
-                id: user?.inventory?.id,
+
+      const existingItem = await prisma.inventoryItem.findFirst({
+        where: {
+          AND: [
+            { badgeId: badge?.id },
+            {type: "BADGE"},
+            { inventoryId: user?.inventory?.id },
+          ],
+        },
+      });
+
+      if(!existingItem) {
+        await prisma.inventoryItem.create({
+          data: {
+            type: "BADGE",
+            badge: {
+              connect: {
+                id: badge?.id,
               },
-              create: {
-                user: {
-                  connect: {
-                    id: user?.id
+            },
+            equipped: true,
+            inventory: {
+              connectOrCreate: {
+                where: {
+                  id: user?.inventory?.id,
+                },
+                create: {
+                  user: {
+                    connect: {
+                      id: user?.id
+                    }
                   }
                 }
-              }
+              },
             },
           },
-        },
-      })
-    }
+        })
+      }
 
-  })
+
+    }
+  }
+ 
+
+  
 
 }, undefined, {authed: true})

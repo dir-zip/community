@@ -135,7 +135,7 @@ model Badge {
   title       String
   description String
   image       String?
-  condition   Condition?
+  conditions   Condition[]
   unlockedBadges InventoryItem[]
 }
 
@@ -211,9 +211,11 @@ model Condition {
   id          String      @id @default(cuid())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  actions Action[]
+  action      Action @relation(fields: [actionId], references: [id])
+  actionId    String
+  quantity    Int       @default(1)
   badge Badge @relation(fields: [badgeId], references: [id])
-  badgeId String @unique
+  badgeId String
 }
 
 model GlobalSetting {

@@ -44,15 +44,6 @@ const load = async () => {
       }
     })
 
-    await prisma.user.create({
-      data: {
-        email: 'admin',
-        verified: true,
-        role: "ADMIN",
-        points: 100,
-        username: "admin"
-      }
-    })
     console.log('Added data')
   } catch (e) {
     console.error(e)
