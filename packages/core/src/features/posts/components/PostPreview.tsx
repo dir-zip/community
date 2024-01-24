@@ -10,7 +10,7 @@ export type PostPreviewProps = {
   comments: number,
   slug: string,
   userId: string,
-  currentUserId: string
+  currentUserId: string | null
   categories: {title: string, slug: string}[]
   onCategorySelect?: (categorySlug: string) => Promise<void>
 }
@@ -88,7 +88,7 @@ export const PostPreview = (props: PostPreviewProps) => {
 
         <Link href={`/posts/${slug}`} className="text-link text-sm font-medium flex items-center space-x-2"><MessageSquare className='w-4 h-4' /> <span>{comments} replies</span></Link>
 
-        {currentUserId === userId ? <div ref={divRef} className="bg-primary-700 px-2 py-2 rounded flex items-center space-x-8 transition-all duration-500 ease-in-out">
+        {currentUserId && currentUserId === userId ? <div ref={divRef} className="bg-primary-700 px-2 py-2 rounded flex items-center space-x-8 transition-all duration-500 ease-in-out">
           <div className="flex items-center gap-2">
             <Link href={`/posts/${slug}/edit`}><PenSquare className='text-link w-4 cursor-pointer h-4' /></Link>
             {showEdit ? <ChevronsLeft className="w-4 h-4 cursor-pointer"  onClick={toggleShowEdit}/> : <ChevronsRight className="w-4 h-4 cursor-pointer"  onClick={toggleShowEdit}/>}

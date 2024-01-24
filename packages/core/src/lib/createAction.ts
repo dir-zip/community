@@ -71,7 +71,13 @@ export const createAction = <T, P extends z.ZodType<any, any>, S>(
       const session = await _auth.getSession();
 
       if(!session) {
-        redirect('/login');
+        const isPrivate = await prisma.globalSetting.findFirst({
+          include: {
+            features: true
+          }
+        })
+
+        isPrivate?.features.find(f => f.feature === 'private')?.isActive ? redirect('/login') : null
       } else {
         ctx = {
           session,

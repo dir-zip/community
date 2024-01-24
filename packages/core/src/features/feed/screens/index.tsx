@@ -15,11 +15,11 @@ export const FeedScreen = async () => {
 
 
       <div className="flex items-center gap-20 justify-center p-6 flex-col">
-        <Suspense>
+{      currentUser ?  <Suspense>
           <div className="w-full pt-20">
             <FeedInput user={currentUser} />
           </div>
-        </Suspense>
+        </Suspense> : null}
         <Divider component={() => {
           return (
             <div className="px-4">

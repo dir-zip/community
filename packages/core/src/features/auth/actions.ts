@@ -153,6 +153,16 @@ export const verifyUser = createAction(async({session, updateSession}, {token}) 
 
 export const getCurrentUser = cache(createAction(async ({ session }) => {
   const userId = session?.data.userId;
+  const globalSettings = await prisma.globalSetting.findFirst({
+    include: {
+      features: true
+    }
+  });
+  const isSitePrivate = globalSettings?.features.some(feature => feature.feature === 'private' && feature.isActive);
+
+  if (!userId && !isSitePrivate) {
+    return null; // Return null if there is no session and the site is not private
+  }
 
   if (!userId) {
     throw new Error("No user id");

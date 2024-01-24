@@ -22,13 +22,11 @@ export type SidebarProps = Omit<_SidebarProps, 'children'> & {
     avatar: string,
     points: number,
     inventory: (Inventory & { collection: (InventoryItem & { item: Item | null, quantity?: number })[] }) | null
-  }
+  } | null
 }
 
 export const Sidebar = (props: SidebarProps) => {
   const pathname = usePathname()
-  const usernameWithEffect = applyEffects("username",{username: props.user.username}, props.user.inventory);
-  const avatarWithEffect = applyEffects("avatar",{username: props.user.username, avatar: props.user.avatar}, props.user.inventory);
 
   return (
     <SidebarContainer open={props.open}>
@@ -52,15 +50,15 @@ export const Sidebar = (props: SidebarProps) => {
           <TagCloud tags={props.tags || []} />
         </div> : null}
 
-        <UserInfo 
+{     props.user ?  <UserInfo 
           open={props.open} 
           username={props.user.username}
-          customUsernameComponent={usernameWithEffect} 
-          avatar={avatarWithEffect} 
+          customUsernameComponent={applyEffects("username",{username: props.user.username}, props.user.inventory)} 
+          avatar={applyEffects("avatar",{username: props.user.username, avatar: props.user.avatar}, props.user.inventory)} 
           points={props.user.points}
-        />
+        /> : null }
 
-        <NavWrapper open={props.open}>
+        {props.user ? <NavWrapper open={props.open}>
           <Link href={`/settings`} className={`${pathname === '/settings' || pathname.startsWith('/settings/') ? 'bg-primary-900' : null} text-sm rounded px-4 py-2 flex items-center space-x-2`}>
             <Settings className="w-4 h-4" />
             {props.open && <span>Settings</span>}
@@ -72,7 +70,7 @@ export const Sidebar = (props: SidebarProps) => {
             <LogOut className="w-4 h-4" />
             {props.open && <span>Logout</span>}
           </button>
-        </NavWrapper>
+        </NavWrapper> : null }
       </InnerSidebarContainer>
     </SidebarContainer>
   )
