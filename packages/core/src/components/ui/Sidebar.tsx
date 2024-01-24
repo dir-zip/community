@@ -7,6 +7,7 @@ import { logoutAction } from "../../features/auth/actions"
 import { TagCloud } from "./TagCloud"
 import { Inventory, InventoryItem, Item, Tag } from "@dir/db"
 import { applyEffects } from "~/itemEffects"
+import { UserWithInventory } from "~/lib/types"
 
 const _sidebarLinks = [
   { icon: Layers, text: "Feed", link: '/feed' },
@@ -14,15 +15,10 @@ const _sidebarLinks = [
   { icon: Store, text: "Shop", link: '/shop' }
 ]
 
-export type SidebarProps = Omit<_SidebarProps, 'children'> & {
+export type SidebarProps = Omit<_SidebarProps, 'children' | 'user'> & {
   tags?: (Tag & { postCount: number })[],
   open?: boolean,
-  user: {
-    username: string,
-    avatar: string,
-    points: number,
-    inventory: (Inventory & { collection: (InventoryItem & { item: Item | null, quantity?: number })[] }) | null
-  } | null
+  user: UserWithInventory | null
 }
 
 export const Sidebar = (props: SidebarProps) => {
@@ -54,7 +50,7 @@ export const Sidebar = (props: SidebarProps) => {
           open={props.open} 
           username={props.user.username}
           customUsernameComponent={applyEffects("username",{username: props.user.username}, props.user.inventory)} 
-          avatar={applyEffects("avatar",{username: props.user.username, avatar: props.user.avatar}, props.user.inventory)} 
+          avatar={applyEffects("avatar",{username: props.user.username, avatar: props.user.avatar || ""}, props.user.inventory)} 
           points={props.user.points}
         /> : null }
 
