@@ -40,6 +40,8 @@ import { FeedScreen } from "./features/feed/screens";
 import { UserInventoryScreen, UserSettingsScreen } from "./features/user/screens";
 import { AdminSidebar } from "./components/ui/AdminSidebar";
 import { getUserInventory } from "./features/user/actions";
+import { Inventory } from "packages/db";
+import { UserWithInventory } from "./lib/types";
 
 const router = new Router();
 
@@ -99,11 +101,21 @@ export async function PageInit<T>({
 
 
   router.createLayout("/admin/*", async ({ children }) => {
-    const user = await getCurrentUser()
-    const inventory = await getUserInventory({
-      userId: user.id
+    const settings = await prisma?.globalSetting.findFirst({
+      include: {
+        features: true
+      }
     })
-    const settings = await prisma?.globalSetting.findFirst()
+
+    
+    const user = await getCurrentUser()
+    let inventory: Inventory | null = null
+    if(user) {
+      inventory = await getUserInventory({
+        userId: user.id
+      })
+    }
+    
     const memberCount = await prisma?.user.findMany()
     const tags = await prisma?.tag.findMany({
       where: {
@@ -131,9 +143,8 @@ export async function PageInit<T>({
       };
     })) : [];
 
-    const session = await auth.getSession();
-    if (!session) {
-      throw new Error("You do not belong here.")
+    if(!user) {
+      redirect('/login')
     }
 
 
@@ -148,12 +159,7 @@ export async function PageInit<T>({
           memberCount={memberCount!.length}
           tags={tagsWithPostCount}
           open={false}
-          user={{
-            username: user.username,
-            points: user.points,
-            avatar: user.avatar || "",
-            inventory: inventory
-          }}
+          user={user}
         />
         <div className="flex min-w-0 flex-1">
           <div className="ml-20">
@@ -176,11 +182,22 @@ export async function PageInit<T>({
   })
 
   router.createLayout("/*", async ({ children }) => {
-    const user = await getCurrentUser()
-    const inventory = await getUserInventory({
-      userId: user.id
+    const settings = await prisma?.globalSetting.findFirst({
+      include: {
+        features: true
+      }
     })
-    const settings = await prisma?.globalSetting.findFirst()
+
+    
+    const user = await getCurrentUser()
+    let inventory: Inventory | null = null
+    if(user) {
+      inventory = await getUserInventory({
+        userId: user.id
+      })
+    }
+
+
     const memberCount = await prisma?.user.findMany()
     const tags = await prisma?.tag.findMany({
       where: {
@@ -217,14 +234,7 @@ export async function PageInit<T>({
               memberCount={memberCount!.length}
               tags={tagsWithPostCount}
               open={true}
-              user={
-                {
-                  username: user.username,
-                  points: user.points,
-                  avatar: user.avatar || "",
-                  inventory: inventory
-                }
-              }
+              user={user}
             />
           </div>
         </div>
@@ -258,13 +268,12 @@ export async function PageInit<T>({
   })
 
   router.addRoute("/posts/:slug", async ({ slug }) => {
-    const session = await auth.getSession();
-    return <SinglePost slug={slug} loggedIn={session ? true : false} />
+    const currentUser = await getCurrentUser()
+    return <SinglePost slug={slug} loggedIn={currentUser ? true : false} />
   })
 
   router.addRoute("/posts/:slug/comments/:commentId", async ({ slug, commentId }) => {
-    const session = await auth.getSession();
-    return <SingleCommentScreen commentId={commentId} postSlug={slug} loggedIn={session ? true : false} />
+    return <SingleCommentScreen commentId={commentId} postSlug={slug}  />
   })
 
   router.addRoute("/posts/:slug/comments/:commentId/edit", async ({ commentId }) => {
@@ -287,7 +296,7 @@ export async function PageInit<T>({
   router.addRoute('/posts/new', async () => {
     const session = await auth.getSession();
     if (!session) {
-      throw new Error("You do not belong here.")
+      redirect('/login')
     }
 
     return <NewPost />
@@ -296,18 +305,13 @@ export async function PageInit<T>({
   router.addRoute('/posts/:slug/edit', async ({ slug }) => {
     const session = await auth.getSession();
     if (!session) {
-      throw new Error("You do not belong here.")
+      redirect('/login')
     }
 
     return <EditPost slug={slug} />
   })
 
   router.addRoute('/shop', async () => {
-    const session = await auth.getSession();
-    if (!session) {
-      throw new Error("You do not belong here.")
-    }
-
     return <ShopPage />
   })
 

@@ -11,7 +11,7 @@ export type CommentPreviewProps = {
   mainPostSlug: string,
   slug: string,
   userId: string,
-  currentUserId: string
+  currentUserId: string | null
 }
 
 export const CommentPreview = (props: CommentPreviewProps) => {

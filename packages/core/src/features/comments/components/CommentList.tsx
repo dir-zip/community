@@ -9,7 +9,7 @@ import { UserWithInventory } from '~/lib/types'
 export type CommentsListProps = {
   comments: (Comment & {user: UserWithInventory, replyCount: number})[],
   mainPostSlug: string,
-  currentUserId: string
+  currentUserId: string | null
 }
 export const CommentList = ({comments, mainPostSlug, currentUserId}: CommentsListProps) => {
   return (
@@ -25,7 +25,7 @@ export const CommentList = ({comments, mainPostSlug, currentUserId}: CommentsLis
             content={comment.body} 
             replies={comment.replyCount} 
             mainPostSlug={mainPostSlug} 
-            slug={comment.id} 
+            slug={comment.id}   
             userId={comment.userId} 
             currentUserId={currentUserId} 
           />

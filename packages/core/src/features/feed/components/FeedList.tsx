@@ -12,7 +12,7 @@ import { applyEffects } from '~/itemEffects'
 import {  UserWithInventory } from '~/lib/types'
 
 
-export const FeedList = ({ currentUser }: { currentUser: User }) => {
+export const FeedList = ({ currentUser }: { currentUser: User | null }) => {
   const contentRef = useRef<HTMLDivElement>(null);
 
   const ITEMS_PER_PAGE = 10
@@ -70,7 +70,7 @@ export const FeedList = ({ currentUser }: { currentUser: User }) => {
               slug={feed.slug}
               category={feed.category.slug}
               comments={feed.comments.length}
-              currentUserId={currentUser.id}
+              currentUserId={currentUser?.id || null}
               userId={feed.user.id}
               categories={categoriesSelect.map((c) => { return { title: c.title, slug: c.slug } })}
               onCategorySelect={async (slug) => {
