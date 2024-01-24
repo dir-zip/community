@@ -35,22 +35,29 @@ export const getAllBadges = createAction(
 );
 
 
-export const createBadge = createAction(async({}, {title, description, image, condition}) => {
+export const createBadge = createAction(async({}, {title, description, image, conditions}) => {
+  const preparedConditions = prepareArrayField(
+    conditions,
+    [], // The initial array is empty for a new badge
+    (item) => ({
+
+        action: {
+          connect: {
+            id: item.action
+          }
+        },
+        quantity: item.quantity
+      
+    })
+  );
+
 
   const badge = await prisma.badge.create({
     data: {
       title,
       description,
       image,
-      condition: {
-        create: {
-          actions: prepareArrayField(
-            condition.map((c) => {
-              return { id: c }
-            })
-          ),
-        }
-      }
+      conditions: preparedConditions
     }
   })
 
@@ -65,9 +72,12 @@ export const getSingleBadge = createAction(async({}, {id}) => {
       id
     },
     include: {
-      condition: {
+      conditions: {
         include: {
-          actions: true
+          action: true
+        },
+        orderBy: {
+          id: 'asc'
         }
       }
     }
@@ -89,34 +99,39 @@ export const updateBadge = createAction(async ({}, params) => {
       id: params.id
     },
     include: {
-      condition: {
+      conditions: {
         include: {
-          actions: true
+          action: true
+        },
+        orderBy: {
+          id: 'asc'
         }
       }
     }
   })
 
-  const mappedActions = prepareArrayField(
-    params.condition.map((c) => {
-      return { id: c }
-    }) || [],
-    findBadge?.condition?.actions,
+
+  const preparedConditions = prepareArrayField(
+    params.conditions,
+    findBadge?.conditions,
     (item) => ({
-      ...item,
+      action: {
+        connect: {
+          id: item.action
+        }
+      },
+      quantity: item.quantity
     }),
-    { removedItemsMethod: "disconnect" }
-  )
+    { removedItemsMethod: 'delete' }
+  );
+
+
 
   const badge = await prisma.badge.update({
     where: { id: params.id },
     data: { 
       ...params, 
-      condition: {
-        update: {
-          actions: mappedActions,
-        },
-      }
+      conditions: preparedConditions
     }
   });
 
@@ -126,25 +141,21 @@ export const updateBadge = createAction(async ({}, params) => {
 }), {authed: true});
 
 export const deleteBadge = createAction(async({}, params) => {
-  const condition = await prisma.condition.findFirst({
+  // Delete all conditions associated with the badge
+  await prisma.condition.deleteMany({
     where: {
       badgeId: params.id,
     }
-  })
+  });
 
-  await prisma.condition.delete({
-    where: {
-      id: condition?.id,
-    }
-  })
-
+  // Then delete the badge itself
   const badge = await prisma.badge.delete({
     where: {
       id: params.id
     }
-  })
+  });
 
-  return badge
+  return badge;
 
 
 }, z.object({

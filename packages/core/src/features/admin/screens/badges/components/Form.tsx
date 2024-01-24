@@ -1,6 +1,6 @@
 "use client"
 
-import { Form, TextField } from "../../../../../components/Forms"
+import { Form, TextField } from "~/components/Forms"
 
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
@@ -10,11 +10,10 @@ import { createBadge, deleteBadge, updateBadge } from "../actions"
 import type { Action, Badge, Condition } from "packages/db"
 import { CreateBadgeSchema } from "../schema"
 import { ConditionInputField } from "./ConditionInputField"
-import SingleFileUploadField from "../../../../../features/files/components/SingleFileUpload"
-import { cn } from "@/utils"
-import { buttonVariants } from "@/components/Button"
+import SingleFileUploadField from "~/features/files/components/SingleFileUpload"
 
-export const BadgeForm = ({ badge, actions }: { badge?: Badge & { condition: (Condition & { actions: Action[] }) | null }, actions: Action[] }) => {
+
+export const BadgeForm = ({ badge, actions }: { badge?: Badge & { conditions: (Condition & { action: Action })[] | null }, actions: Action[] }) => {
   const router = useRouter()
 
   return (
@@ -25,7 +24,7 @@ export const BadgeForm = ({ badge, actions }: { badge?: Badge & { condition: (Co
         initialValues={badge && {
           ...badge,
           image: badge.image || undefined,
-          condition: badge.condition?.actions.map((c) => c.id)
+          conditions: badge.conditions?.map((c) => ({ action: c.action.id, quantity: c.quantity })) || []
         }}
         onSubmit={async (values) => {
 
@@ -60,7 +59,7 @@ export const BadgeForm = ({ badge, actions }: { badge?: Badge & { condition: (Co
         <div className="bg-border-subtle w-full h-px" />
         <SingleFileUploadField name="image" label="Image" />
         <div className="bg-border-subtle w-full h-px" />
-        <ConditionInputField name="condition" label="Condition" actions={actions} />
+        <ConditionInputField name="conditions" label="Conditions" actions={actions} />
       </Form>
     </div>
   )
