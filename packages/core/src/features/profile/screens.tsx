@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation"
-import {  getUser } from "./actions"
+import { getUser } from "./actions"
 
 import { Suspense } from 'react'
 
@@ -18,8 +18,8 @@ export const ProfileScreen = async ({ username }: { username: string }) => {
   })
 
 
-  const usernameWithEffect = applyEffects("username", {username: user.username}, inventory);
-  const avatarWithEffect = applyEffects('avatar', {username: user.username, avatar: user.avatar || "", className:"p-2 w-48 h-48"}, inventory);
+  const usernameWithEffect = applyEffects("username", { username: user.username }, inventory);
+  const avatarWithEffect = applyEffects('avatar', { username: user.username, avatar: user.avatar || "", className: "p-2 w-48 h-48 text-5xl" }, inventory);
 
 
   return (

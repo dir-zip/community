@@ -57,6 +57,7 @@ export const ItemsTable = () => {
         return (
           <Link
             href={`/admin/items/${info.getValue()}`}
+            className="text-link"
           >
             {info.getValue()}
           </Link>

@@ -60,6 +60,7 @@ const UsersTable = () => {
         return (
           <Link
             href={`/admin/users/${info.getValue()}`}
+            className="text-link"
           >
             {info.getValue()}
           </Link>

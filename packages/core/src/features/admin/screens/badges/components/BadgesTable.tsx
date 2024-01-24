@@ -57,6 +57,7 @@ export const BadgesTable = () => {
         return (
           <Link
             href={`/admin/badges/${info.getValue()}`}
+            className="text-link"
           >
             {info.getValue()}
           </Link>

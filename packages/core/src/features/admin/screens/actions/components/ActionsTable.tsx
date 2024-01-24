@@ -57,6 +57,7 @@ export const ActionsTable = () => {
         return (
           <Link
             href={`/admin/actions/${info.getValue()}`}
+            className="text-link"
           >
             {info.getValue()}
           </Link>

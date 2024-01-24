@@ -85,6 +85,7 @@ const ResourceTable = ({ resource, schema }: { resource: string, schema: Resourc
         return (
           <Link
             href={`/admin/${resource}/${info.getValue()}`}
+            className="text-link"
           >
             {info.getValue()}
           </Link>
@@ -98,6 +99,7 @@ const ResourceTable = ({ resource, schema }: { resource: string, schema: Resourc
         return (
           <Link
             href={`/admin/users/${info.getValue()}`}
+            className="text-link"
           >
             {info.getValue()}
           </Link>

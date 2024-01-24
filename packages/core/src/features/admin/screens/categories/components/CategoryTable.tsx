@@ -57,6 +57,7 @@ export const CategoryTable = () => {
         return (
           <Link
             href={`/admin/categories/${info.getValue()}`}
+            className="text-link"
           >
             {info.getValue()}
           </Link>
