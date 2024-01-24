@@ -46,13 +46,20 @@ export const Sidebar = (props: SidebarProps) => {
           <TagCloud tags={props.tags || []} />
         </div> : null}
 
-{     props.user ?  <UserInfo 
+        { props.user ?  <UserInfo 
           open={props.open} 
           username={props.user.username}
           customUsernameComponent={applyEffects("username",{username: props.user.username}, props.user.inventory)} 
           avatar={applyEffects("avatar",{username: props.user.username, avatar: props.user.avatar || ""}, props.user.inventory)} 
           points={props.user.points}
-        /> : null }
+        /> : <div className="flex bg-primary-700 rounded p-4 flex-col gap-2">
+          <p className="text-xs">You're not logged in</p>
+          <div className="flex flex-row gap-1 text-sm">
+            <Link href={'/login'}><span className="text-link">Login</span></Link>
+            <span>Or</span>
+            <Link href={'/signup'}><span className="text-link">Create an account</span></Link>
+          </div>
+        </div> }
 
         {props.user ? <NavWrapper open={props.open}>
           <Link href={`/settings`} className={`${pathname === '/settings' || pathname.startsWith('/settings/') ? 'bg-primary-900' : null} text-sm rounded px-4 py-2 flex items-center space-x-2`}>

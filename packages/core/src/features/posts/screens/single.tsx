@@ -10,7 +10,11 @@ import { PenSquare } from 'lucide-react'
 import { applyEffects } from "~/itemEffects"
 export const SinglePost = async ({ slug, loggedIn }: { slug: string, loggedIn: boolean }) => {
   const post = await getSinglePost({ slug: slug })
-  const can = await checkGuard({ rule: ["UPDATE", "post", slug] });
+  let can = false
+  if(loggedIn) {
+    can = await checkGuard({ rule: ["UPDATE", "post", slug] });
+  }
+
   if (!post) {
     redirect('/404')
   }
@@ -29,7 +33,7 @@ export const SinglePost = async ({ slug, loggedIn }: { slug: string, loggedIn: b
           <div className="w-full bg-primary-900 rounded p-6 border-border-subtle">
             <RichTextField value={post.body} editable={false} onValueChange={undefined} />
             <div className="w-full flex justify-end">
-              {can && <Link href={`/posts/${slug}/edit`}><PenSquare className='text-link w-4 cursor-pointer h-4' /></Link>}
+              {loggedIn && can && <Link href={`/posts/${slug}/edit`}><PenSquare className='text-link w-4 cursor-pointer h-4' /></Link>}
             </div>
           </div>
         </div>
@@ -38,7 +42,7 @@ export const SinglePost = async ({ slug, loggedIn }: { slug: string, loggedIn: b
         <Divider text="Comments" />
 
         <Suspense fallback={<div>Loading...</div>}>
-          <Comments postSlug={post.slug} loggedIn={loggedIn} />
+          <Comments postSlug={post.slug} />
         </Suspense>
       </div>
     </div>

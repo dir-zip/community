@@ -1,8 +1,9 @@
 
+import { getCurrentUser } from "../auth/actions"
 import { ListItems } from "./components/ListItems"
 
 export const ShopPage = async () => {
-
+  const currentUser = await getCurrentUser()
   return (
     <div className="overflow-auto xl:mx-auto xl:w-[960px]">
       <div className="py-6">
@@ -13,7 +14,7 @@ export const ShopPage = async () => {
           </div>
         </div>
 
-        <ListItems />
+        <ListItems loggedIn={currentUser ? true : false} />
       </div>
     </div>
   )

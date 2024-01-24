@@ -13,10 +13,15 @@ import { applyEffects } from "~/itemEffects"
 
 
 
-export const SingleCommentScreen = async ({ postSlug, commentId, loggedIn }: { postSlug: string, commentId: string, loggedIn: boolean }) => {
+export const SingleCommentScreen = async ({ postSlug, commentId }: { postSlug: string, commentId: string }) => {
   const comment = await getComment({ commentId: commentId })
   const currentUser = await getCurrentUser()
-  const can = await checkGuard({ rule: ["UPDATE", "comment", commentId] });
+
+  let can = false
+  if(currentUser) {
+    can = await checkGuard({ rule: ["UPDATE", "comment", commentId] });
+  }
+
   if (!comment) {
     redirect('/404')
   }
@@ -78,9 +83,9 @@ export const SingleCommentScreen = async ({ postSlug, commentId, loggedIn }: { p
         <Divider text="Comments" />
 
         <div className="w-full flex flex-col gap-8">
-          {loggedIn && <CommentForm postSlug={comment.post.slug} parentId={comment.id} user={currentUser} />}
+          {currentUser && <CommentForm postSlug={comment.post.slug} parentId={comment.id} user={currentUser} />}
           <Suspense fallback={<div>Loading...</div>}>
-            <CommentList comments={comment.replies} mainPostSlug={postSlug} currentUserId={currentUser.id} />
+            <CommentList comments={comment.replies} mainPostSlug={postSlug} currentUserId={currentUser?.id || null} />
           </Suspense>
         </div>
       </div>
@@ -90,16 +95,16 @@ export const SingleCommentScreen = async ({ postSlug, commentId, loggedIn }: { p
 
 
 
-export const Comments = async ({ postSlug, loggedIn }: { loggedIn: boolean, postSlug: string }) => {
+export const Comments = async ({ postSlug }: {  postSlug: string }) => {
   const comments = await getCommentsForPost({ postSlug: postSlug })
   const currentUser = await getCurrentUser()
 
   return (
 
       <div className="w-full flex flex-col gap-16">
-        {loggedIn && <CommentForm postSlug={postSlug} parentId={null} user={currentUser} />}
+        {currentUser && <CommentForm postSlug={postSlug} parentId={null} user={currentUser} />}
         <Suspense fallback={<div>Loading...</div>}>
-          <CommentList comments={comments} mainPostSlug={postSlug} currentUserId={currentUser.id} />
+          <CommentList comments={comments} mainPostSlug={postSlug} currentUserId={currentUser?.id || null} />
         </Suspense>
       </div>
 

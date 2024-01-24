@@ -11,7 +11,7 @@ import { getAllItems } from "~/features/items/actions";
 import { ChevronLeft, ChevronRight, Check } from "lucide-react"
 import { GoldCoinIcon } from "@/icons/GoldCoin";
 
-export const ListItems = () => {
+export const ListItems = ({loggedIn}: {loggedIn: boolean}) => {
 
   const ITEMS_PER_PAGE = 20
   const searchParams = useSearchParams()
@@ -67,7 +67,7 @@ export const ListItems = () => {
                   <h3 className="text-lg antialiased">{item.title}</h3>
                   <p className="antialiased text-md">{item.description}</p>
                   <div className="py-4">
-                    <button className={cn(buttonVariants({ variant: "default" }))} onClick={async (e) => {
+                    {loggedIn ? <button className={cn(buttonVariants({ variant: "default" }))} onClick={async (e) => {
                       e.preventDefault()
                       toast.promise(
                         new Promise(async (resolve, reject) => {
@@ -103,7 +103,7 @@ export const ListItems = () => {
       />
     )}
   </div>
-                    </button>
+                    </button> : null}
                   </div>
                 </div>
               </div>

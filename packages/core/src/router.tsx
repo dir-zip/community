@@ -268,13 +268,12 @@ export async function PageInit<T>({
   })
 
   router.addRoute("/posts/:slug", async ({ slug }) => {
-    const session = await auth.getSession();
-    return <SinglePost slug={slug} loggedIn={session ? true : false} />
+    const currentUser = await getCurrentUser()
+    return <SinglePost slug={slug} loggedIn={currentUser ? true : false} />
   })
 
   router.addRoute("/posts/:slug/comments/:commentId", async ({ slug, commentId }) => {
-    const session = await auth.getSession();
-    return <SingleCommentScreen commentId={commentId} postSlug={slug} loggedIn={session ? true : false} />
+    return <SingleCommentScreen commentId={commentId} postSlug={slug}  />
   })
 
   router.addRoute("/posts/:slug/comments/:commentId/edit", async ({ commentId }) => {
@@ -297,7 +296,7 @@ export async function PageInit<T>({
   router.addRoute('/posts/new', async () => {
     const session = await auth.getSession();
     if (!session) {
-      throw new Error("You do not belong here.")
+      redirect('/login')
     }
 
     return <NewPost />
@@ -306,18 +305,13 @@ export async function PageInit<T>({
   router.addRoute('/posts/:slug/edit', async ({ slug }) => {
     const session = await auth.getSession();
     if (!session) {
-      throw new Error("You do not belong here.")
+      redirect('/login')
     }
 
     return <EditPost slug={slug} />
   })
 
   router.addRoute('/shop', async () => {
-    const session = await auth.getSession();
-    if (!session) {
-      throw new Error("You do not belong here.")
-    }
-
     return <ShopPage />
   })
 

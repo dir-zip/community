@@ -26,7 +26,7 @@ export const updateUser = createAction(async({validate}, {avatar, userId}) => {
 
 
 export const getUserInventory = createAction(async({validate}, { userId}) => {
-  await validate(['UPDATE', "user", userId])
+  // await validate(['UPDATE', "user", userId])
 
   const inventory = await prisma.inventory.findFirst({
     where: {
