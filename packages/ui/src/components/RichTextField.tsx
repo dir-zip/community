@@ -1,4 +1,4 @@
-import React, { ForwardedRef, useEffect, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { useEditor, EditorContent, Editor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import TextStyle from '@tiptap/extension-text-style'
@@ -11,6 +11,9 @@ import ts from 'highlight.js/lib/languages/typescript'
 import html from 'highlight.js/lib/languages/xml'
 import 'highlight.js/styles/github.css';
 import Placeholder from '@tiptap/extension-placeholder'
+import { EditorImageUpload } from '@/editorPlugins/Image'
+
+
 
 const lowlight = createLowlight(common)
 lowlight.register('html', html)
@@ -19,11 +22,12 @@ lowlight.register('js', js)
 lowlight.register('css', css)
 
 export const RichTextField = (
-  { value, placeholder, onValueChange, editable = true }:
-    { value: string, onValueChange?: (e: string) => void, editable?: boolean, placeholder?: string }
+  { value, placeholder, onValueChange, editable = true, imageUploadUrl }:
+    { value: string, onValueChange?: (e: string) => void, editable?: boolean, placeholder?: string, imageUploadUrl?: string }
 ) => {
 
   const editorRef = useRef<Editor | null>(null);
+
 
   useEffect(() => {
     if (value === null && editorRef.current) {
@@ -49,6 +53,9 @@ export const RichTextField = (
         .configure({ lowlight }),
       Placeholder.configure({
         placeholder: placeholder
+      }),
+      EditorImageUpload.configure({
+        uploadUrl: imageUploadUrl
       })
     ],
     editorProps: {

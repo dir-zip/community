@@ -13,12 +13,12 @@ export const FancyEditorField = ({ name, label }: { name: string, label?: string
       <label
         className="text-sm font-medium leading-none flex w-full flex-row items-center"
       >
-        {label ? <span className="w-1/2">{label}</span> : null}
+        {label ? <span className="w-1/2 self-start">{label}</span> : null}
         <Controller
           name={name}
           control={control}
           render={({ field }) => (
-            <RichTextField value={field.value} placeholder="Write something spectacular..." onValueChange={(e) => field.onChange(e)} />
+            <RichTextField value={field.value} placeholder="Write something spectacular..." imageUploadUrl={`${process.env.NEXT_PUBLIC_APP_URL}/api/files/upload`} onValueChange={(e) => field.onChange(e)} />
           )}
         />
       </label>

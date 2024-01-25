@@ -20,6 +20,7 @@ export class FileUploader {
     this.allowedFileTypes = args?.allowedFileTypes;
     this.s3Client = new S3Client({
       endpoint: process.env.S3_ENDPOINT,
+      region: process.env.S3_REGION || "us-east-1",
       forcePathStyle: true,
       credentials: {
         accessKeyId: process.env.S3_ACCESS_KEY as string,
