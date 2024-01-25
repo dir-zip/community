@@ -11,7 +11,7 @@ import ts from 'highlight.js/lib/languages/typescript'
 import html from 'highlight.js/lib/languages/xml'
 import 'highlight.js/styles/github.css';
 import Placeholder from '@tiptap/extension-placeholder'
-import { EditorImageUpload } from '@/editorPlugins/Image'
+import { EditorImageUpload, imageUploadPluginKey } from '@/editorPlugins/Image'
 
 
 
@@ -22,9 +22,10 @@ lowlight.register('js', js)
 lowlight.register('css', css)
 
 export const RichTextField = (
-  { value, placeholder, onValueChange, editable = true, imageUploadUrl }:
-    { value: string, onValueChange?: (e: string) => void, editable?: boolean, placeholder?: string, imageUploadUrl?: string }
+  { value, placeholder, onValueChange, editable = true, imageUploadUrl, onImageRemove }:
+    { value: string, onValueChange?: (e: string) => void, editable?: boolean, placeholder?: string, imageUploadUrl?: string, onImageRemove?: (images: string[]) => Promise<void> }
 ) => {
+  
 
   const editorRef = useRef<Editor | null>(null);
 
@@ -55,7 +56,8 @@ export const RichTextField = (
         placeholder: placeholder
       }),
       EditorImageUpload.configure({
-        uploadUrl: imageUploadUrl
+        uploadUrl: imageUploadUrl,
+        removeImage: onImageRemove
       })
     ],
     editorProps: {
@@ -66,6 +68,11 @@ export const RichTextField = (
     editable,
     content: value,
     onUpdate({ editor }) {
+      const imageUploadState = imageUploadPluginKey.getState(editor.state);
+
+      if(imageUploadState.removedImages && imageUploadState.removedImages.length > 0) {
+        onImageRemove!(imageUploadState.removedImages)
+      }
       onValueChange!(editor.getHTML())
       editorRef.current = editor as Editor;
     }

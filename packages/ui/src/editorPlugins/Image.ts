@@ -1,20 +1,20 @@
 import { Node } from '@tiptap/core'
 import { NodeType } from '@tiptap/pm/model';
 import { EditorState, Plugin, PluginKey, TextSelection, Transaction } from '@tiptap/pm/state'
+import { ReplaceAroundStep, ReplaceStep } from '@tiptap/pm/transform';
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
     imageUpload: {
-      /**
-       * Insert an image at the current position or a specific position.
-       */
       insertImage: (options: { src: string, alt?: string, title?: string }) => ReturnType,
     }
   }
 }
 
-
-
+interface ImageUploadPluginState {
+  removedImages: string[];
+}
+export const imageUploadPluginKey = new PluginKey('imageUpload');
 
 export const EditorImageUpload = Node.create(({
   name: 'imageUpload',
@@ -24,7 +24,8 @@ export const EditorImageUpload = Node.create(({
   addOptions() {
     return {
       ...this.parent?.(),
-      uploadUrl: ""
+      uploadUrl: "",
+      removeImage: async (src: string) => {}
     }
   },
   addAttributes: () => ({
@@ -72,8 +73,8 @@ export const EditorImageUpload = Node.create(({
     };
   },
   addProseMirrorPlugins() {
-    const plugin = new Plugin({
-      key: new PluginKey('imageUpload'),
+    const plugin = new Plugin<ImageUploadPluginState>({
+      key: imageUploadPluginKey,
       props: {
         handleDOMEvents: {
           drop: (view, event) => {
@@ -93,6 +94,8 @@ export const EditorImageUpload = Node.create(({
             }
 
             images.forEach(async (image) => {
+    
+              
               try {
                 const formData = new FormData();
                 formData.append('file', image); // 'file' is the key your server expects
@@ -103,8 +106,8 @@ export const EditorImageUpload = Node.create(({
                   body: formData // Send the FormData object
                 });
                 const res = await uploadResponse.json();
-    
-        
+              
+
                 const { tr } = view.state;
         
                 const imageNodeType = tr.doc.type.schema.nodes.imageUpload;
@@ -123,6 +126,48 @@ export const EditorImageUpload = Node.create(({
             return true
           },
         },
+      },
+      state: {
+        init: (): ImageUploadPluginState => ({ removedImages: [] }),
+        apply: (tr, value: ImageUploadPluginState): ImageUploadPluginState => {
+          const removedImages = tr.getMeta('imageUpload') as string[] | undefined;
+
+          if (removedImages) {
+            return {
+              ...value,
+              removedImages: [...value.removedImages, ...removedImages],
+            };
+          }
+          return value;
+        },
+      },
+      appendTransaction: (transactions, oldState, newState) => {
+        let imagesRemoved: string[] = [];
+  
+        transactions.forEach((transaction) => {
+
+          transaction.steps.forEach((step) => {
+            if (step instanceof ReplaceStep || step instanceof ReplaceAroundStep) {
+              step.getMap().forEach((oldStart, oldEnd) => {
+                oldState.doc.nodesBetween(oldStart, oldEnd, (node, pos) => {
+                  if (node.type.name === 'imageUpload') {
+                    const newNode = newState.doc.nodeAt(pos);
+                    if (!newNode || newNode.type.name !== 'imageUpload') {
+                      // Image node was deleted, capture the src attribute
+                      imagesRemoved.push(node.attrs.src);
+                    }
+                  }
+                });
+              });
+            }
+          });
+        });
+
+        if (imagesRemoved.length > 0) {
+          // Set the metadata with the removed images' sources
+          return newState.tr.setMeta('imageUpload', imagesRemoved);
+        }
+        return null;
       },
     })
 
