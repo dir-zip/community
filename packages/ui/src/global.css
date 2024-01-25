@@ -95,5 +95,5 @@
 }
 
 .tiptap img[src] {
-  @apply p-4 bg-primary-800 rounded max-w-lg;
+  @apply p-4 bg-primary-400 rounded max-w-lg;
 }
