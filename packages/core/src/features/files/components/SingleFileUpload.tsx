@@ -28,7 +28,7 @@ export const SingleFileUploadField = React.forwardRef<
   } = useFormContext();
 
   return (
-    <div className="w-full flex flex-row items-center">
+    <div className="w-full flex gap-4 flex-row items-center">
       <label className="flex flex-col gap-4 w-1/2">
         <span className="text-sm font-medium leading-none">{label}</span>
         {description ? <span className="text-xs antialiased text-primary-400">{description}</span> : null}

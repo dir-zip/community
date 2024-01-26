@@ -19,7 +19,7 @@ export const ProfileScreen = async ({ username }: { username: string }) => {
 
 
   const usernameWithEffect = applyEffects("username", { username: user.username }, inventory);
-  const avatarWithEffect = applyEffects('avatar', { username: user.username, avatar: user.avatar || "", className: "p-2 w-48 h-48 text-5xl" }, inventory);
+  const avatarWithEffect = applyEffects('avatar', { username: user.username, avatar: user.avatar || "", className: "text-5xl w-48 h-48" }, inventory);
 
 
   return (

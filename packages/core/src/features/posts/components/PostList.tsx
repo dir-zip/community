@@ -114,7 +114,7 @@ export const PostList = ({ posts }: PostListProps) => {
                 {/* 
                 //TODO: Add a field to post to set as pinned by admin only
                 <Pin className="transform rotate-45 w-4 h-4 absolute top-2 left-2" /> */}
-                <div className="flex gap-4 mr-4 min-w-0">
+                <div className="flex gap-4 mr-4 flex-[2_2_0%] min-w-0">
                   {applyEffects('avatar', {avatar: post.user.avatar || "", username: post.user.username}, post.user.inventory)}
                   <div className="flex flex-col">
                     <Link href={`/posts/${post.slug}`}><span className="text-link font-semibold">{post.title}</span></Link>

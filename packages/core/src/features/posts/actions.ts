@@ -104,7 +104,7 @@ export const createPost = createAction(async ({ session }, { title, body, catego
 
   const newTags = await Promise.all(
     tags.map(async (tagSlug) => {
-      tagSlug = tagSlug.trim(); // Trim whitespace
+      tagSlug = tagSlug.trim().replace(/^#/, '') // Trim whitespace
 
       if (!tagSlug) return null; // Skip empty strings
 
@@ -198,7 +198,7 @@ export const updatePost = createAction(async ({ validate, session }, { slug, dat
 
   const newTags = await Promise.all(
     data.tags.map(async (tagSlug) => {
-      tagSlug = tagSlug.trim(); // Trim whitespace
+      tagSlug = tagSlug.trim().replace(/^#/, '') // Trim whitespace
 
       if (!tagSlug) return null; // Skip empty strings
 
