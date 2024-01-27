@@ -6,6 +6,9 @@ import { Suspense } from 'react'
 import { UserPostsList } from "./components/UserPostsList"
 import { applyEffects } from "~/itemEffects"
 import { getUserInventory } from "../user/actions"
+import { getUserBadges } from './actions'
+
+import { HoverCard } from "@dir/ui"
 
 export const ProfileScreen = async ({ username }: { username: string }) => {
   const user = await getUser({ username })
@@ -17,6 +20,7 @@ export const ProfileScreen = async ({ username }: { username: string }) => {
     userId: user.id
   })
 
+  const badges = await getUserBadges({ userId: user.id })
 
   const usernameWithEffect = applyEffects("username", { username: user.username }, inventory);
   const avatarWithEffect = applyEffects('avatar', { username: user.username, avatar: user.avatar || "", className: "text-5xl w-48 h-48" }, inventory);
@@ -24,7 +28,7 @@ export const ProfileScreen = async ({ username }: { username: string }) => {
 
   return (
 
-    <div className="pb-8 flex flex-col">
+    <div className="pb-8 flex flex-col gap-4">
       <img
         alt="Header"
         className="h-56 w-full aspect-[3/1] object-cover"
@@ -44,16 +48,39 @@ export const ProfileScreen = async ({ username }: { username: string }) => {
                 <span>🌐</span>
               </div>
             </div>
+
+          </div>
+
+        </div>
+
+        <div className="flex flex-col gap-24">
+          <div className="flex flex-col gap-4">
+            <h3 className="text-lg font-bold">Badges</h3>
+            <div className="flex gap-2 py-6 px-4 bg-primary-800 border rounded border-border-subtle">
+              {badges?.collection.map(i => {
+                return (
+                  <HoverCard trigger={ <div className="rounded px-1.5 py-1.5 bg-primary-900 border border-border-subtle">
+                  <img src={i.badge?.image!} className="w-8 h-8 rounded" />
+                </div>} content={   <span className="text-xs">{i.badge?.title}</span>}/>
+
+                )
+              })}
+
+            </div>
+          </div>
+
+
+
+          <div className="flex flex-col gap-6">
+            <h3 className="text-lg font-bold">Posts</h3>
+            <Suspense fallback="Loading...">
+              <UserPostsList username={user.username} />
+            </Suspense>
           </div>
         </div>
 
-        <div className="flex flex-col gap-6">
-          <h3 className="text-lg font-bold">Posts</h3>
-          <Suspense fallback="Loading...">
-            <UserPostsList username={user.username} />
-          </Suspense>
-        </div>
       </div>
+      {/* </div> */}
     </div>
   )
 }

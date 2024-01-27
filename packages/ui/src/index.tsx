@@ -11,7 +11,9 @@ export * from "./components/Skeleton"
 export * from "./components/Select"
 export * from "./components/TagInputField"
 export * from "./components/Badge"
+export * from "./components/HoverCard"
 
 export * from "./primitives/dropdown-menu"
 export * from "./primitives/switch-primitive"
+
 
