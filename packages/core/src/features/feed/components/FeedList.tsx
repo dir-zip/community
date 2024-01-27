@@ -54,9 +54,6 @@ export const FeedList = ({ currentUser }: { currentUser: User | null }) => {
   }, [pathname, page, searchQuery, router, pageSize, searchParams])
 
 
-
-
-
   return (
     <div className="w-full flex flex-col space-y-6">
       {data.map((feed) => {

@@ -20,33 +20,59 @@ export const getAllPosts = createAction(async ({}, params) => {
   if (!params) {
     throw new Error('Parameters are undefined');
   }
-  const { skip, take } = params;
+  const { skip, take, tags, categorySlug } = params;
 
-  const categories = await prisma.category.findMany({
+  let whereClause: {
+    tags?: {
+      some?: { slug: { in: string[], not?: string } },
+      none?: { slug: string }
+    },
+    category?: {
+      slug?: string
+    }
+  } = {};
+
+  if (tags && tags.length > 0) {
+    whereClause.tags = {
+      some: {
+        slug: {
+          in: tags,
+          not: 'feed'
+        }
+      }
+    };
+  } else {
+    whereClause.tags = {
+      none: {
+        slug: 'feed'
+      }
+    };
+  }
+
+  if (categorySlug && categorySlug !== "all") {
+    whereClause.category = {
+      slug: categorySlug
+    };
+  }
+
+  const posts = await prisma.post.findMany({
+    skip,
+    take,
+    where: whereClause,
     include: {
-      posts: {
-        skip,
-        take,
-        where: {
-          tags: {
-            none: {
-              slug: 'feed'
-            }
-          }
-        },
+      user: userInventoryIncludes.user,
+      category: {
+        select: {
+          title: true,
+          slug: true
+        }
+      },
+      comments: {
         include: {
           user: userInventoryIncludes.user,
-          comments: {
+          replies: {
             include: {
-              user: userInventoryIncludes.user,
-              replies: {
-                include: {
-                  user: userInventoryIncludes.user
-                }
-              }
-            },
-            orderBy: {
-              createdAt: 'desc'
+              user: userInventoryIncludes.user
             }
           }
         },
@@ -54,36 +80,37 @@ export const getAllPosts = createAction(async ({}, params) => {
           createdAt: 'desc'
         }
       }
+    },
+    orderBy: {
+      createdAt: 'desc'
     }
-  })
+  });
 
-  const categoryWithPostsAndCounts = await Promise.all(categories.map(async (category) => {
-    const count = await prisma.post.count({
-      where: { categoryId: category.id, tags: { none: { slug: 'feed' } } },
-    });
-
-    const postsWithCounts = category.posts.map(post => {
-      const replyCount = post.comments.length + post.comments.reduce((total, comment) => total + comment.replies.length, 0); // Calculate total reply count
-      const allCommentsAndReplies = post.comments.concat(
-        post.comments.flatMap(comment => comment.replies.map(reply => ({
-          ...reply,
-          user: {...comment.user, inventory: comment.user.inventory,},
-        
-          replies: []
-        })))
-      );
-      const lastCommentOrReply = allCommentsAndReplies.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0]; // Get the latest comment or reply
-      const replies = post.comments.flatMap(comment => comment.replies); // Get all replies
-      return { ...post, replyCount, lastCommentOrReply, replies }; // Include replies here
-    });
-
-    return { ...category, posts: postsWithCounts, count };
+  const postsWithCounts = await Promise.all(posts.map(async (post) => {
+    const replyCount = post.comments.length + post.comments.reduce((total, comment) => total + comment.replies.length, 0);
+    const allCommentsAndReplies = post.comments.concat(
+      post.comments.flatMap(comment => comment.replies.map(reply => ({
+        ...reply,
+        user: {...comment.user, inventory: comment.user.inventory,},
+        replies: []
+      })))
+    );
+    const lastCommentOrReply = allCommentsAndReplies.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
+    const replies = post.comments.flatMap(comment => comment.replies);
+    return { ...post, replyCount, lastCommentOrReply, replies };
   }));
 
-  return categoryWithPostsAndCounts;
-},   z.object({
+  const postsCount = await prisma.post.count({
+    where: whereClause,
+  });
+
+  return { posts: postsWithCounts, count: postsCount };
+
+}, z.object({
   skip: z.number().optional(),
   take: z.number().optional(),
+  tags: z.array(z.string()).optional(),
+  categorySlug: z.string().optional()
 }),
 { authed: false })
 

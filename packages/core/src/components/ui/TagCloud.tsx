@@ -2,6 +2,7 @@
 import React from 'react'
 import {Badge} from '@dir/ui'
 import { Tag } from 'packages/db'
+import Link from 'next/link'
 
 export const TagCloud = ({tags}: {tags: (Tag & {postCount: number})[]}) => {
   const displayTags = tags.slice(0, 10);
@@ -28,7 +29,7 @@ const maxPostCount = Math.max(...tags.map(tag => tag.postCount));
       <h2 className="text-sm font-semibold">Tag cloud</h2>
       <div className="flex flex-wrap gap-2">
         {displayTags.map((tag) => {
-          return <Badge key={tag.id} className={`${getClassName(tag.postCount, minPostCount, maxPostCount)}`}># {tag.title}</Badge>
+          return <Link key={tag.id} href={`/posts/?tags=${tag.slug}`}><Badge className={`${getClassName(tag.postCount, minPostCount, maxPostCount)}`}># {tag.title}</Badge></Link>
         })}
         {hasMoreTags && <div>...</div>}
       </div>

@@ -1,11 +1,11 @@
 "use client"
 
 
-import { Badge, Select, SelectTrigger, SelectValue, SelectContent, SelectItem, Button, buttonVariants } from '@dir/ui'
+import { Badge, Select, SelectTrigger, SelectValue, SelectContent, SelectItem, Button, buttonVariants, TagInputField, Skeleton } from '@dir/ui'
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
 import { MessageSquare, ChevronLeft, ChevronRight, PlusCircle } from 'lucide-react'
-import { Category, Post, User, Comment, Inventory, InventoryItem } from '@dir/db';
+import { Category, Post, Comment } from '@dir/db';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { getAllPosts } from '../actions';
 import { applyEffects } from '~/itemEffects';
@@ -20,56 +20,60 @@ interface ExtendedPost extends Post {
   replyCount: number;
   lastCommentOrReply?: ExtendedComment;
   user: UserWithInventory
+  category: {
+    title: string,
+    slug: string
+  }
 }
 
-interface ExtendedCategory extends Category {
-  posts: ExtendedPost[];
-}
+export const PostList = ({categories}: {categories: Category[]}) => {
+  const [selectedCategory, setSelectedCategory] = React.useState("all");
 
-export interface PostListProps {
-  posts: ExtendedCategory[];
-}
-
-export const PostList = ({ posts }: PostListProps) => {
-  const [selectedCategory, setSelectedCategory] = React.useState(posts[0]?.slug);
-
-  const ITEMS_PER_PAGE = 20
+  const ITEMS_PER_PAGE = 10
   const searchParams = useSearchParams()
   const pathname = usePathname();
   const page = Number(searchParams.get('page')) || 0;
   const searchQuery = searchParams.get('search')
+  const searchTags = searchParams.get('tags')
   const tablePage = Number(page)
   const skip = tablePage * ITEMS_PER_PAGE
   const router = useRouter()
   const startPage = tablePage * ITEMS_PER_PAGE + 1
   let endPage = startPage - 1 + ITEMS_PER_PAGE
-  const [pageSize, setPageSize] = useState(ITEMS_PER_PAGE);
 
-  const [data, setData] = useState<ExtendedCategory[]>([])
+
+  const [data, setData] = useState<ExtendedPost[]>([])
   const [count, setCount] = useState(0)
   const totalPages = Math.ceil(count / ITEMS_PER_PAGE);
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+
+  const [tags, setTags] = useState<string[]>([])
 
 
   if (endPage > count) {
     endPage = count
   }
 
+  useEffect(() => {
+    if (tags.length > 0) {
+      setSelectedCategory("all");
+    }
+  }, [tags]);
+
+  useEffect(() => {
+    if (searchTags) {
+      setTags([searchTags]);
+    }
+  }, [searchTags]);
 
   useEffect(() => {
     (async () => {
-      const result = await getAllPosts({ skip: (page) * pageSize, take: pageSize })
-
-      setData(result);
-
-      // Find the selected category and set the count
-      const selectedCategoryData = result.find(category => category.slug === selectedCategory);
-      if (selectedCategoryData) {
-        setCount(selectedCategoryData.count);
-      }
+      const result = await getAllPosts({ skip: skip, take: ITEMS_PER_PAGE, tags: tags, categorySlug: selectedCategory });
+      setData(result.posts)
+      setCount(result.count)
     })()
     router.refresh()
-  }, [pathname, page, searchQuery, router, pageSize, selectedCategory])
+  }, [pathname, page, searchQuery, router, selectedCategory, tags])
 
 
   return (
@@ -87,8 +91,10 @@ export const PostList = ({ posts }: PostListProps) => {
               <SelectValue />
             </SelectTrigger>
             <SelectContent className='bg-primary-900 rounded'>
-
-              {posts.map((option) => (
+              <SelectItem key={"All Posts"} value={"all"} className={`hover:bg-primary-700 rounded`}>
+                All Posts
+              </SelectItem>
+              {categories.map((option) => (
                 <SelectItem key={option.title} value={option.slug} className={`hover:bg-primary-700 rounded`}>
                   {option.title}
                 </SelectItem>
@@ -98,7 +104,11 @@ export const PostList = ({ posts }: PostListProps) => {
         </div>
 
         <div className="w-4/12">
-
+          <TagInputField
+            value={tags}
+            onChange={(newTagString) => {
+              setTags(newTagString);
+            }} />
         </div>
         <div className="w-4/12 flex gap-4 justify-end">
           <Link href={`/posts/new`} className={`${buttonVariants({ variant: "default" })} flex items-center gap-2`}><PlusCircle className="h-4 w-4" />Post</Link>
@@ -107,23 +117,22 @@ export const PostList = ({ posts }: PostListProps) => {
 
       <div className="flex flex-col gap-4">
         {data
-          .find((category) => category.slug === selectedCategory)?.posts.map((post) => {
-            const category = data.find((category) => category.posts.includes(post));
+          .map((post) => {
             return (
               <div key={post.id} className={`pt-4 bg-transparent relative border-b rounded pb-4 flex items-center gap-4 w-full justify-between pl-8 pr-8`}>
                 {/* 
                 //TODO: Add a field to post to set as pinned by admin only
                 <Pin className="transform rotate-45 w-4 h-4 absolute top-2 left-2" /> */}
                 <div className="flex gap-4 mr-4 flex-[2_2_0%] min-w-0">
-                  {applyEffects('avatar', {avatar: post.user.avatar || "", username: post.user.username}, post.user.inventory)}
+                  {applyEffects('avatar', { avatar: post.user.avatar || "", username: post.user.username }, post.user.inventory)}
                   <div className="flex flex-col">
                     <Link href={`/posts/${post.slug}`}><span className="text-link font-semibold">{post.title}</span></Link>
-                    <span className="text-xs flex items-center gap-2"><Link href={`/profile/${post.user.username}`}>{applyEffects('username', {username: post.user.username}, post.user.inventory)}</Link> • <span className="text-xs">{post.createdAt.toDateString()}</span></span>
+                    <span className="text-xs flex items-center gap-2"><Link href={`/profile/${post.user.username}`}>{applyEffects('username', { username: post.user.username }, post.user.inventory)}</Link> • <span className="text-xs">{post.createdAt.toDateString()}</span></span>
                   </div>
                 </div>
                 <div className="flex-1 min-w-0 flex items-center justify-center">
                   <Badge>
-                    {category?.title}
+                    {post.category?.title}
                   </Badge>
                 </div>
                 <div className="flex-1 min-w-0 flex items-center justify-center">
@@ -133,9 +142,9 @@ export const PostList = ({ posts }: PostListProps) => {
                   <div className="flex flex-col items-end">
                     <span className="text-primary-100 text-xs self-end">Last reply</span>
                     {post.lastCommentOrReply ? <div className="flex gap-4 justify-end">
-                      {applyEffects('avatar', {avatar: post.lastCommentOrReply.user.avatar || "", username: post.lastCommentOrReply.user.username}, post.lastCommentOrReply.user.inventory)}
+                      {applyEffects('avatar', { avatar: post.lastCommentOrReply.user.avatar || "", username: post.lastCommentOrReply.user.username }, post.lastCommentOrReply.user.inventory)}
                       <div className="flex flex-col items-end">
-                        <Link href={`/profile/${post.lastCommentOrReply.user.username}`}><span className="text-link text-sm">{applyEffects('username',{username:  post.lastCommentOrReply.user.username || ""}, post.lastCommentOrReply.user.inventory)}</span></Link>
+                        <Link href={`/profile/${post.lastCommentOrReply.user.username}`}><span className="text-link text-sm">{applyEffects('username', { username: post.lastCommentOrReply.user.username || "" }, post.lastCommentOrReply.user.inventory)}</span></Link>
                         <span className="text-xs self-end">{post.lastCommentOrReply.createdAt.toDateString()}</span>
                       </div>
                     </div> : <div><span className="text-xs">No comments</span></div>}
@@ -145,6 +154,7 @@ export const PostList = ({ posts }: PostListProps) => {
               </div>
             )
           })}
+
 
       </div>
 

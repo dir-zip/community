@@ -19,7 +19,7 @@ const PostForm = ({ post, categories }: { post?: Post & { tags: Tag[], category:
     <div className="bg-primary-800 p-6 rounded-lg border border-border-subtle w-full">
       <Form
         submitText={post ? "Update" : "Post"}
-        // schema={PostSchema}
+        schema={PostSchema}
         initialValues={post && {
           title: post.title,
           body: post.body,
@@ -30,7 +30,6 @@ const PostForm = ({ post, categories }: { post?: Post & { tags: Tag[], category:
           toast.promise(
             new Promise(async (resolve) => {
               if (!post) {
-                console.log(values)
                 const post = await createPost({
                   ...values
                 })
