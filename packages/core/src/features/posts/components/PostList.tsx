@@ -1,15 +1,16 @@
 "use client"
 
 
-import { Badge, Select, SelectTrigger, SelectValue, SelectContent, SelectItem, Button, buttonVariants, TagInputField, Skeleton } from '@dir/ui'
+import { Badge, Select, SelectTrigger, SelectValue, SelectContent, SelectItem, Button, buttonVariants, TagInputField } from '@dir/ui'
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
-import { MessageSquare, ChevronLeft, ChevronRight, PlusCircle } from 'lucide-react'
-import { Category, Post, Comment } from '@dir/db';
+import { MessageSquare, ChevronLeft, ChevronRight, PlusCircle, Pin } from 'lucide-react'
+import { Category, Post, Comment, Broadcast } from '@dir/db';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { getAllPosts } from '../actions';
 import { applyEffects } from '~/itemEffects';
 import { UserWithInventory } from '~/lib/types';
+import { cn } from '@/utils';
 
 interface ExtendedComment extends Comment {
   user: UserWithInventory
@@ -23,7 +24,8 @@ interface ExtendedPost extends Post {
   category: {
     title: string,
     slug: string
-  }
+  },
+  broadcast?: Broadcast | null
 }
 
 export const PostList = ({categories}: {categories: Category[]}) => {
@@ -119,10 +121,8 @@ export const PostList = ({categories}: {categories: Category[]}) => {
         {data
           .map((post) => {
             return (
-              <div key={post.id} className={`pt-4 bg-transparent relative border-b rounded pb-4 flex items-center gap-4 w-full justify-between pl-8 pr-8`}>
-                {/* 
-                //TODO: Add a field to post to set as pinned by admin only
-                <Pin className="transform rotate-45 w-4 h-4 absolute top-2 left-2" /> */}
+              <div key={post.id} className={cn(`pt-4 bg-transparent relative border-b rounded pb-4 flex items-center gap-4 w-full justify-between pl-8 pr-8`, post.broadcast && 'bg-primary-700')}>
+                {post.broadcast && <Pin className="transform rotate-45 w-4 h-4 absolute top-2 left-2" />} 
                 <div className="flex gap-4 mr-4 flex-[2_2_0%] min-w-0">
                   {applyEffects('avatar', { avatar: post.user.avatar || "", username: post.user.username }, post.user.inventory)}
                   <div className="flex flex-col">

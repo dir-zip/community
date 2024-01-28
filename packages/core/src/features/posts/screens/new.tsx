@@ -1,9 +1,12 @@
+import { checkGuard } from "~/features/auth/actions"
 import { getCategories } from "../actions"
 import PostForm from "../components/Form"
 import { Suspense } from 'react'
 
 export const NewPost = async () => {
   const categories = await getCategories()
+  let can = await checkGuard({ rule: ["CREATE", "broadcast"] });
+  
   return (
     <div className="xl:mx-auto xl:w-[960px]">
       <div className="p-6">
@@ -14,7 +17,7 @@ export const NewPost = async () => {
           </div>
         </div>
         <Suspense>
-          <PostForm categories={categories} />
+          <PostForm categories={categories} canCreateBroadcast={can} />
         </Suspense>
       </div>
     </div>

@@ -13,12 +13,13 @@ export interface SwitchFieldProps
   label: string;
   description?: string;
   outerProps?: PropsWithoutRef<JSX.IntrinsicElements["div"]>;
+  onSwitchChange?: (value: boolean) => void;
 }
 
 export const SwitchField = forwardRef<
   HTMLInputElement,
   SwitchFieldProps
->(({ label, description, name }, _) => {
+>(({ label, description, name, onSwitchChange }, _) => {
   const { control } = useFormContext();
 
   return (
@@ -34,7 +35,10 @@ export const SwitchField = forwardRef<
               {description ? <span className="text-xs antialiased text-primary-400">{description}</span> : null}
               </div>
               <div className="w-full">
-              <Switch checked={value} onCheckedChange={(e) => onChange(e)}/>
+              <Switch checked={value} onCheckedChange={(e) => {
+                onChange(e)
+                onSwitchChange?.(e)
+              }}/>
               </div>
             </label>
 

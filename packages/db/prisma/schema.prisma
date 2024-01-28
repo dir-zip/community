@@ -85,6 +85,7 @@ model Post {
   category    Category @relation(fields: [categoryId], references: [id])
   userId      String
   user        User @relation(fields: [userId], references: [id])
+  broadcast  Broadcast?
 }
 
 model Comment {
@@ -156,7 +157,6 @@ model Tag {
   title       String
   slug        String @unique
   posts       Post[]
-  broadcasts  Broadcast[]
 }
 
 model Category {
@@ -231,16 +231,16 @@ model FeatureToggle {
   feature   String   @unique
   isActive  Boolean  @default(false)
   globalSetting GlobalSetting @relation(fields: [globalSettingId], references: [id])
-  globalSettingId Int @default(1) 
+  globalSettingId Int @default(1)
+  value String? 
 }
 
 model Broadcast {
   id String @id @default(cuid())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  title String
-  slug String @unique
-  body String
-  tags Tag[]
+  post Post @relation(fields: [postId], references: [id])
+  postId String @unique
   sentTo User[]
+  status String
 }

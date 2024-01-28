@@ -37,10 +37,24 @@ const load = async () => {
       }
     })
 
+
     await prisma.category.create({
       data: {
         title: 'General',
         slug: 'general'
+      }
+    })
+
+    await prisma.featureToggle.create({
+      data: {
+        globalSetting: {
+          connect: {
+            id: 1
+          }
+        },
+        isActive: false,
+        feature: 'broadcastCategory',
+        value: 'general'
       }
     })
 

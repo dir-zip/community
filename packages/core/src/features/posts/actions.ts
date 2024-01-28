@@ -9,6 +9,7 @@ import { revalidatePath } from 'next/cache'
 import { prepareArrayField } from "@creatorsneverdie/prepare-array-for-prisma"
 import { triggerAction } from '../actions/actions';
 import { userInventoryIncludes } from "~/lib/includes";
+import { sendEmail } from "~/jobs";
 
 
 export const getCategories = createAction(async () => {
@@ -61,6 +62,7 @@ export const getAllPosts = createAction(async ({}, params) => {
     where: whereClause,
     include: {
       user: userInventoryIncludes.user,
+      broadcast: true,
       category: {
         select: {
           title: true,
@@ -114,7 +116,7 @@ export const getAllPosts = createAction(async ({}, params) => {
 }),
 { authed: false })
 
-export const createPost = createAction(async ({ session }, { title, body, category, tags }) => {
+export const createPost = createAction(async ({ session }, { title, body, category, tags, broadcast }) => {
   
   
   const createSlug = await findFreeSlug<Post>(
@@ -155,7 +157,7 @@ export const createPost = createAction(async ({ session }, { title, body, catego
   );
 
   const filteredTags = newTags.filter(Boolean);
-
+  
 
   const post = await prisma.post.create({
     data: {
@@ -169,6 +171,11 @@ export const createPost = createAction(async ({ session }, { title, body, catego
           return c
         })
       ),
+      broadcast: broadcast ? {
+        create: {
+          status: "PENDING"
+        }
+      } : undefined
     }
   })
 
@@ -183,6 +190,37 @@ export const createPost = createAction(async ({ session }, { title, body, catego
       }
     })
   }
+
+  if(broadcast) {
+    const users = await prisma.user.findMany({})
+
+    for(const user of users) {
+      await sendEmail.queue.add('sendEmail', {email: user.email, subject: post.title, template:post.body})
+
+      await prisma.broadcast.update({
+        where: {
+          postId: post.id
+        },
+        data: {
+          sentTo: {
+            connect: {
+              id: user.id
+            }
+          }
+        }
+      })
+    }
+
+    await prisma.broadcast.update({
+      where: {
+        postId: post.id
+      },
+      data: {
+        status: "SENT"
+      }
+    })
+  }
+
 
   await triggerAction({ title: "CREATE_POST" })
   revalidatePath('/feed')
@@ -259,13 +297,13 @@ export const updatePost = createAction(async ({ validate, session }, { slug, dat
     }),
     { removedItemsMethod: "disconnect" }
   )
-
+  const { broadcast, ...updateData } = data;
   const post = await prisma.post.update({
     where: {
       slug
     },
     data: {
-      ...data,
+      ...updateData,
       slug: newSlug,
       category: {
         connect: {
