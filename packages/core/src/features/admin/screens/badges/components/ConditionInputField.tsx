@@ -42,7 +42,7 @@ export const ConditionInputField = React.forwardRef<HTMLInputElement, ConditionI
             return (
               <div className="mt-2 gap-4 sm:flex sm:justify-between sm:items-end bg-primary-900 rounded p-2 items-center" key={i}>
 
-                <div className="w-full flex items-center gap-4">
+                <div className="w-full flex items-center gap-8">
                   <div className="flex-1">
                     <SelectField
                       name={`${props.name}.${i}.action` as const}

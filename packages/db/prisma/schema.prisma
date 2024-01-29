@@ -85,7 +85,7 @@ model Post {
   category    Category @relation(fields: [categoryId], references: [id])
   userId      String
   user        User @relation(fields: [userId], references: [id])
-  broadcast  Broadcast?
+  broadcasts  Broadcast[]
 }
 
 model Comment {
@@ -240,7 +240,7 @@ model Broadcast {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   post Post @relation(fields: [postId], references: [id])
-  postId String @unique
+  postId String
   sentTo User[]
   status String
 }

@@ -52,9 +52,9 @@ const load = async () => {
             id: 1
           }
         },
-        isActive: false,
-        feature: 'broadcastCategory',
-        value: 'general'
+        isActive: true,
+        feature: 'broadcastPin',
+        value: '0'
       }
     })
 

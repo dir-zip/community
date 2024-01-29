@@ -56,13 +56,23 @@ export const getAllPosts = createAction(async ({}, params) => {
     };
   }
 
+  const broadcastPinFeature = await prisma.featureToggle.findUnique({
+    where: {
+      feature: 'broadcastPin'
+    },
+  });
+
+  const PRIORITY_DAYS = Number(broadcastPinFeature?.value) || 0;
+  const priorityDate = new Date();
+  priorityDate.setDate(priorityDate.getDate() - PRIORITY_DAYS);
+
   const posts = await prisma.post.findMany({
     skip,
     take,
     where: whereClause,
     include: {
       user: userInventoryIncludes.user,
-      broadcast: true,
+      broadcasts: true,
       category: {
         select: {
           title: true,
@@ -88,7 +98,13 @@ export const getAllPosts = createAction(async ({}, params) => {
     }
   });
 
-  const postsWithCounts = await Promise.all(posts.map(async (post) => {
+  const sortedPosts = posts.sort((a, b) => {
+    const aIsRecentBroadcast = a.broadcasts.length > 0 && a.createdAt > priorityDate ? 1 : 0;
+    const bIsRecentBroadcast = b.broadcasts.length > 0 && b.createdAt > priorityDate ? 1 : 0;
+    return bIsRecentBroadcast - aIsRecentBroadcast || b.createdAt.getTime() - a.createdAt.getTime();
+  });
+
+  const postsWithCounts = await Promise.all(sortedPosts.map(async (post) => {
     const replyCount = post.comments.length + post.comments.reduce((total, comment) => total + comment.replies.length, 0);
     const allCommentsAndReplies = post.comments.concat(
       post.comments.flatMap(comment => comment.replies.map(reply => ({
@@ -170,12 +186,7 @@ export const createPost = createAction(async ({ session }, { title, body, catego
         filteredTags.map((c) => {
           return c
         })
-      ),
-      broadcast: broadcast ? {
-        create: {
-          status: "PENDING"
-        }
-      } : undefined
+      )
     }
   })
 
@@ -197,28 +208,22 @@ export const createPost = createAction(async ({ session }, { title, body, catego
     for(const user of users) {
       await sendEmail.queue.add('sendEmail', {email: user.email, subject: post.title, template:post.body})
 
-      await prisma.broadcast.update({
-        where: {
-          postId: post.id
-        },
+      await prisma.broadcast.create({
         data: {
           sentTo: {
             connect: {
               id: user.id
             }
-          }
+          },
+          post: {
+            connect: {
+              id: post.id
+            }
+          },
+          status: "SENT"
         }
       })
     }
-
-    await prisma.broadcast.update({
-      where: {
-        postId: post.id
-      },
-      data: {
-        status: "SENT"
-      }
-    })
   }
 
 

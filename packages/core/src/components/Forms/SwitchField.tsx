@@ -29,7 +29,7 @@ export const SwitchField = forwardRef<
 
         return (
           <div className="flex flex-col space-y-2 w-full">
-            <label className="text-sm font-medium leading-none flex flex-row items-center">
+            <label className="text-sm font-medium leading-none flex flex-row gap-8 items-center">
               <div className="flex flex-col gap-4 w-1/2">
               <span>{label}</span>
               {description ? <span className="text-xs antialiased text-primary-400">{description}</span> : null}
