@@ -175,6 +175,17 @@ export const suggestion = {
             .setNode('heading', { level: 3 })
             .run()
         },
+      },
+      {
+        title: 'Post',
+        command: ({ editor, range }: { editor: Editor, range: Range }) => {
+          editor
+            .chain()
+            .focus()
+            .deleteRange(range)
+            .insertContent('<post-mention content="hello world"></post-mention>')
+            .run()
+        },
       }
     ].filter(item => item.title.toLowerCase().startsWith(query.toLowerCase())).slice(0, 10)
   },

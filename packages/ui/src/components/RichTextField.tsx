@@ -13,6 +13,7 @@ import 'highlight.js/styles/github.css';
 import Placeholder from '@tiptap/extension-placeholder'
 import { EditorImageUpload, imageUploadPluginKey } from '@/editorPlugins/Image'
 import { Command, suggestion } from '@/editorPlugins/Command'
+import { PostMentionNode } from '@/editorPlugins/PostMention'
 
 
 
@@ -62,7 +63,8 @@ export const RichTextField = (
       }),
       Command.configure({
         suggestion: suggestion
-      })
+      }),
+      PostMentionNode
     ],
     editorProps: {
       attributes: {
