@@ -45,9 +45,7 @@ const ActivateAccount = ({
 
             <Section className="text-center mt-[32px] mb-[32px]">
               <Button
-                pX={20}
-                pY={12}
-                className="bg-[#000000] rounded text-white text-[12px] font-semibold no-underline text-center"
+                className="bg-[#000000] py-2 px-4 rounded text-white text-[12px] font-semibold no-underline text-center"
                 href={url}
               >
                 Activate
