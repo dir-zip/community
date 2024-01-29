@@ -437,6 +437,9 @@ importers:
       '@tiptap/starter-kit':
         specifier: ^2.1.12
         version: 2.1.13(@tiptap/pm@2.1.13)
+      '@tiptap/suggestion':
+        specifier: ^2.2.0
+        version: 2.2.0(@tiptap/core@2.1.16)(@tiptap/pm@2.1.13)
       class-variance-authority:
         specifier: ^0.6.1
         version: 0.6.1
@@ -461,6 +464,9 @@ importers:
       tailwindcss-animate:
         specifier: ^1.0.5
         version: 1.0.7(tailwindcss@3.3.6)
+      tippy.js:
+        specifier: ^6.3.7
+        version: 6.3.7
     devDependencies:
       '@types/react':
         specifier: 18.2.16
@@ -4557,6 +4563,16 @@ packages:
       '@tiptap/extension-text': 2.1.13(@tiptap/core@2.1.16)
     transitivePeerDependencies:
       - '@tiptap/pm'
+    dev: false
+
+  /@tiptap/suggestion@2.2.0(@tiptap/core@2.1.16)(@tiptap/pm@2.1.13):
+    resolution: {integrity: sha512-xcjGEVgRB0tx21LdNTr5F/HEKNlFuq9cnJlVGDLlNP43ixXM6aODAeY3VvEZ3XtEtLpHsiCVrinrjRNtpUf+eQ==}
+    peerDependencies:
+      '@tiptap/core': ^2.0.0
+      '@tiptap/pm': ^2.0.0
+    dependencies:
+      '@tiptap/core': 2.1.16(@tiptap/pm@2.1.13)
+      '@tiptap/pm': 2.1.13
     dev: false
 
   /@tokenizer/token@0.3.0:

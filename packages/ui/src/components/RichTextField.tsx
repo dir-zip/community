@@ -12,6 +12,7 @@ import html from 'highlight.js/lib/languages/xml'
 import 'highlight.js/styles/github.css';
 import Placeholder from '@tiptap/extension-placeholder'
 import { EditorImageUpload, imageUploadPluginKey } from '@/editorPlugins/Image'
+import { Command, suggestion } from '@/editorPlugins/Command'
 
 
 
@@ -58,6 +59,9 @@ export const RichTextField = (
       EditorImageUpload.configure({
         uploadUrl: imageUploadUrl,
         removeImage: onImageRemove
+      }),
+      Command.configure({
+        suggestion: suggestion
       })
     ],
     editorProps: {
