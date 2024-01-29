@@ -9,6 +9,7 @@ import { revalidatePath } from 'next/cache'
 import { prepareArrayField } from "@creatorsneverdie/prepare-array-for-prisma"
 import { triggerAction } from '../actions/actions';
 import { userInventoryIncludes } from "~/lib/includes";
+import { sendEmail } from "~/jobs";
 
 
 export const getCategories = createAction(async () => {
@@ -55,12 +56,23 @@ export const getAllPosts = createAction(async ({}, params) => {
     };
   }
 
+  const broadcastPinFeature = await prisma.featureToggle.findUnique({
+    where: {
+      feature: 'broadcastPin'
+    },
+  });
+
+  const PRIORITY_DAYS = Number(broadcastPinFeature?.value) || 0;
+  const priorityDate = new Date();
+  priorityDate.setDate(priorityDate.getDate() - PRIORITY_DAYS);
+
   const posts = await prisma.post.findMany({
     skip,
     take,
     where: whereClause,
     include: {
       user: userInventoryIncludes.user,
+      broadcasts: true,
       category: {
         select: {
           title: true,
@@ -86,7 +98,13 @@ export const getAllPosts = createAction(async ({}, params) => {
     }
   });
 
-  const postsWithCounts = await Promise.all(posts.map(async (post) => {
+  const sortedPosts = posts.sort((a, b) => {
+    const aIsRecentBroadcast = a.broadcasts.length > 0 && a.createdAt > priorityDate ? 1 : 0;
+    const bIsRecentBroadcast = b.broadcasts.length > 0 && b.createdAt > priorityDate ? 1 : 0;
+    return bIsRecentBroadcast - aIsRecentBroadcast || b.createdAt.getTime() - a.createdAt.getTime();
+  });
+
+  const postsWithCounts = await Promise.all(sortedPosts.map(async (post) => {
     const replyCount = post.comments.length + post.comments.reduce((total, comment) => total + comment.replies.length, 0);
     const allCommentsAndReplies = post.comments.concat(
       post.comments.flatMap(comment => comment.replies.map(reply => ({
@@ -114,7 +132,7 @@ export const getAllPosts = createAction(async ({}, params) => {
 }),
 { authed: false })
 
-export const createPost = createAction(async ({ session }, { title, body, category, tags }) => {
+export const createPost = createAction(async ({ session }, { title, body, category, tags, broadcast }) => {
   
   
   const createSlug = await findFreeSlug<Post>(
@@ -155,7 +173,7 @@ export const createPost = createAction(async ({ session }, { title, body, catego
   );
 
   const filteredTags = newTags.filter(Boolean);
-
+  
 
   const post = await prisma.post.create({
     data: {
@@ -168,7 +186,7 @@ export const createPost = createAction(async ({ session }, { title, body, catego
         filteredTags.map((c) => {
           return c
         })
-      ),
+      )
     }
   })
 
@@ -183,6 +201,31 @@ export const createPost = createAction(async ({ session }, { title, body, catego
       }
     })
   }
+
+  if(broadcast) {
+    const users = await prisma.user.findMany({})
+
+    for(const user of users) {
+      await sendEmail.queue.add('sendEmail', {email: user.email, subject: post.title, template:post.body})
+
+      await prisma.broadcast.create({
+        data: {
+          sentTo: {
+            connect: {
+              id: user.id
+            }
+          },
+          post: {
+            connect: {
+              id: post.id
+            }
+          },
+          status: "SENT"
+        }
+      })
+    }
+  }
+
 
   await triggerAction({ title: "CREATE_POST" })
   revalidatePath('/feed')
@@ -259,13 +302,13 @@ export const updatePost = createAction(async ({ validate, session }, { slug, dat
     }),
     { removedItemsMethod: "disconnect" }
   )
-
+  const { broadcast, ...updateData } = data;
   const post = await prisma.post.update({
     where: {
       slug
     },
     data: {
-      ...data,
+      ...updateData,
       slug: newSlug,
       category: {
         connect: {

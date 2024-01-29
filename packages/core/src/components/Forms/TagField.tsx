@@ -9,7 +9,7 @@ export const TagField = ({ name, label, description }: { name: string, label: st
   } = useFormContext();
 
   return (
-    <div className="w-full flex flex-row items-center">
+    <div className="w-full flex flex-row gap-8 items-center">
       <label
         className="text-sm font-medium leading-none w-1/2"
       >

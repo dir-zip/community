@@ -194,7 +194,7 @@ export const logoutAction = createAction(async ({ deleteSession }) => {
 
 export const checkGuard = createAction(
   async ({auth}, { rule }) => {
-    const can = await auth.validate([rule[0], rule[1], rule[2]]);
+    const can = await auth.validate([rule[0], rule[1], rule[2]], {throw: false});
     return can!;
   },
   z.object({

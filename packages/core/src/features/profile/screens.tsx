@@ -6,7 +6,7 @@ import { Suspense } from 'react'
 import { UserPostsList } from "./components/UserPostsList"
 import { applyEffects } from "~/itemEffects"
 import { getUserInventory } from "../user/actions"
-import { getUserBadges } from './actions'
+import { getUserBadges } from '../user/actions'
 
 import { HoverCard } from "@dir/ui"
 

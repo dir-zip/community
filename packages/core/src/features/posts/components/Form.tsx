@@ -1,7 +1,7 @@
 "use client"
 
-import { Form, SelectField, TextField } from "~/components/Forms"
-
+import { Form, SelectField, SwitchField, TextField } from "~/components/Forms"
+import {useEffect, useState} from 'react'
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 
@@ -10,10 +10,21 @@ import { createPost, updatePost } from "../actions"
 import { Category, Tag, type Post } from "packages/db"
 import { FancyEditorField } from "~/components/Forms/FancyEditorField"
 import { TagField } from "~/components/Forms/TagField"
+import { Megaphone } from 'lucide-react'
+import { getAllUserCount } from "~/features/user/actions"
 
-
-const PostForm = ({ post, categories }: { post?: Post & { tags: Tag[], category: Category }, categories: Category[] }) => {
+const PostForm = ({ post, categories, canCreateBroadcast }: { post?: Post & { tags: Tag[], category: Category }, categories: Category[], canCreateBroadcast?: boolean }) => {
   const router = useRouter()
+  const can = canCreateBroadcast || false
+  const [membersCount, setMembersCount] = useState(0);
+  const [toggle, setToggle] = useState(false)
+
+  useEffect(() => {
+    getAllUserCount().then(members => {
+      setMembersCount(members);
+    });
+  }, []);
+
 
   return (
     <div className="bg-primary-800 p-6 rounded-lg border border-border-subtle w-full">
@@ -31,7 +42,8 @@ const PostForm = ({ post, categories }: { post?: Post & { tags: Tag[], category:
             new Promise(async (resolve) => {
               if (!post) {
                 const post = await createPost({
-                  ...values
+                  ...values,
+                  broadcast: values.broadcast
                 })
                 router.push(`/posts/${post.slug}`)
               } else {
@@ -44,8 +56,6 @@ const PostForm = ({ post, categories }: { post?: Post & { tags: Tag[], category:
 
                 router.push(`/posts/${updatedPost.slug}`)
               }
-
-
 
               router.refresh()
               resolve(null)
@@ -63,6 +73,18 @@ const PostForm = ({ post, categories }: { post?: Post & { tags: Tag[], category:
         <SelectField label="Category" name="category" options={categories.map((c) => {
           return { value: c.slug, key: c.title }
         })} />
+        {can ? <div className="flex flex-col w-full gap-6">
+          <div className="bg-border-subtle w-full h-px" />
+          <div className="flex flex-col bg-primary-700 gap-4 py-4 px-3 rounded w-full -mb-5">
+            <Megaphone className="w-6 h-6 self-start  stroke-primary-100 -rotate-12" />
+            <SwitchField name="broadcast" label="Broadcast" onSwitchChange={(value) => {
+              setToggle(value)
+            }} />
+            {toggle ? <div className="flex flex-col gap-4">
+              <p className="text-xs antialiased">Being sent to {membersCount} member{membersCount > 1 ? "s" : ""}</p>
+            </div> : null}
+          </div>
+        </div> : null}
         <div className="bg-border-subtle w-full h-px" />
         <TagField name="tags" label="Tags" />
         <div className="bg-border-subtle w-full h-px" />

@@ -1,4 +1,4 @@
-import { getAllPosts, getCategories } from "../actions"
+import { getCategories } from "../actions"
 import { PostList } from "../components/PostList"
 
 export const AllPosts = async () => {

@@ -1,8 +1,9 @@
 "use client"
 import React, { useEffect, useRef, useState } from 'react'
-import { MessageSquare, PenSquare, LucideSquareStack, Hash, ChevronsLeft, ChevronsRight } from 'lucide-react'
+import { MessageSquare, PenSquare, LucideSquareStack, Hash, ChevronsLeft, ChevronsRight, Megaphone } from 'lucide-react'
 import { RichTextField, buttonVariants, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@dir/ui'
 import Link from 'next/link'
+import { cn } from '@/utils'
 
 export type PostPreviewProps = {
   content: string,
@@ -13,10 +14,11 @@ export type PostPreviewProps = {
   currentUserId: string | null
   categories: {title: string, slug: string}[]
   onCategorySelect?: (categorySlug: string) => Promise<void>
+  broadcast?: boolean
 }
 
 export const PostPreview = (props: PostPreviewProps) => {
-  const { content, comments, slug, currentUserId, userId, categories, category, onCategorySelect } = props
+  const { content, comments, slug, currentUserId, userId, categories, category, onCategorySelect, broadcast } = props
 
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(category);
@@ -75,8 +77,9 @@ export const PostPreview = (props: PostPreviewProps) => {
   }, [divRef, isDropdownOpen]);
 
   return (
-    <div className="max-h-96 w-full overflow-hidden px-6 py-4 bg-primary-800 rounded border border-border-subtle relative">
-      <div className="relative overflow-hidden" ref={contentRef}>
+    <div className={cn("max-h-96 w-full overflow-hidden px-6 py-4 rounded border relative", !broadcast ? "border-border-subtle bg-primary-800" : "bg-primary-700")}>
+      {broadcast ? <Megaphone className="transform -rotate-12 w-4 h-4 absolute top-2 left-2 mb-2" /> : null} 
+      <div className={cn("relative overflow-hidden", broadcast ? "mt-6" : "")} ref={contentRef}>
         <div className="max-h-60 overflow-y-hidden">
           <RichTextField value={content} editable={false} onValueChange={undefined} />
         </div>

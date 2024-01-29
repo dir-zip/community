@@ -48,7 +48,7 @@ export const FancyEditorField = ({ name, label }: { name: string, label?: string
   return (
     <div className="w-full flex flex-col gap-4">
       <label
-        className="text-sm font-medium leading-none flex w-full flex-row items-center"
+        className="text-sm font-medium leading-none flex w-full gap-8 flex-row items-center"
       >
         {label ? <span className="w-1/2 self-start">{label}</span> : null}
         <Controller

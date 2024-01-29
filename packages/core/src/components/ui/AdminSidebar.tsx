@@ -2,7 +2,7 @@
 import { usePathname } from "next/navigation"
 import Link from 'next/link'
 import { cn } from "@/utils"
-import {Monitor, Box, Star, Zap, Shapes, Users} from 'lucide-react'
+import {Monitor, Box, Star, Zap, Shapes, Users, Megaphone} from 'lucide-react'
 
 const _adminSidebarLinks = [
   { icon: Monitor, text: "Site", link: '/admin' },
@@ -11,6 +11,7 @@ const _adminSidebarLinks = [
   { icon: Zap, text: "Actions", link: '/admin/actions' },
   { icon: Shapes, text: "Categories", link: '/admin/categories' },
   { icon: Users, text: "Users", link: '/admin/users' },
+  { icon: Megaphone, text: "Broadcasts", link: '/admin/broadcasts' },
 ]
 
 export const AdminSidebar = () => {

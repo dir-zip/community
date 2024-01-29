@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import {  Button } from "@dir/ui"
 import { PostPreview } from '~/features/posts/components/PostPreview'
-import { Post, User, Comment, Category, Tag } from "@dir/db"
+import { Post, User, Comment, Category, Tag, Broadcast } from "@dir/db"
 import { updatePost } from '~/features/posts/actions'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { getFeed } from '../actions'
@@ -27,7 +27,7 @@ export const FeedList = ({ currentUser }: { currentUser: User | null }) => {
   let endPage = startPage - 1 + ITEMS_PER_PAGE
   const [pageSize, setPageSize] = useState(ITEMS_PER_PAGE);
   const [categoriesSelect, setCategoriesSelect] = useState<Category[]>([])
-  const [data, setData] = useState<(Post & { user: UserWithInventory, comments: Comment[], category: Category, tags: Tag[] })[]>([])
+  const [data, setData] = useState<(Post & { user: UserWithInventory, comments: Comment[], category: Category, tags: Tag[], broadcasts?: Broadcast[] | null})[]>([])
   const [count, setCount] = useState(0)
   const totalPages = Math.ceil(count / ITEMS_PER_PAGE);
   const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -70,14 +70,16 @@ export const FeedList = ({ currentUser }: { currentUser: User | null }) => {
               currentUserId={currentUser?.id || null}
               userId={feed.user.id}
               categories={categoriesSelect.map((c) => { return { title: c.title, slug: c.slug } })}
+              broadcast={feed.broadcasts && feed.broadcasts.length ? true : false}
               onCategorySelect={async (slug) => {
+                const {broadcasts, ...feedData} = feed // Remove broadcast from the feed since you shouldn't edit once its created
                 await updatePost({
                   data: {
-                    ...feed,
+                    ...feedData,
                     category: slug,
-                    tags: feed.tags.map(tag => tag.slug)
+                    tags: feed.tags.map(tag => tag.slug),
                   },
-                  slug: feed.slug
+                  slug: feed.slug,
                 })
               }}
             />

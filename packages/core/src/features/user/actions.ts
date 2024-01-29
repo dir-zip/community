@@ -199,3 +199,27 @@ export const getUsersPosts = createAction(async ({ }, { username, skip, take }) 
   skip: z.number().optional(),
   take: z.number().optional(),
 }), { authed: false })
+
+export const getUserBadges = createAction(async ({ }, { userId }) => {
+  const inventory = await prisma.inventory.findFirst({
+    where: {
+      userId,
+    },
+    include: {
+      collection: {
+        include: {
+          badge: true,
+        },
+      },
+    },
+  })
+
+  return inventory
+}, z.object({
+  userId: z.string()
+}), { authed: false })
+
+export const getAllUserCount = createAction(async ({}) => {
+  const users = await prisma.user.count()
+  return users
+}, undefined, {authed: false})

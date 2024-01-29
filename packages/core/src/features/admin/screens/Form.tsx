@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation"
 
 import { GlobalSetting, FeatureToggle } from "packages/db"
 import { updateSiteSettings } from "../actions"
+import TextFieldWithAddon from "~/components/Forms/TextFieldWithAddon"
 
 export const SiteForm = ({ site }: { site: GlobalSetting & { features: FeatureToggle[] } }) => {
   const router = useRouter()
@@ -20,7 +21,8 @@ export const SiteForm = ({ site }: { site: GlobalSetting & { features: FeatureTo
         submitText={"Save"}
         initialValues={{
           siteTitle: site.siteTitle,
-          isPrivate: isPrivate
+          isPrivate: isPrivate,
+          broadcastPin: site.features.find(f => f.feature === 'broadcastPin')!.value
         }}
         onSubmit={async (values) => {
           toast.promise(
@@ -41,11 +43,14 @@ export const SiteForm = ({ site }: { site: GlobalSetting & { features: FeatureTo
               error: (error) => `Error updating site: ${error.message}`
             }
           )
-        }}
+        }}  
       >
         <TextField name="siteTitle" label="Site Title" description="The title of your site" />
         <div className="bg-border-subtle w-full h-px" />
         <SwitchField name="isPrivate" label="Private" description="Require an account to view posts" />
+        <div className="bg-border-subtle w-full h-px" />
+        <TextFieldWithAddon inputWidth="12rem" name="broadcastPin" label="Pin broadcasts" addon="days" description="How long to keep broadcasts at the top of the feed" type="number" />
+
       </Form>
     </div>
   )

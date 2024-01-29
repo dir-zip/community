@@ -37,7 +37,7 @@ export const SelectField = forwardRef<HTMLInputElement, SelectFieldProps>(
     return (
       <div className="flex flex-col space-y-1 w-full" {...outerProps}>
         <label
-          className={cn("text-sm font-medium leading-none flex flex-row items-center", fullWidth ? "gap-4" : null)}
+          className={cn("text-sm font-medium leading-none flex flex-row items-center", fullWidth ? "gap-4" : "gap-8")}
           {...labelProps}
         >
           <div className={cn("flex flex-col gap-4", fullWidth ? null : 'w-1/2')}>

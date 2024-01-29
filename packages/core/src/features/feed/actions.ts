@@ -11,7 +11,17 @@ export const getFeed = createAction(async ({ }, params) => {
   }
   const { skip, take } = params;
 
-  const feed = await prisma.post.findMany({
+  const broadcastPinFeature = await prisma.featureToggle.findUnique({
+    where: {
+      feature: 'broadcastPin'
+    },
+  });
+
+  const PRIORITY_DAYS = Number(broadcastPinFeature?.value) || 0;
+  const priorityDate = new Date();
+  priorityDate.setDate(priorityDate.getDate() - PRIORITY_DAYS);
+
+  let feed = await prisma.post.findMany({
     skip,
     take,
     where: {
@@ -19,6 +29,7 @@ export const getFeed = createAction(async ({ }, params) => {
     },
     include: {
       user: userInventoryIncludes.user,
+      broadcasts: true,
       comments: true,
       category: true,
       tags: true
@@ -27,6 +38,12 @@ export const getFeed = createAction(async ({ }, params) => {
       createdAt: 'desc'
     }
   })
+
+  feed = feed.sort((a, b) => {
+    const aIsRecentBroadcast = a.broadcasts.length > 0 && a.createdAt > priorityDate ? 1 : 0;
+    const bIsRecentBroadcast = b.broadcasts.length > 0 && b.createdAt > priorityDate ? 1 : 0;
+    return bIsRecentBroadcast - aIsRecentBroadcast || b.createdAt.getTime() - a.createdAt.getTime();
+  });
 
   const count = await prisma.post.count({
     where: {

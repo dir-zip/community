@@ -34,14 +34,25 @@ export const updateSiteSettings = createAction(
       data: {
         siteTitle: params.siteTitle,
         features: {
-          update: {
-            where: {
-              feature: 'private'
+          updateMany: [
+            {
+              where: {
+                feature: 'private'
+              },
+              data: {
+                isActive: params.isPrivate
+              }
             },
-            data: {
-              isActive: params.isPrivate
+            {
+              where: {
+                feature: 'broadcastPin'
+              },
+              data: {
+                isActive: true,
+                value: params.broadcastPin.toString()
+              }
             }
-          }
+          ]
         }
       }
     })
@@ -51,7 +62,8 @@ export const updateSiteSettings = createAction(
   },
   z.object({
     siteTitle: z.string(),
-    isPrivate: z.boolean()
+    isPrivate: z.boolean(),
+    broadcastPin: z.number()
   }),
   {authed: true}
 )

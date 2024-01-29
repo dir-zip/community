@@ -42,6 +42,7 @@ import { AdminSidebar } from "./components/ui/AdminSidebar";
 import { getUserInventory } from "./features/user/actions";
 import { Inventory } from "packages/db";
 import { UserWithInventory } from "./lib/types";
+import { BroadcastsIndex } from "./features/admin/screens/broadcasts/screens";
 
 const router = new Router();
 
@@ -461,6 +462,10 @@ export async function PageInit<T>({
 
   router.addRoute('/admin/users/:id', async (params) => {
     return <SingleUserAdminPage id={params.id} />
+  })
+
+  router.addRoute('/admin/broadcasts', async() => {
+    return <BroadcastsIndex />
   })
 
 
