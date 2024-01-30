@@ -17,43 +17,51 @@ export const PostMentionNode = Node.create({
     return {
       title: {
         default: null,
-        parseHTML: element => element.getAttribute('data-title'),
+        parseHTML: element => element.getAttribute('title'),
         renderHTML: attributes => {
           if (!attributes.title) {
             return {}
           }
-
-          return {
-            'title': attributes.title,
-          }
+          return { 'title': attributes.title }
         },
       },
       url: {
         default: null,
-        parseHTML: element => element.getAttribute('data-url'),
+        parseHTML: element => element.getAttribute('url'),
         renderHTML: attributes => {
           if (!attributes.url) {
             return {}
           }
-
-          return {
-            'url': attributes.url,
-          }
+          return { 'url': attributes.url }
         },
       },
       createdBy: {
         default: null,
+        parseHTML: element => element.getAttribute('createdBy'),
+        renderHTML: attributes => {
+          if (!attributes.createdBy) {
+            return {}
+          }
+          return { 'createdBy': attributes.createdBy }
+        },
       },
       createdByAvatar: {
-        default: null
+        default: null,
+        parseHTML: element => element.getAttribute('createdByAvatar'),
+        renderHTML: attributes => {
+          if (!attributes.createdByAvatar) {
+            return {}
+          }
+          return { 'createdByAvatar': attributes.createdByAvatar }
+        },
       }
-    
     };
   },
   renderHTML: ({node, HTMLAttributes }) => {
+    console.log(node)
     return [
       'div',
-      { class: 'bg-primary-400 rounded text-link p-4 mt-2 flex justify-between w-96 flex-col gap-8' },
+      { class: 'post-mention bg-primary-400 rounded text-link p-4 mt-2 flex justify-between w-96 flex-col gap-8' },
       [
         'a',
         { href: HTMLAttributes.url, class: 'text-link text-2xl font-bold' },
@@ -77,21 +85,18 @@ export const PostMentionNode = Node.create({
   },
   parseHTML: () => [
     {
-      tag: 'a',
-      getAttrs: (dom) => {
-        const element = dom as HTMLImageElement
+      tag: 'div.post-mention',
+      getAttrs: dom => {
+        const element = dom as HTMLElement;
+        const a = element.querySelector('a.text-link.text-2xl.font-bold');
+        const img = element.querySelector('img');
+        const createdByLink = element.querySelector('a.text-link:not(.text-2xl)'); // Assuming the createdBy link is the only other link
+  
         return {
-          title: element.getAttribute('title'),
-          url: element.getAttribute('url')
-        }
-      }
-    },
-    {
-      tag: 'img[src]',
-      getAttrs: (dom) => {
-        const element = dom as HTMLImageElement
-        return {
-          src: element.getAttribute('createdByAvatar')
+          title: a ? a.textContent : null,
+          url: a ? a.getAttribute('href') : null,
+          createdBy: createdByLink ? createdByLink.textContent?.trim().substring(3) : null, // Remove the " By " prefix
+          createdByAvatar: img ? img.getAttribute('src') : null,
         }
       }
     }
