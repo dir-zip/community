@@ -2,10 +2,10 @@ import { Extension } from '@tiptap/core'
 import Suggestion from '@tiptap/suggestion'
 import { Editor } from '@tiptap/core'
 import { Range } from '@tiptap/core'
-import React, { useState, useEffect, useRef, useCallback, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ReactRenderer } from '@tiptap/react'
 import tippy, { Instance, Props } from "tippy.js";
-import { TextSelection } from '@tiptap/pm/state';
+import { PostSelectList } from './PostMention';
 
 interface ReactRendererWithKeyDown extends ReactRenderer {
   ref: {
@@ -183,87 +183,12 @@ export const suggestion = {
           editor.chain().focus().deleteRange(range).run();
 
           const comp = new ReactRenderer(() => {
-            const [selectedIndex, setSelectedIndex] = React.useState(0);
-            const containerRef = React.useRef<HTMLDivElement>(null);
-
-            const posts = [{ title: "test 1", url: "x.com" }, { title: 'test2', url: 'x.com' }];
-
-            React.useEffect(() => {
-              if (containerRef.current) {
-                containerRef.current.focus();
-              }
-            }, []);
-            
-
-            const selectPost = (index: number) => {
-              const post = posts[index];
-              const adjustedRange = { ...range, from: range.from - 1, to: range.to + 1 };
-              editor
-                .chain()
-                .focus()
-                .deleteRange(adjustedRange)
-                .insertContent({ type: 'paragraph' })
-                .insertContent({
-                  type: 'postMention',
-                  attrs: post
-                })
-                .insertContent({ type: 'paragraph' })
-                // Move the cursor to the new block if necessary
-                .command(({ tr, state }) => {
-                  const { doc, selection } = state;
-                  const position = selection.$head.after();
-                  const endOfDoc = doc.content.size;
-                  if (position < endOfDoc) {
-                    tr.setSelection(TextSelection.near(tr.doc.resolve(position + 1)));
-                  }
-                  return true;
-                })
-                .run();
-
-              
+            const handleChange = () => {
               comp.destroy()
-            };
-
-            useEffect(() => {
-              const navigationKeys = ["ArrowUp", "ArrowDown", "Enter"];
-              const onKeyDown = (e: KeyboardEvent) => {
-                if (navigationKeys.includes(e.key)) {
-                  e.preventDefault();
-          
-                  if (e.key === "ArrowUp") {
-                    e.preventDefault(); // Prevent scrolling
-                    setSelectedIndex((prevIndex) => (prevIndex - 1 + posts.length) % posts.length);
-                  } else if (e.key === "ArrowDown") {
-                    e.preventDefault(); // Prevent scrolling
-                    setSelectedIndex((prevIndex) => (prevIndex + 1) % posts.length);
-                  } else if (e.key === "Enter") {
-                    e.preventDefault();
-                    selectPost(selectedIndex);
-                  }
-                }
-              };
-              document.addEventListener("keydown", onKeyDown);
-              return () => {
-                document.removeEventListener("keydown", onKeyDown);
-              };
-            }, [selectedIndex, setSelectedIndex, selectPost]);
-
-
-            return (
-              <div ref={containerRef} className='fixed top-1/2 left-1/2 bg-primary-800 transform -translate-x-1/2 -translate-y-1/2 p-4 rounded shadow-md' >
-                <h2>Post Details</h2>
-                {posts.map((c, index) => {
-                  return (
-                    <div className={`flex items-center space-x-2 cursor-pointer ${index === selectedIndex ? 'bg-blue-500' : ''}`} onClick={() => selectPost(index)} key={index}>
-                      <p>{c.title}</p>
-                      <p>{c.url}</p>
-                    </div>
-                  )
-                })}
-              </div>
-            )
+            }
+            return <PostSelectList editor={editor} range={range} onChange={handleChange} />
           }, {
-            editor: editor,
+            editor: editor
           });
 
 
@@ -281,6 +206,7 @@ export const suggestion = {
   render: () => {
     let component: ReactRenderer | null = null;
     let popup: Instance<Props>[] | null = null;
+    let isPopupDestroyed = true;
 
     return {
       onStart: (props: SuggestionProps) => {
@@ -299,31 +225,38 @@ export const suggestion = {
           trigger: "manual",
           placement: "bottom-start",
         });
+        isPopupDestroyed = false;
 
-        const hidePopupListener = () => {
+      const hidePopupListener = () => {
+        if (!isPopupDestroyed) {
           popup?.[0]?.hide();
-        };
-        document.addEventListener('hideCommandListPopup', hidePopupListener);
+        }
+      };
+      document.addEventListener('hideCommandListPopup', hidePopupListener);
 
-        // Cleanup listener on exit
-        return () => {
-          document.removeEventListener('hideCommandListPopup', hidePopupListener);
-        };
+      // Cleanup listener on exit
+      return () => {
+        document.removeEventListener('hideCommandListPopup', hidePopupListener);
+      };
       },
 
       onUpdate(props: SuggestionProps) {
-        component?.updateProps(props);
-        popup &&
-          popup[0]?.setProps({
-            getReferenceClientRect: props.clientRect,
-          });
+        if (!isPopupDestroyed) { // Check the flag before updating
+          component?.updateProps(props);
+          popup &&
+            popup[0]?.setProps({
+              getReferenceClientRect: props.clientRect,
+            });
+        }
       },
 
       onKeyDown(props: SuggestionProps) {
         const componentWithKeyDown = component as ReactRendererWithKeyDown;
 
         if (props.event.key === "Escape") {
-          popup?.[0]?.hide();
+          if (!isPopupDestroyed) { // Check the flag before hiding
+            popup?.[0]?.hide();
+          }
           return true;
         }
 
@@ -337,8 +270,11 @@ export const suggestion = {
       },
 
       onExit() {
-        popup?.[0]?.destroy();
-        component?.destroy();
+        if (!isPopupDestroyed) { // Check the flag before destroying
+          popup?.[0]?.destroy();
+          component?.destroy();
+          isPopupDestroyed = true; // Update the flag after destruction
+        }
       },
     }
   },
