@@ -5,6 +5,7 @@ import { Range } from '@tiptap/core'
 import React, { useState, useEffect, useRef, useCallback, useLayoutEffect } from 'react';
 import { ReactRenderer } from '@tiptap/react'
 import tippy, { Instance, Props } from "tippy.js";
+import { TextSelection } from '@tiptap/pm/state';
 
 interface ReactRendererWithKeyDown extends ReactRenderer {
   ref: {
@@ -180,47 +181,45 @@ export const suggestion = {
         title: 'Post',
         command: ({ editor, range }: { editor: Editor, range: Range }) => {
           editor.chain().focus().deleteRange(range).run();
+
           const comp = new ReactRenderer(() => {
             const [selectedIndex, setSelectedIndex] = React.useState(0);
             const containerRef = React.useRef<HTMLDivElement>(null);
+
             const posts = [{ title: "test 1", url: "x.com" }, { title: 'test2', url: 'x.com' }];
 
             React.useEffect(() => {
-              // Focus on the div when the component mounts
               if (containerRef.current) {
                 containerRef.current.focus();
               }
             }, []);
-
-
             
-
-            // Function to handle key down events for navigation and selection
-            const handleKeyDown = (event: KeyboardEvent) => {
-              if (event.key === "ArrowUp") {
-                event.preventDefault(); // Prevent scrolling
-                setSelectedIndex((prevIndex) => (prevIndex - 1 + posts.length) % posts.length);
-              } else if (event.key === "ArrowDown") {
-                event.preventDefault(); // Prevent scrolling
-                setSelectedIndex((prevIndex) => (prevIndex + 1) % posts.length);
-              } else if (event.key === "Enter") {
-                event.preventDefault();
-                selectPost(selectedIndex);
-              }
-            };
-
 
             const selectPost = (index: number) => {
               const post = posts[index];
+              const adjustedRange = { ...range, from: range.from - 1, to: range.to + 1 };
               editor
                 .chain()
                 .focus()
-                .deleteRange(range)
+                .deleteRange(adjustedRange)
+                .insertContent({ type: 'paragraph' })
                 .insertContent({
                   type: 'postMention',
-                  attrs: post // Assuming post contains the necessary attributes for a postMention
+                  attrs: post
+                })
+                .insertContent({ type: 'paragraph' })
+                // Move the cursor to the new block if necessary
+                .command(({ tr, state }) => {
+                  const { doc, selection } = state;
+                  const position = selection.$head.after();
+                  const endOfDoc = doc.content.size;
+                  if (position < endOfDoc) {
+                    tr.setSelection(TextSelection.near(tr.doc.resolve(position + 1)));
+                  }
+                  return true;
                 })
                 .run();
+
               
               comp.destroy()
             };
