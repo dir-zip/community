@@ -1,11 +1,13 @@
 "use client"
 import React, { useState } from 'react'
-import { RichTextField, Button} from "@dir/ui";
+import { RichTextField, Button } from "@dir/ui";
 import { Controller, useFormContext } from "react-hook-form";
-import {X} from 'lucide-react'
+import { X } from 'lucide-react'
 import { remove } from "~/features/files/actions";
+import { getAllPosts } from '~/features/posts/actions';
+import { ExtendedPost } from '~/features/posts/components/PostList';
 
-export const FancyEditorField = ({ name, label }: { name: string, label?: string }) => {
+export const FancyEditorField = ({ name, label, posts }: { name: string, label?: string, posts: ExtendedPost[] }) => {
   const {
     control,
     formState: { isSubmitSuccessful }
@@ -13,6 +15,7 @@ export const FancyEditorField = ({ name, label }: { name: string, label?: string
 
   //  State for storing the file to be removed. Note: Just clicking remove file without submitting the form won't delete the file from the server.
   const [removedFiles, setRemovedFiles] = useState<string[]>([]);
+
 
 
 
@@ -27,13 +30,14 @@ export const FancyEditorField = ({ name, label }: { name: string, label?: string
           }
         }
       };
-  
+
       removeFiles().then(() => {
         // After all files are removed, reset the removedFiles state
         setRemovedFiles([]);
       });
     }
   }, [isSubmitSuccessful]);
+
 
   const handleImageRemove = async (images: string[]) => {
     images.forEach(async (image) => {
@@ -43,7 +47,7 @@ export const FancyEditorField = ({ name, label }: { name: string, label?: string
       }
     });
   };
-  
+
 
   return (
     <div className="w-full flex flex-col gap-4">
@@ -55,7 +59,7 @@ export const FancyEditorField = ({ name, label }: { name: string, label?: string
           name={name}
           control={control}
           render={({ field }) => (
-            <RichTextField value={field.value} onImageRemove={handleImageRemove} placeholder="Write something spectacular..." imageUploadUrl={`${process.env.NEXT_PUBLIC_APP_URL}/api/files/upload`} onValueChange={(e) => field.onChange(e)} />
+            <RichTextField internalData={posts} value={field.value} onImageRemove={handleImageRemove} placeholder="Write something spectacular..." imageUploadUrl={`${process.env.NEXT_PUBLIC_APP_URL}/api/files/upload`} onValueChange={(e) => field.onChange(e)} />
           )}
         />
       </label>

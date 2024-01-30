@@ -179,12 +179,102 @@ export const suggestion = {
       {
         title: 'Post',
         command: ({ editor, range }: { editor: Editor, range: Range }) => {
-          editor
-            .chain()
-            .focus()
-            .deleteRange(range)
-            .insertContent('<post-mention content="hello world"></post-mention>')
-            .run()
+          editor.chain().focus().deleteRange(range).run();
+          const comp = new ReactRenderer(() => {
+            const [selectedIndex, setSelectedIndex] = React.useState(0);
+            const containerRef = React.useRef<HTMLDivElement>(null);
+            const posts = [{ title: "test 1", url: "x.com" }, { title: 'test2', url: 'x.com' }];
+
+            React.useEffect(() => {
+              // Focus on the div when the component mounts
+              if (containerRef.current) {
+                containerRef.current.focus();
+              }
+            }, []);
+
+
+            
+
+            // Function to handle key down events for navigation and selection
+            const handleKeyDown = (event: KeyboardEvent) => {
+              if (event.key === "ArrowUp") {
+                event.preventDefault(); // Prevent scrolling
+                setSelectedIndex((prevIndex) => (prevIndex - 1 + posts.length) % posts.length);
+              } else if (event.key === "ArrowDown") {
+                event.preventDefault(); // Prevent scrolling
+                setSelectedIndex((prevIndex) => (prevIndex + 1) % posts.length);
+              } else if (event.key === "Enter") {
+                event.preventDefault();
+                selectPost(selectedIndex);
+              }
+            };
+
+
+            const selectPost = (index: number) => {
+              const post = posts[index];
+              editor
+                .chain()
+                .focus()
+                .deleteRange(range)
+                .insertContent({
+                  type: 'postMention',
+                  attrs: post // Assuming post contains the necessary attributes for a postMention
+                })
+                .run();
+              
+              comp.destroy()
+            };
+
+            useEffect(() => {
+              const navigationKeys = ["ArrowUp", "ArrowDown", "Enter"];
+              const onKeyDown = (e: KeyboardEvent) => {
+                if (navigationKeys.includes(e.key)) {
+                  e.preventDefault();
+          
+                  if (e.key === "ArrowUp") {
+                    e.preventDefault(); // Prevent scrolling
+                    setSelectedIndex((prevIndex) => (prevIndex - 1 + posts.length) % posts.length);
+                  } else if (e.key === "ArrowDown") {
+                    e.preventDefault(); // Prevent scrolling
+                    setSelectedIndex((prevIndex) => (prevIndex + 1) % posts.length);
+                  } else if (e.key === "Enter") {
+                    e.preventDefault();
+                    selectPost(selectedIndex);
+                  }
+                }
+              };
+              document.addEventListener("keydown", onKeyDown);
+              return () => {
+                document.removeEventListener("keydown", onKeyDown);
+              };
+            }, [selectedIndex, setSelectedIndex, selectPost]);
+
+
+            return (
+              <div ref={containerRef} className='fixed top-1/2 left-1/2 bg-primary-800 transform -translate-x-1/2 -translate-y-1/2 p-4 rounded shadow-md' >
+                <h2>Post Details</h2>
+                {posts.map((c, index) => {
+                  return (
+                    <div className={`flex items-center space-x-2 cursor-pointer ${index === selectedIndex ? 'bg-blue-500' : ''}`} onClick={() => selectPost(index)} key={index}>
+                      <p>{c.title}</p>
+                      <p>{c.url}</p>
+                    </div>
+                  )
+                })}
+              </div>
+            )
+          }, {
+            editor: editor,
+          });
+
+
+          document.body.appendChild(comp.element);
+
+          const event = new CustomEvent('hideCommandListPopup');
+          document.dispatchEvent(event);
+
+
+
         },
       }
     ].filter(item => item.title.toLowerCase().startsWith(query.toLowerCase())).slice(0, 10)
@@ -210,6 +300,16 @@ export const suggestion = {
           trigger: "manual",
           placement: "bottom-start",
         });
+
+        const hidePopupListener = () => {
+          popup?.[0]?.hide();
+        };
+        document.addEventListener('hideCommandListPopup', hidePopupListener);
+
+        // Cleanup listener on exit
+        return () => {
+          document.removeEventListener('hideCommandListPopup', hidePopupListener);
+        };
       },
 
       onUpdate(props: SuggestionProps) {

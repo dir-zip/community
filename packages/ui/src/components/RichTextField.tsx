@@ -13,7 +13,7 @@ import 'highlight.js/styles/github.css';
 import Placeholder from '@tiptap/extension-placeholder'
 import { EditorImageUpload, imageUploadPluginKey } from '@/editorPlugins/Image'
 import { Command, suggestion } from '@/editorPlugins/Command'
-import { PostMentionNode } from '@/editorPlugins/PostMention'
+import {  PostMentionNode } from '@/editorPlugins/PostMention'
 
 
 
@@ -24,10 +24,9 @@ lowlight.register('js', js)
 lowlight.register('css', css)
 
 export const RichTextField = (
-  { value, placeholder, onValueChange, editable = true, imageUploadUrl, onImageRemove }:
-    { value: string, onValueChange?: (e: string) => void, editable?: boolean, placeholder?: string, imageUploadUrl?: string, onImageRemove?: (images: string[]) => Promise<void> }
+  { value, placeholder, onValueChange, editable = true, imageUploadUrl, onImageRemove, internalData }:
+    { internalData?: any, value: string, onValueChange?: (e: string) => void, editable?: boolean, placeholder?: string, imageUploadUrl?: string, onImageRemove?: (images: string[]) => Promise<void> }
 ) => {
-  
 
   const editorRef = useRef<Editor | null>(null);
 
@@ -64,7 +63,9 @@ export const RichTextField = (
       Command.configure({
         suggestion: suggestion
       }),
-      PostMentionNode
+      PostMentionNode.configure({
+        posts: internalData
+      })
     ],
     editorProps: {
       attributes: {
