@@ -1,7 +1,8 @@
 "use client"
 import React, { useEffect, useRef, useState } from 'react'
 import { MessageSquare, PenSquare, LucideSquareStack, Hash, ChevronsLeft, ChevronsRight, Megaphone } from 'lucide-react'
-import { RichTextField, buttonVariants, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@dir/ui'
+import { buttonVariants, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@dir/ui'
+import { RichTextField } from '~/components/Editor/RichTextField'
 import Link from 'next/link'
 import { cn } from '@/utils'
 

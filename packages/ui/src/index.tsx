@@ -2,7 +2,6 @@ import "./global.css";
 
 export * from './components/Table'
 export * from "./components/Button"
-export * from "./components/RichTextField"
 export * from "./components/InputField"
 export * from "./components/Sidebar"
 export * from "./components/Avatar"
@@ -15,5 +14,5 @@ export * from "./components/HoverCard"
 
 export * from "./primitives/dropdown-menu"
 export * from "./primitives/switch-primitive"
-
+export * from "./primitives/dialog-primitive"
 

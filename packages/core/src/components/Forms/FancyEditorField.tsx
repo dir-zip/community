@@ -1,9 +1,10 @@
 "use client"
 import React, { useState } from 'react'
-import { RichTextField, Button} from "@dir/ui";
+import { RichTextField } from "~/components/Editor/RichTextField";
 import { Controller, useFormContext } from "react-hook-form";
-import {X} from 'lucide-react'
+
 import { remove } from "~/features/files/actions";
+
 
 export const FancyEditorField = ({ name, label }: { name: string, label?: string }) => {
   const {
@@ -13,6 +14,7 @@ export const FancyEditorField = ({ name, label }: { name: string, label?: string
 
   //  State for storing the file to be removed. Note: Just clicking remove file without submitting the form won't delete the file from the server.
   const [removedFiles, setRemovedFiles] = useState<string[]>([]);
+
 
 
 
@@ -27,13 +29,14 @@ export const FancyEditorField = ({ name, label }: { name: string, label?: string
           }
         }
       };
-  
+
       removeFiles().then(() => {
         // After all files are removed, reset the removedFiles state
         setRemovedFiles([]);
       });
     }
   }, [isSubmitSuccessful]);
+
 
   const handleImageRemove = async (images: string[]) => {
     images.forEach(async (image) => {
@@ -43,7 +46,7 @@ export const FancyEditorField = ({ name, label }: { name: string, label?: string
       }
     });
   };
-  
+
 
   return (
     <div className="w-full flex flex-col gap-4">

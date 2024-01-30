@@ -6,9 +6,11 @@ import { Suspense } from 'react'
 import { getCurrentUser } from "~/features/auth/actions"
 
 
+
 export const FeedScreen = async () => {
 
   const currentUser = await getCurrentUser()
+
 
   return (
     <div className="xl:mx-auto xl:w-[960px]">

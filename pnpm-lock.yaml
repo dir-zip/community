@@ -202,12 +202,18 @@ importers:
       '@tanstack/react-table':
         specifier: ^8.8.5
         version: 8.10.7(react-dom@18.2.0)(react@18.2.0)
+      '@tiptap/core':
+        specifier: ^2.1.16
+        version: 2.1.16(@tiptap/pm@2.1.13)
       '@tiptap/extension-code-block-lowlight':
         specifier: ^2.1.12
         version: 2.1.13(@tiptap/core@2.1.16)(@tiptap/extension-code-block@2.1.13)(@tiptap/pm@2.1.13)
       '@tiptap/extension-list-item':
         specifier: ^2.1.12
         version: 2.1.13(@tiptap/core@2.1.16)
+      '@tiptap/extension-placeholder':
+        specifier: ^2.1.15
+        version: 2.1.15(@tiptap/core@2.1.16)(@tiptap/pm@2.1.13)
       '@tiptap/extension-text-style':
         specifier: ^2.1.12
         version: 2.1.13(@tiptap/core@2.1.16)
@@ -220,6 +226,9 @@ importers:
       '@tiptap/starter-kit':
         specifier: ^2.1.12
         version: 2.1.13(@tiptap/pm@2.1.13)
+      '@tiptap/suggestion':
+        specifier: ^2.2.0
+        version: 2.2.0(@tiptap/core@2.1.16)(@tiptap/pm@2.1.13)
       bullmq:
         specifier: ^4.8.0
         version: 4.15.4
@@ -268,6 +277,9 @@ importers:
       tailwindcss:
         specifier: ^3.3.1
         version: 3.3.6
+      tippy.js:
+        specifier: ^6.3.7
+        version: 6.3.7
       uuid:
         specifier: ^9.0.0
         version: 9.0.1
@@ -413,33 +425,6 @@ importers:
       '@tanstack/react-table':
         specifier: ^8.10.7
         version: 8.10.7(react-dom@18.2.0)(react@18.2.0)
-      '@tiptap/core':
-        specifier: ^2.1.16
-        version: 2.1.16(@tiptap/pm@2.1.13)
-      '@tiptap/extension-code-block-lowlight':
-        specifier: ^2.1.12
-        version: 2.1.13(@tiptap/core@2.1.16)(@tiptap/extension-code-block@2.1.13)(@tiptap/pm@2.1.13)
-      '@tiptap/extension-list-item':
-        specifier: ^2.1.12
-        version: 2.1.13(@tiptap/core@2.1.16)
-      '@tiptap/extension-placeholder':
-        specifier: ^2.1.15
-        version: 2.1.15(@tiptap/core@2.1.16)(@tiptap/pm@2.1.13)
-      '@tiptap/extension-text-style':
-        specifier: ^2.1.12
-        version: 2.1.13(@tiptap/core@2.1.16)
-      '@tiptap/pm':
-        specifier: ^2.1.12
-        version: 2.1.13
-      '@tiptap/react':
-        specifier: ^2.1.12
-        version: 2.1.13(@tiptap/core@2.1.16)(@tiptap/pm@2.1.13)(react-dom@18.2.0)(react@18.2.0)
-      '@tiptap/starter-kit':
-        specifier: ^2.1.12
-        version: 2.1.13(@tiptap/pm@2.1.13)
-      '@tiptap/suggestion':
-        specifier: ^2.2.0
-        version: 2.2.0(@tiptap/core@2.1.16)(@tiptap/pm@2.1.13)
       class-variance-authority:
         specifier: ^0.6.1
         version: 0.6.1
@@ -464,9 +449,6 @@ importers:
       tailwindcss-animate:
         specifier: ^1.0.5
         version: 1.0.7(tailwindcss@3.3.6)
-      tippy.js:
-        specifier: ^6.3.7
-        version: 6.3.7
     devDependencies:
       '@types/react':
         specifier: 18.2.16
