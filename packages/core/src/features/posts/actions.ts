@@ -21,7 +21,7 @@ export const getAllPosts = createAction(async ({}, params) => {
   if (!params) {
     throw new Error('Parameters are undefined');
   }
-  const { skip, take, tags, categorySlug } = params;
+  const { skip, take, tags, categorySlug, title } = params;
 
   let whereClause: {
     tags?: {
@@ -30,6 +30,9 @@ export const getAllPosts = createAction(async ({}, params) => {
     },
     category?: {
       slug?: string
+    },
+    title?: {
+      contains: string
     }
   } = {};
 
@@ -53,6 +56,12 @@ export const getAllPosts = createAction(async ({}, params) => {
   if (categorySlug && categorySlug !== "all") {
     whereClause.category = {
       slug: categorySlug
+    };
+  }
+
+  if (title) { // Add this block
+    whereClause.title = {
+      contains: title
     };
   }
 
@@ -128,7 +137,8 @@ export const getAllPosts = createAction(async ({}, params) => {
   skip: z.number().optional(),
   take: z.number().optional(),
   tags: z.array(z.string()).optional(),
-  categorySlug: z.string().optional()
+  categorySlug: z.string().optional(),
+  title: z.string().optional()
 }),
 { authed: false })
 
