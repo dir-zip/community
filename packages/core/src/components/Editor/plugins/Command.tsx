@@ -1,11 +1,13 @@
+"use client"
 import { Extension } from '@tiptap/core'
 import Suggestion from '@tiptap/suggestion'
 import { Editor } from '@tiptap/core'
 import { Range } from '@tiptap/core'
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, ReactNode } from 'react';
 import { ReactRenderer } from '@tiptap/react'
 import tippy, { Instance, Props } from "tippy.js";
 import { PostSelectList } from './PostMention';
+import {Heading1, Heading2, Heading3, FileText} from 'lucide-react'
 
 interface ReactRendererWithKeyDown extends ReactRenderer {
   ref: {
@@ -29,6 +31,7 @@ interface SuggestionProps {
 
 type Item = {
   title: string,
+  icon: ReactNode,
   command: (props: CommandFunctionProps) => void
 }
 
@@ -114,6 +117,8 @@ const CommandList = ({
     }
   }, []);
 
+
+
   return (
     <div
       ref={commandListRef}
@@ -130,7 +135,8 @@ const CommandList = ({
             onClick={() => selectItem(index)}
           >
 
-            <div>
+            <div className="flex gap-4 items-center">
+             <span>{item.icon}</span>
               <p className="font-medium">{item.title}</p>
             </div>
           </button>
@@ -145,7 +151,8 @@ export const suggestion = {
   items: ({ query }: { query: string }): Item[] => {
     return [
       {
-        title: 'H1',
+        title: 'Heading 1',
+        icon: <Heading1 className='w-4 h-4'/>,
         command: ({ editor, range }: { editor: Editor, range: Range }) => {
           editor
             .chain()
@@ -156,7 +163,8 @@ export const suggestion = {
         },
       },
       {
-        title: 'H2',
+        title: 'Heading 2',
+        icon: <Heading2 className='w-4 h-4'/>,
         command: ({ editor, range }: { editor: Editor, range: Range }) => {
           editor
             .chain()
@@ -167,7 +175,8 @@ export const suggestion = {
         },
       },
       {
-        title: 'H3',
+        title: 'Heading 3',
+        icon: <Heading3 className='w-4 h-4'/>,
         command: ({ editor, range }: { editor: Editor, range: Range }) => {
           editor
             .chain()
@@ -178,7 +187,8 @@ export const suggestion = {
         },
       },
       {
-        title: 'Post',
+        title: 'Mention a post',
+        icon: <FileText className='w-4 h-4'/>,
         command: ({ editor, range }: { editor: Editor, range: Range }) => {
           editor.chain().focus().deleteRange(range).run();
 

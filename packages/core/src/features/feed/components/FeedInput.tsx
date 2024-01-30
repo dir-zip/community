@@ -1,15 +1,15 @@
 "use client";
 
 import { Form } from "~/components/Forms";
-import { createPost, getAllPosts } from "~/features/posts/actions";
+import { createPost } from "~/features/posts/actions";
 import { toast } from "sonner";
 import { FancyEditorField } from "~/components/Forms/FancyEditorField";
 import { useRouter } from "next/navigation";
 import { applyEffects } from "~/itemEffects";
 import { UserWithInventory } from "~/lib/types";
-import { ExtendedPost } from "~/features/posts/components/PostList";
 
-export const FeedInput = ({ user, posts }: { user: UserWithInventory, posts: ExtendedPost[] }) => {
+
+export const FeedInput = ({ user }: { user: UserWithInventory }) => {
   const router = useRouter()
 
   return (
@@ -42,7 +42,7 @@ export const FeedInput = ({ user, posts }: { user: UserWithInventory, posts: Ext
         className="w-full flex flex-col space-y-2 items-end"
         submitText="Post"
       >
-        <FancyEditorField name="feedInput" posts={posts} />
+        <FancyEditorField name="feedInput" />
       </Form>
     </div>
   )

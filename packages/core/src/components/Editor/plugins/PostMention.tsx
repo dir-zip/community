@@ -1,8 +1,9 @@
 "use client"
-import { InputField } from '@/components/InputField';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/primitives/dialog-primitive';
+import { InputField, Dialog, DialogContent, DialogHeader, DialogTitle } from '@dir/ui';
 import {  Editor, Node, Range } from '@tiptap/core'
 import React, { useEffect, useRef, useState } from 'react';
+import { getAllPosts } from '~/features/posts/actions';
+import { ExtendedPost } from '~/features/posts/components/PostList';
 
 
 export const PostMentionNode = Node.create({
@@ -74,8 +75,16 @@ export const PostMentionNode = Node.create({
 export const PostSelectList = ({editor, range, onChange}: {editor: Editor, range: Range, onChange: () => void}) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [localPosts, setLocalPosts] = useState<ExtendedPost[]>([])
 
-  const posts = [{ title: "test 1", url: "x.com" }, { title: 'test2', url: 'x.com' }];
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      const posts = await getAllPosts({skip: 0, take: 40})
+      setLocalPosts(posts.posts)
+    }
+    fetchPosts()
+  }, [])
 
   useEffect(() => {
     if (containerRef.current) {
@@ -85,14 +94,17 @@ export const PostSelectList = ({editor, range, onChange}: {editor: Editor, range
 
 
   const selectPost = (index: number) => {
-    const post = posts[index];
+    const post = localPosts[index];
     editor
       .chain()
       .focus()
       .deleteRange(range)
       .insertContent({
         type: 'postMention',
-        attrs: post
+        attrs: {
+          title: post?.title,
+          url: `/posts/${post?.slug}`
+        }
       })
       .enter()
       .run();
@@ -108,10 +120,10 @@ export const PostSelectList = ({editor, range, onChange}: {editor: Editor, range
 
         if (e.key === "ArrowUp") {
           e.preventDefault(); // Prevent scrolling
-          setSelectedIndex((prevIndex) => (prevIndex - 1 + posts.length) % posts.length);
+          setSelectedIndex((prevIndex) => (prevIndex - 1 + localPosts.length) % localPosts.length);
         } else if (e.key === "ArrowDown") {
           e.preventDefault(); // Prevent scrolling
-          setSelectedIndex((prevIndex) => (prevIndex + 1) % posts.length);
+          setSelectedIndex((prevIndex) => (prevIndex + 1) % localPosts.length);
         } else if (e.key === "Enter") {
           e.preventDefault();
           selectPost(selectedIndex);
@@ -138,11 +150,11 @@ export const PostSelectList = ({editor, range, onChange}: {editor: Editor, range
           <DialogTitle>Mention a post</DialogTitle>
         </DialogHeader>
         <InputField name='search' placeholder='Search'/>
-        {posts.map((c, index) => {
+        {localPosts.map((c, index) => {
           return (
             <div className={`flex items-center space-x-2 cursor-pointer rounded px-4 py-2 ${index === selectedIndex ? 'bg-primary-900' : ''}`} onClick={() => selectPost(index)} key={index}>
               <p>{c.title}</p>
-              <p>{c.url}</p>
+              <p>{c.slug}</p>
             </div>
           )
         })}

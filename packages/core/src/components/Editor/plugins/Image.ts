@@ -1,3 +1,4 @@
+"use client"
 import { Node } from '@tiptap/core'
 import { NodeType } from '@tiptap/pm/model';
 import { EditorState, Plugin, PluginKey, TextSelection, Transaction } from '@tiptap/pm/state'

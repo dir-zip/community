@@ -4,13 +4,13 @@ import { FeedList } from "../components/FeedList"
 
 import { Suspense } from 'react'
 import { getCurrentUser } from "~/features/auth/actions"
-import { getAllPosts } from "~/features/posts/actions"
+
 
 
 export const FeedScreen = async () => {
 
   const currentUser = await getCurrentUser()
-  const posts = await getAllPosts({skip: 0, take: 40})
+
 
   return (
     <div className="xl:mx-auto xl:w-[960px]">
@@ -19,7 +19,7 @@ export const FeedScreen = async () => {
       <div className="flex items-center gap-20 justify-center p-6 flex-col">
 {      currentUser ?  <Suspense>
           <div className="w-full pt-20">
-            <FeedInput user={currentUser} posts={posts.posts}/>
+            <FeedInput user={currentUser} />
           </div>
         </Suspense> : null}
         <Divider component={() => {
