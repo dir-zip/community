@@ -68,7 +68,12 @@ export const signUpAction = createAction(async ({createSession}, { email, passwo
     data: {
       email,
       username,
-      hashedPassword: hashedPassword
+      hashedPassword: hashedPassword,
+      lists: {
+        connect: {
+          slug: 'general'
+        }
+      }
     },
   });
 
@@ -309,6 +314,11 @@ export const handleOauth = async ({email, auth}: {email: string, auth: AuthInit<
         email,
         username: email,
         role: "USER",
+        lists: {
+          connect: {
+            slug: 'general'
+          }
+        }
       },
     });
 

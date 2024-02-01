@@ -33,12 +33,12 @@ model User {
 
   inventory Inventory?
   events Event[]
-
-
-  recievedBroadcasts Broadcast[]
+  broadcasts Broadcast[]
 
 
   calendarEvents CalendarEvent[]
+
+  lists List[]
 }
 
 model Session {
@@ -241,6 +241,17 @@ model Broadcast {
   updatedAt   DateTime @updatedAt
   post Post @relation(fields: [postId], references: [id])
   postId String
-  sentTo User[]
   status String
+  users User[]
+  lists       List[]   
 }
+
+model List {
+  id String @id @default(cuid())
+  title String
+  slug String @unique
+  description String?
+  users User[]
+  broadcasts Broadcast[]
+}
+

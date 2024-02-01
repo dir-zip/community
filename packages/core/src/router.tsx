@@ -41,8 +41,8 @@ import { UserInventoryScreen, UserSettingsScreen } from "./features/user/screens
 import { AdminSidebar } from "./components/ui/AdminSidebar";
 import { getUserInventory } from "./features/user/actions";
 import { Inventory } from "packages/db";
-import { UserWithInventory } from "./lib/types";
 import { BroadcastsIndex } from "./features/admin/screens/broadcasts/screens";
+import { AllListsPage, SingleListPage } from "./features/admin/screens/lists/screens";
 
 const router = new Router();
 
@@ -108,15 +108,15 @@ export async function PageInit<T>({
       }
     })
 
-    
+
     const user = await getCurrentUser()
     let inventory: Inventory | null = null
-    if(user) {
+    if (user) {
       inventory = await getUserInventory({
         userId: user.id
       })
     }
-    
+
     const memberCount = await prisma?.user.findMany()
     const tags = await prisma?.tag.findMany({
       where: {
@@ -144,7 +144,7 @@ export async function PageInit<T>({
       };
     })) : [];
 
-    if(!user) {
+    if (!user) {
       redirect('/login')
     }
 
@@ -189,10 +189,10 @@ export async function PageInit<T>({
       }
     })
 
-    
+
     const user = await getCurrentUser()
     let inventory: Inventory | null = null
-    if(user) {
+    if (user) {
       inventory = await getUserInventory({
         userId: user.id
       })
@@ -274,7 +274,7 @@ export async function PageInit<T>({
   })
 
   router.addRoute("/posts/:slug/comments/:commentId", async ({ slug, commentId }) => {
-    return <SingleCommentScreen commentId={commentId} postSlug={slug}  />
+    return <SingleCommentScreen commentId={commentId} postSlug={slug} />
   })
 
   router.addRoute("/posts/:slug/comments/:commentId/edit", async ({ commentId }) => {
@@ -464,8 +464,16 @@ export async function PageInit<T>({
     return <SingleUserAdminPage id={params.id} />
   })
 
-  router.addRoute('/admin/broadcasts', async() => {
+  router.addRoute('/admin/broadcasts', async () => {
     return <BroadcastsIndex />
+  })
+
+  router.addRoute('/admin/lists', async () => {
+    return <AllListsPage />
+  })
+
+  router.addRoute('/admin/lists/:slug', async (params) => {
+    return <SingleListPage slug={params.slug} />
   })
 
 

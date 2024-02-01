@@ -88,6 +88,11 @@ export const CategoryTable = () => {
       totalCount={count}
       startPage={startPage}
       endPage={endPage}
+      routingContext={{
+        pathname: '/admin/categories',
+        searchParams: JSON.parse(searchQuery as string)
+      }}
+      onNavigate={(url) => {  router.push(url) }}
     />
   )
 }

@@ -70,14 +70,6 @@ export const BroadcastsTable = () => {
       accessorKey: 'status',
       id: 'status',
       cell: (info: any) => <Badge className={cn("bg-primary-700", info.getValue() === "SENT" ? "text-green-400" : "")} variant={'default'}>{info.getValue()}</Badge>
-    },
-    {
-      accessorKey: 'sentTo',
-      id: 'sentTo',
-      header: "Sent To",
-      cell: (info: any) => {
-        return info.getValue()[0].email
-      }
     }
   ]
 
@@ -93,6 +85,11 @@ export const BroadcastsTable = () => {
       totalCount={count}
       startPage={startPage}
       endPage={endPage}
+      routingContext={{
+        pathname: '/admin/broadcasts',
+        searchParams: JSON.parse(searchQuery as string)
+      }}
+      onNavigate={(url) => {  router.push(url) }}
     />
   )
 }

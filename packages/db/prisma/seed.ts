@@ -58,6 +58,20 @@ const load = async () => {
       }
     })
 
+    await prisma.list.create({
+      data: {
+        title: 'Unsubscribed',
+        slug: 'unsubscribed'
+      }
+    })
+
+    await prisma.list.create({
+      data: {
+        title: 'General',
+        slug: 'general'
+      }
+    })
+
     console.log('Added data')
   } catch (e) {
     console.error(e)
