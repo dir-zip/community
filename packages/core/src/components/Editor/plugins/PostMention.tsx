@@ -4,7 +4,7 @@ import {  Editor, Node, Range } from '@tiptap/core'
 import React, { useEffect, useRef, useState } from 'react';
 import { getAllPosts } from '~/features/posts/actions';
 import { ExtendedPost } from '~/features/posts/components/PostList';
-
+import {Search} from 'lucide-react'
 
 export const PostMentionNode = Node.create({
   name: 'postMention',
@@ -187,7 +187,7 @@ export const PostSelectList = ({editor, range, onChange}: {editor: Editor, range
         <DialogHeader>
           <DialogTitle>Mention a post</DialogTitle>
         </DialogHeader>
-        <InputField name='search' placeholder='Search' onChange={(e) => setSearchQuery(e.target.value)} value={searchQuery}/>
+        <InputField icon={<Search />} name='search' placeholder='Search' onChange={(e) => setSearchQuery(e.target.value)} value={searchQuery}/>
         {localPosts.map((c, index) => {
           return (
             <div className={`flex items-center justify-between cursor-pointer rounded px-4 py-2 ${index === selectedIndex ? 'bg-primary-900' : ''}`} onClick={() => selectPost(index)} key={index}>

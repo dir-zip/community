@@ -1,13 +1,13 @@
 "use client"
 import { useEffect, useState } from "react"
-import { Table } from "@dir/ui"
+import { Badge, Button, Table } from '@dir/ui'
 import Link from 'next/link'
 import { useSearchParams, usePathname, useRouter } from "next/navigation"
-import { getAllActions } from "../actions"
-import { type Action } from "packages/db"
+import { getAllLists } from "../actions"
+import { List, User, Broadcast } from "packages/db"
 
 
-export const ActionsTable = () => {
+export const ListTable = () => {
   const ITEMS_PER_PAGE = 10
   const searchParams = useSearchParams()
   const pathname = usePathname();
@@ -19,7 +19,7 @@ export const ActionsTable = () => {
   const startPage = tablePage * ITEMS_PER_PAGE + 1
   let endPage = startPage - 1 + ITEMS_PER_PAGE
 
-  const [data, setData] = useState<Action[]>([])
+  const [data, setData] = useState<(List & {users: User[], broadcasts: Broadcast[]})[]>([])
   const [count, setCount] = useState(0)
 
   if (endPage > count) {
@@ -29,21 +29,25 @@ export const ActionsTable = () => {
   useEffect(() => {
     (async () => {
 
-      const data = await getAllActions({
+      const data = await getAllLists({
         skip, take: ITEMS_PER_PAGE, where: searchQuery && JSON.parse(searchQuery as string)
           ? {
             OR: [
-              !isNaN(Number(JSON.parse(searchQuery as string))) &&
-                Number(JSON.parse(searchQuery as string)) > 0
-                ? {
-                  id: Number(JSON.parse(searchQuery as string)),
+              {
+                slug: {
+                  contains: JSON.parse(searchQuery as string)
                 }
-                : {}
-            ],
+              },
+              {
+                title: {
+                  contains: JSON.parse(searchQuery as string)
+                }
+              }
+            ]
           }
           : {}
       })
-      setData(data.actions)
+      setData(data.lists)
       setCount(data.count)
     })()
     router.refresh()
@@ -51,28 +55,35 @@ export const ActionsTable = () => {
 
   const columns = [
     {
-      accessorKey: 'id',
-      id: 'id',
+      accessorKey: 'slug',
+      id: 'slug',
+      header: 'Title',
       cell: (info: any) => {
         return (
           <Link
-            href={`/admin/actions/${info.getValue()}`}
-            className="text-link"
-          >
-            {info.getValue()}
-          </Link>
+          href={`/admin/lists/${info.getValue()}`}
+          className="text-link"
+        >
+          {info.row.original.title}
+        </Link>
         )
       }
     },
     {
-      accessorKey: 'title',
-      id: 'title',
-      cell: (info: any) => info.getValue()
+      accessorKey: 'users',
+      id: 'users',
+      header: 'Total Users',
+      cell: (info: any) => <Badge className="bg-primary-900">{info.getValue().length}</Badge>
     },
     {
-      accessorKey: 'value',
-      id: 'value',
-      cell: (info: any) => info.getValue().toString()
+      accessorKey: 'edit',
+      id: 'edit',
+      header: '',
+      cell: (info: any) => {
+        return (
+          info.row.original.slug !== 'unsubscribed' ? <Button onClick={() => router.push(`/admin/lists/${info.row.original.slug}/edit`)}>Edit</Button> : null
+        )
+      }
     }
   ]
 
@@ -89,7 +100,7 @@ export const ActionsTable = () => {
       startPage={startPage}
       endPage={endPage}
       routingContext={{
-        pathname: '/admin/actions',
+        pathname: '/admin/lists',
         searchParams: JSON.parse(searchQuery as string)
       }}
       onNavigate={(url) => {  router.push(url) }}

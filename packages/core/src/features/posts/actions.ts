@@ -12,12 +12,13 @@ import { userInventoryIncludes } from "~/lib/includes";
 import { sendEmail } from "~/jobs";
 
 
+
 export const getCategories = createAction(async () => {
   const categories = await prisma.category.findMany()
   return categories
 })
 
-export const getAllPosts = createAction(async ({}, params) => {
+export const getAllPosts = createAction(async ({ }, params) => {
   if (!params) {
     throw new Error('Parameters are undefined');
   }
@@ -118,7 +119,7 @@ export const getAllPosts = createAction(async ({}, params) => {
     const allCommentsAndReplies = post.comments.concat(
       post.comments.flatMap(comment => comment.replies.map(reply => ({
         ...reply,
-        user: {...comment.user, inventory: comment.user.inventory,},
+        user: { ...comment.user, inventory: comment.user.inventory, },
         replies: []
       })))
     );
@@ -140,11 +141,11 @@ export const getAllPosts = createAction(async ({}, params) => {
   categorySlug: z.string().optional(),
   title: z.string().optional()
 }),
-{ authed: false })
+  { authed: false })
 
-export const createPost = createAction(async ({ session }, { title, body, category, tags, broadcast }) => {
-  
-  
+export const createPost = createAction(async ({ session }, { title, body, category, tags, broadcast, broadcastToList }) => {
+
+
   const createSlug = await findFreeSlug<Post>(
     title.toLowerCase().replace(/[^a-z0-9]/g, "-"),
     async (slug: string) =>
@@ -183,7 +184,7 @@ export const createPost = createAction(async ({ session }, { title, body, catego
   );
 
   const filteredTags = newTags.filter(Boolean);
-  
+
 
   const post = await prisma.post.create({
     data: {
@@ -200,7 +201,7 @@ export const createPost = createAction(async ({ session }, { title, body, catego
     }
   })
 
-  if(post.title === "") {
+  if (post.title === "") {
     await prisma.post.update({
       where: {
         id: post.id
@@ -212,27 +213,65 @@ export const createPost = createAction(async ({ session }, { title, body, catego
     })
   }
 
-  if(broadcast) {
-    const users = await prisma.user.findMany({})
+  if (broadcast) {
+    const unsubscribedList = await prisma.list.findUnique({
+      where: {
+        slug: 'unsubscribed'
+      },
+      include: {
+        users: true
+      }
+    });
 
-    for(const user of users) {
-      await sendEmail.queue.add('sendEmail', {email: user.email, subject: post.title, template:post.body})
+    // Extract user IDs from the unsubscribed list
+    const unsubscribedUserIds = unsubscribedList ? unsubscribedList.users.map(user => user.id) : [];
 
-      await prisma.broadcast.create({
-        data: {
-          sentTo: {
-            connect: {
-              id: user.id
-            }
-          },
-          post: {
-            connect: {
-              id: post.id
-            }
-          },
-          status: "SENT"
+    const targetLists = await prisma.list.findMany({
+      where: {
+        slug: {
+          in: broadcastToList
         }
-      })
+      },
+      include: {
+        users: true
+      }
+    });
+
+    // Initialize a set to keep track of user IDs that have already been processed
+    const processedUserIds = new Set();
+
+    for (const list of targetLists) {
+      for (const user of list.users) {
+        if (!unsubscribedUserIds.includes(user.id) && !processedUserIds.has(user.id)) {
+          await sendEmail.queue.add('sendEmail', { type:"BROADCAST", email: user.email, subject: post.title, html: post.body });
+          // Create a broadcast and connect it to the current list
+          await prisma.broadcast.create({
+            data: {
+              lists: {
+                connect: {
+                  id: list.id
+                }
+              },
+              users: {
+                connect: {
+                  id: user.id
+                }
+              },
+              post: {
+                connect: {
+                  id: post.id
+                }
+              },
+              status: "SENT"
+            }
+          });
+          // Mark the user as processed
+          processedUserIds.add(user.id);
+
+        }
+      }
+
+
     }
   }
 

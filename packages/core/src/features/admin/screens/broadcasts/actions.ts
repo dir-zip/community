@@ -15,11 +15,8 @@ export const getAllBroadcasts = createAction(
       skip,
       where,
       include: {
-        sentTo: {
-          select: {
-            email: true
-          }
-        },
+        users: true,
+        lists: true,
         post: {
           select: {
             slug: true,

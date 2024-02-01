@@ -1,0 +1,1 @@
+import {Table as _Table} from '@dir/ui'

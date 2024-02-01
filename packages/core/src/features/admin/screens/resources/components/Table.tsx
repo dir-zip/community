@@ -122,6 +122,11 @@ const ResourceTable = ({ resource, schema }: { resource: string, schema: Resourc
       totalCount={count}
       startPage={startPage}
       endPage={endPage}
+      routingContext={{
+        pathname: `/admin/${resource}`,
+        searchParams: JSON.parse(searchQuery as string)
+      }}
+      onNavigate={(url) => {  router.push(url) }}
     />
   )
 }
