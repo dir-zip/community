@@ -15,4 +15,4 @@ export * from "./components/HoverCard"
 export * from "./primitives/dropdown-menu"
 export * from "./primitives/switch-primitive"
 export * from "./primitives/dialog-primitive"
-
+export * from "./primitives/checkbox-primitive"

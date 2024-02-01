@@ -70,6 +70,14 @@ export const BroadcastsTable = () => {
       accessorKey: 'status',
       id: 'status',
       cell: (info: any) => <Badge className={cn("bg-primary-700", info.getValue() === "SENT" ? "text-green-400" : "")} variant={'default'}>{info.getValue()}</Badge>
+    },
+    {
+      accessorKey: 'users',
+      id: 'users',
+      header: 'Sent To',
+      cell: (info: any) => {
+        return <Link href={`/admin/users/${info.getValue()[0].id}`} className="text-link">{info.getValue()[0].email}</Link>
+      }
     }
   ]
 

@@ -143,7 +143,7 @@ export const getAllPosts = createAction(async ({ }, params) => {
 }),
   { authed: false })
 
-export const createPost = createAction(async ({ session }, { title, body, category, tags, broadcast }) => {
+export const createPost = createAction(async ({ session }, { title, body, category, tags, broadcast, broadcastToList }) => {
 
 
   const createSlug = await findFreeSlug<Post>(
@@ -229,7 +229,7 @@ export const createPost = createAction(async ({ session }, { title, body, catego
     const targetLists = await prisma.list.findMany({
       where: {
         slug: {
-          in: ['general']
+          in: broadcastToList
         }
       },
       include: {
@@ -237,9 +237,12 @@ export const createPost = createAction(async ({ session }, { title, body, catego
       }
     });
 
+    // Initialize a set to keep track of user IDs that have already been processed
+    const processedUserIds = new Set();
+
     for (const list of targetLists) {
       for (const user of list.users) {
-        if (!unsubscribedUserIds.includes(user.id)) {
+        if (!unsubscribedUserIds.includes(user.id) && !processedUserIds.has(user.id)) {
           await sendEmail.queue.add('sendEmail', { email: user.email, subject: post.title, template: post.body });
           // Create a broadcast and connect it to the current list
           await prisma.broadcast.create({
@@ -262,6 +265,9 @@ export const createPost = createAction(async ({ session }, { title, body, catego
               status: "SENT"
             }
           });
+          // Mark the user as processed
+          processedUserIds.add(user.id);
+
         }
       }
 
