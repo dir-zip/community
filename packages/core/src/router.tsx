@@ -43,6 +43,7 @@ import { getUserInventory } from "./features/user/actions";
 import { Inventory } from "packages/db";
 import { BroadcastsIndex } from "./features/admin/screens/broadcasts/screens";
 import { AllListsPage, EditListPage, NewListPage, SingleListPage } from "./features/admin/screens/lists/screens";
+import { Unsubscribe } from "./features/lists/action";
 
 const router = new Router();
 
@@ -485,7 +486,9 @@ export async function PageInit<T>({
   })
 
 
-
+  router.addRoute('/unsubscribe', async (_, request) => {
+    return Unsubscribe(request!)
+  }, 'api:GET')
 
   router.addRoute('/activateAccount', async (_, request) => {
     return VerifyUser(request!)

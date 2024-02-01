@@ -10,7 +10,7 @@ import { prepareArrayField } from "@creatorsneverdie/prepare-array-for-prisma"
 import { triggerAction } from '../actions/actions';
 import { userInventoryIncludes } from "~/lib/includes";
 import { sendEmail } from "~/jobs";
-import { UserWithInventory } from "~/lib/types";
+
 
 
 export const getCategories = createAction(async () => {
@@ -243,7 +243,7 @@ export const createPost = createAction(async ({ session }, { title, body, catego
     for (const list of targetLists) {
       for (const user of list.users) {
         if (!unsubscribedUserIds.includes(user.id) && !processedUserIds.has(user.id)) {
-          await sendEmail.queue.add('sendEmail', { email: user.email, subject: post.title, template: post.body });
+          await sendEmail.queue.add('sendEmail', { type:"BROADCAST", email: user.email, subject: post.title, html: post.body });
           // Create a broadcast and connect it to the current list
           await prisma.broadcast.create({
             data: {

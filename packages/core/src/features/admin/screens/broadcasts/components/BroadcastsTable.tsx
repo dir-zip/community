@@ -95,7 +95,7 @@ export const BroadcastsTable = () => {
       endPage={endPage}
       routingContext={{
         pathname: '/admin/broadcasts',
-        searchParams: JSON.parse(searchQuery as string)
+        searchParams: searchQuery ? JSON.parse(searchQuery) : ''
       }}
       onNavigate={(url) => {  router.push(url) }}
     />
