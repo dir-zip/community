@@ -1,11 +1,12 @@
 "use server"
 
-import { prisma, type Item } from "@dir/db";
+import { prisma, type Item, List } from "@dir/db";
 import {z} from 'zod'
 
 
 import {createAction} from '../../../../lib/createAction';
 import { revalidatePath, revalidateTag } from "next/cache";
+import { findFreeSlug } from "@/utils";
 
 
 
@@ -60,6 +61,60 @@ export const getSingleList = createAction(async({}, {slug}) => {
 }, z.object({
   slug: z.string()
 }))
+
+export const createList = createAction(async({}, {title}) => {
+  const createSlug = await findFreeSlug<List>(
+    title.toLowerCase().replace(/[^a-z0-9]/g, "-"),
+    async (slug: string) =>
+      await prisma.list.findUnique({ where: { slug } }),
+  );
+  
+  const list = await prisma.list.create({
+    data: {
+      title,
+      slug: createSlug
+    }
+  })
+
+  return list
+}, z.object({
+  title: z.string(),
+}))
+
+export const updateList = createAction(async({}, {slug, data}) => {
+  const currentList = await prisma.list.findUnique({ where: { slug }});
+
+  let newSlug;
+  if (currentList?.title !== data.title) {
+    newSlug = await findFreeSlug<List>(
+      data.title.toLowerCase().replace(/[^a-z0-9]/g, "-"),
+      async (slug: string) =>
+        await prisma.list.findUnique({ where: { slug } }),
+    );
+  } else {
+    newSlug = currentList.slug;
+  }
+
+
+  const list = await prisma.list.update({
+    where: {
+      slug
+    },
+    data: {
+      ...data,
+      slug: newSlug
+    }
+  })
+
+  return list
+}, z.object({
+  slug: z.string(),
+  data: z.object({
+    title: z.string()
+  })
+}))
+
+
 
 export const getUsersFromList = createAction(async({}, {slug, skip, take, where}) => {
   const users = await prisma.list.findFirst({

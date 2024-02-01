@@ -42,7 +42,7 @@ import { AdminSidebar } from "./components/ui/AdminSidebar";
 import { getUserInventory } from "./features/user/actions";
 import { Inventory } from "packages/db";
 import { BroadcastsIndex } from "./features/admin/screens/broadcasts/screens";
-import { AllListsPage, SingleListPage } from "./features/admin/screens/lists/screens";
+import { AllListsPage, EditListPage, NewListPage, SingleListPage } from "./features/admin/screens/lists/screens";
 
 const router = new Router();
 
@@ -474,6 +474,14 @@ export async function PageInit<T>({
 
   router.addRoute('/admin/lists/:slug', async (params) => {
     return <SingleListPage slug={params.slug} />
+  })
+
+  router.addRoute('/admin/lists/new', async () => {
+    return <NewListPage  />
+  })
+
+  router.addRoute('/admin/lists/:slug/edit', async (params) => {
+    return <EditListPage slug={params.slug} />
   })
 
 

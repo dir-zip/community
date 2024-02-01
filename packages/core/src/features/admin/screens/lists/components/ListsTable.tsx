@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useState } from "react"
-import { Badge, Table } from '@dir/ui'
+import { Badge, Button, Table } from '@dir/ui'
 import Link from 'next/link'
 import { useSearchParams, usePathname, useRouter } from "next/navigation"
 import { getAllLists } from "../actions"
@@ -75,6 +75,16 @@ export const ListTable = () => {
       header: 'Total Users',
       cell: (info: any) => <Badge className="bg-primary-900">{info.getValue().length}</Badge>
     },
+    {
+      accessorKey: 'edit',
+      id: 'edit',
+      header: '',
+      cell: (info: any) => {
+        return (
+          info.row.original.slug !== 'unsubscribed' ? <Button onClick={() => router.push(`/admin/lists/${info.row.original.slug}/edit`)}>Edit</Button> : null
+        )
+      }
+    }
   ]
 
   return (
