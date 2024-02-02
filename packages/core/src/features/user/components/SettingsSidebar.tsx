@@ -2,7 +2,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
-export const SettingsSidebar = () => {
+export const SettingsSidebar = ({isInviteOnly}: {isInviteOnly?: boolean}) => {
   const pathname = usePathname()
 
   const linkClassName = (path: string) => {
@@ -19,6 +19,10 @@ export const SettingsSidebar = () => {
       <Link href="/settings/inventory" className={`${linkClassName("/settings/inventory")} text-sm p-2 rounded`}>
         Inventory
       </Link>
+
+      {isInviteOnly ?       <Link href="/settings/invites" className={`${linkClassName("/settings/invites")} text-sm p-2 rounded`}>
+        Invites
+      </Link> : null}
     </div>
   )
 }

@@ -4,6 +4,7 @@ import { createAction } from "~/lib/createAction"
 import {InventoryItem, Item, prisma} from "@dir/db"
 import { revalidatePath } from 'next/cache'
 import { effects } from '~/itemEffects'
+import { PasswordHandler, generateToken } from 'packages/auth'
 
 export const updateUser = createAction(async({validate}, {avatar, userId}) => {
   await validate(['UPDATE', "user", userId])
@@ -78,7 +79,8 @@ export const getUserInventory = createAction(async({validate}, { userId}) => {
   userId: z.string()
 }), {authed: true})
 
-export const equipAndUnequipItem = createAction(async({session}, {itemId}) => {
+export const equipAndUnequipItem = createAction(async({session, validate}, {itemId}) => {
+  await validate(['UPDATE', "user", session?.data.userId])
   const findItem = await prisma.inventoryItem.findFirst({
     where: {
       id: itemId
@@ -223,3 +225,26 @@ export const getAllUserCount = createAction(async ({}) => {
   const users = await prisma.user.count()
   return users
 }, undefined, {authed: false})
+
+export const createInvite = createAction(async({validate}, {userId}) => {
+  await validate(['UPDATE', "user", userId])
+  const token = generateToken(16);
+  const hashedToken = await PasswordHandler.hash(token);
+  await prisma.token.create({
+    data: {
+      type: "INVITE_TOKEN",
+      userId: userId,
+      hashedToken: hashedToken,
+      expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
+    },
+  });
+
+  revalidatePath('/settings/invites')
+
+  return token
+
+}, z.object({
+  avatar: z.string().optional(),
+  userId: z.string()
+}), {authed: true})
+
