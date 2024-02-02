@@ -17,9 +17,7 @@ export const FeedList = ({ currentUser }: { currentUser: User | null }) => {
 
   const ITEMS_PER_PAGE = 10
   const searchParams = useSearchParams()
-  const pathname = usePathname();
   const page = Number(searchParams.get('page')) || 0;
-  const searchQuery = searchParams.get('search')
   const tablePage = Number(page)
   const skip = tablePage * ITEMS_PER_PAGE
   const router = useRouter()
@@ -38,8 +36,7 @@ export const FeedList = ({ currentUser }: { currentUser: User | null }) => {
 
 
   useEffect(() => {
-    (async () => {
-
+    const getFeedData = async () => {
       const feed = await getFeed({ skip: (page) * pageSize, take: pageSize })
 
 
@@ -48,10 +45,10 @@ export const FeedList = ({ currentUser }: { currentUser: User | null }) => {
 
       const categories = await getAllCategories({ skip: 0, take: 20 })
       setCategoriesSelect(categories.categories)
+    }
+    getFeedData()
 
-    })()
-    router.refresh()
-  }, [pathname, page, searchQuery, router, pageSize, searchParams])
+  }, [page, pageSize, searchParams])
 
 
   return (

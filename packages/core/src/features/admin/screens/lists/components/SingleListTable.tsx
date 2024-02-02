@@ -30,8 +30,7 @@ export const SingleListTable = ({slug}: {slug: string}) => {
 
 
   useEffect(() => {
-    (async () => {
-
+    const getData = async () => {
       const data = await getUsersFromList({
         skip, slug,  take: ITEMS_PER_PAGE, where: searchQuery && JSON.parse(searchQuery as string)
           ? {
@@ -50,11 +49,13 @@ export const SingleListTable = ({slug}: {slug: string}) => {
           }
           : {}
       })
-
       setData(data.users)
       setCount(data.count)
-    })()
-    router.refresh()
+
+    }
+
+    getData()
+
   }, [pathname, page, searchQuery, router, searchParams])
 
   const columns = [

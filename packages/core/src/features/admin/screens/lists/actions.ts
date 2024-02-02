@@ -181,7 +181,7 @@ export const removeUserFromList = createAction(async({}, {slug, userId}) => {
     }
   })
 
-  revalidatePath(`/admin/lists/${slug}`)
+  revalidatePath(`/admin/lists/[slug]`)
 
   return updatedList
 
@@ -224,7 +224,7 @@ export const addUserToList = createAction(async({}, {slug, userId}) => {
     }
   })
 
-  revalidatePath(`/admin/lists/${slug}`)
+  revalidatePath(`/admin/lists/[slug]`)
 
   return updatedList
 
