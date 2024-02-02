@@ -73,7 +73,7 @@ export const ListTable = () => {
       accessorKey: 'users',
       id: 'users',
       header: 'Total Users',
-      cell: (info: any) => <Badge className="bg-primary-900">{info.getValue().length}</Badge>
+      cell: (info: any) => <Badge>{info.getValue().length}</Badge>
     },
     {
       accessorKey: 'edit',

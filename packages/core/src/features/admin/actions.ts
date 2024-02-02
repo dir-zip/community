@@ -51,6 +51,15 @@ export const updateSiteSettings = createAction(
                 isActive: true,
                 value: params.broadcastPin.toString()
               }
+            },
+            {
+              where: {
+                feature: 'signupFlow'
+              },
+              data: {
+                isActive: true,
+                value: params.signupFlow
+              }
             }
           ]
         }
@@ -63,7 +72,8 @@ export const updateSiteSettings = createAction(
   z.object({
     siteTitle: z.string(),
     isPrivate: z.boolean(),
-    broadcastPin: z.number()
+    broadcastPin: z.number(),
+    signupFlow: z.string()
   }),
   {authed: true}
 )

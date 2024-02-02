@@ -80,7 +80,7 @@ const UsersTable = () => {
     {
       accessorKey: 'points',
       id: 'points',
-      cell: (info: any) => <Badge className="bg-primary-900">{info.getValue()}</Badge>
+      cell: (info: any) => <Badge>{info.getValue()}</Badge>
     },
     {
       accessorKey: 'role',
@@ -90,7 +90,7 @@ const UsersTable = () => {
     {
       accessorKey: 'verified',
       id: 'verified',
-      cell: (info: any) => <Badge className="bg-primary-900">{info.getValue().toString()}</Badge>
+      cell: (info: any) => <Badge>{info.getValue().toString()}</Badge>
     },
     {
       accessorKey: 'createdAt',
