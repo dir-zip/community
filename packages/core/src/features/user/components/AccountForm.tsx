@@ -5,8 +5,9 @@ import { toast } from "sonner"
 import { Form } from "~/components/Forms"
 import SingleFileUploadField from "~/features/files/components/SingleFileUpload"
 import { updateUser } from "../actions"
+import { UserWithInventory } from "~/lib/types"
 
-export const AccountForm = ({currentUser}: {currentUser: User}) => {
+export const AccountForm = ({currentUser}: {currentUser: UserWithInventory | null}) => {
   return (
     <div className="flex flex-col gap-4">
       <div>
@@ -16,12 +17,12 @@ export const AccountForm = ({currentUser}: {currentUser: User}) => {
       <Form 
         className="w-full flex flex-col gap-4 items-end"
         initialValues={{
-          avatar: currentUser.avatar
+          avatar: currentUser?.avatar
         }} 
         onSubmit={async (values) => {
         toast.promise(
           new Promise(async (resolve) => {
-            await updateUser({avatar: values.avatar, userId: currentUser.id})
+            await updateUser({avatar: values.avatar, userId: currentUser?.id!})
             resolve(null);
           }),
           {

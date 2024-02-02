@@ -1,10 +1,11 @@
 "use client"
 import { useEffect, useState } from "react"
-import { Table } from "@dir/ui"
+import { Table, Badge} from "@dir/ui"
 import Link from 'next/link'
 import { useSearchParams, usePathname, useRouter } from "next/navigation"
 import { getAllActions } from "../actions"
 import { type Action } from "packages/db"
+
 
 
 export const ActionsTable = () => {
@@ -72,7 +73,7 @@ export const ActionsTable = () => {
     {
       accessorKey: 'value',
       id: 'value',
-      cell: (info: any) => info.getValue().toString()
+      cell: (info: any) => <Badge>{info.getValue().toString()}</Badge>
     }
   ]
 

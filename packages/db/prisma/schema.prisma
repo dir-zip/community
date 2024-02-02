@@ -61,7 +61,7 @@ model Token {
   hashedToken String
   type        String
   expiresAt   DateTime
-  sentTo      String
+  sentTo      String?
 
   user   User @relation(fields: [userId], references: [id])
   userId String

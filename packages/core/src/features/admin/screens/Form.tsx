@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation"
 import { GlobalSetting, FeatureToggle } from "packages/db"
 import { updateSiteSettings } from "../actions"
 import TextFieldWithAddon from "~/components/Forms/TextFieldWithAddon"
+import ButtonSelectField from "~/components/Forms/ButtonSelectField"
 
 export const SiteForm = ({ site }: { site: GlobalSetting & { features: FeatureToggle[] } }) => {
   const router = useRouter()
@@ -22,7 +23,8 @@ export const SiteForm = ({ site }: { site: GlobalSetting & { features: FeatureTo
         initialValues={{
           siteTitle: site.siteTitle,
           isPrivate: isPrivate,
-          broadcastPin: site.features.find(f => f.feature === 'broadcastPin')!.value
+          broadcastPin: site.features.find(f => f.feature === 'broadcastPin')!.value,
+          signupFlow: site.features.find(f => f.feature === 'signupFlow')!.value
         }}
         onSubmit={async (values) => {
           toast.promise(
@@ -50,7 +52,8 @@ export const SiteForm = ({ site }: { site: GlobalSetting & { features: FeatureTo
         <SwitchField name="isPrivate" label="Private" description="Require an account to view posts" />
         <div className="bg-border-subtle w-full h-px" />
         <TextFieldWithAddon inputWidth="12rem" name="broadcastPin" label="Pin broadcasts" addon="days" description="How long to keep broadcasts at the top of the feed" type="number" />
-
+        <div className="bg-border-subtle w-full h-px" />
+        <ButtonSelectField name="signupFlow" label="Signup Flow" description="Set if registration should be open to the public, completely closed, or invite only where your members can send invites to others." options={[{key: 'Open', value: 'open'}, {key: 'Closed', value: 'closed'}, {key: 'Invite Only', value: 'invite'}]} />
       </Form>
     </div>
   )

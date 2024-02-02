@@ -58,6 +58,19 @@ const load = async () => {
       }
     })
 
+    await prisma.featureToggle.create({
+      data: {
+        globalSetting: {
+          connect: {
+            id: 1
+          }
+        },
+        isActive: true,
+        feature: 'signupFlow',
+        value: 'open'
+      }
+    })
+
     await prisma.list.create({
       data: {
         title: 'Unsubscribed',

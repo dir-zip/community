@@ -37,13 +37,15 @@ import { ShopPage } from "./features/shop/screens";
 
 import { redirect } from 'next/navigation'
 import { FeedScreen } from "./features/feed/screens";
-import { UserInventoryScreen, UserSettingsScreen } from "./features/user/screens";
+import { UserInventoryScreen, UserInviteSettings, UserSettingsScreen } from "./features/user/screens";
 import { AdminSidebar } from "./components/ui/AdminSidebar";
 import { getUserInventory } from "./features/user/actions";
 import { Inventory } from "packages/db";
 import { BroadcastsIndex } from "./features/admin/screens/broadcasts/screens";
 import { AllListsPage, EditListPage, NewListPage, SingleListPage } from "./features/admin/screens/lists/screens";
 import { Unsubscribe } from "./features/lists/action";
+import { ClosedSignupPage } from "./features/auth/screens/closed_signup";
+import { InviteSignupPage } from "./features/auth/screens/invite_signup";
 
 const router = new Router();
 
@@ -294,6 +296,10 @@ export async function PageInit<T>({
     return <UserInventoryScreen />
   })
 
+  router.addRoute("/settings/invites", async () => {
+    return <UserInviteSettings />
+  })
+
 
   router.addRoute('/posts/new', async () => {
     const session = await auth.getSession();
@@ -380,6 +386,23 @@ export async function PageInit<T>({
   })
 
   router.addRoute("/signup", async () => {
+    const signupFlow = await prisma?.featureToggle.findFirst({
+      where: {
+        feature: 'signupFlow'
+      }
+    })
+
+
+    if(signupFlow?.value === 'closed') {
+      return <ClosedSignupPage />
+    }
+
+    if(signupFlow?.value === 'invite') {
+      return <InviteSignupPage  />
+    }
+
+
+
     return <SignupPage searchParams={searchParams} />
   })
 
