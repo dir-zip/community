@@ -40,7 +40,7 @@ import { FeedScreen } from "./features/feed/screens";
 import { UserInventoryScreen, UserInviteSettings, UserSettingsScreen } from "./features/user/screens";
 import { AdminSidebar } from "./components/ui/AdminSidebar";
 import { getUserInventory } from "./features/user/actions";
-import { Inventory } from "packages/db";
+import { Inventory } from "@dir/db";
 import { BroadcastsIndex } from "./features/admin/screens/broadcasts/screens";
 import { AllListsPage, EditListPage, NewListPage, SingleListPage } from "./features/admin/screens/lists/screens";
 import { Unsubscribe } from "./features/lists/action";
@@ -49,8 +49,12 @@ import { InviteSignupPage } from "./features/auth/screens/invite_signup";
 
 const router = new Router();
 
+export async function getMetadata(params: { "router": string[] }){
+  const getParams = params["router"]
+  return router.generateMetadata(getParams)
+}
 
-export async function PageInit<T>({
+export async function PageInit<T>({ 
   params,
   searchParams,
   routes,
@@ -265,15 +269,27 @@ export async function PageInit<T>({
 
   router.addRoute("/feed", async () => {
     return <FeedScreen />
+  }, "page", (params) => {
+    return {
+      title: 'Feed'
+    }
   })
 
   router.addRoute('/posts', async () => {
     return <AllPosts />
+  }, 'page', () => {
+    return {
+      title: 'Posts'
+    }
   })
 
   router.addRoute("/posts/:slug", async ({ slug }) => {
     const currentUser = await getCurrentUser()
     return <SinglePost slug={slug} loggedIn={currentUser ? true : false} />
+  }, "page", (params) => {
+    return {
+      title: params.slug
+    }
   })
 
   router.addRoute("/posts/:slug/comments/:commentId", async ({ slug, commentId }) => {

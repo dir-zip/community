@@ -8,16 +8,11 @@ import { getCurrentUser } from "~/features/auth/actions"
 
 
 export const FeedScreen = async () => {
-
   const currentUser = await getCurrentUser()
-
-
   return (
     <div className="xl:mx-auto xl:w-[960px]">
-
-
       <div className="flex items-center gap-20 justify-center p-6 flex-col">
-{      currentUser ?  <Suspense>
+        {currentUser ? <Suspense>
           <div className="w-full pt-20">
             <FeedInput user={currentUser} />
           </div>
