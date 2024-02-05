@@ -221,6 +221,7 @@ model Condition {
 model GlobalSetting {
   id          Int     @default(1) @unique
   siteTitle   String @default("dir.zip")
+  siteDescription String?
   features FeatureToggle[]
 }
 

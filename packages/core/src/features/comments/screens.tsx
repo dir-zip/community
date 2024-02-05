@@ -6,7 +6,8 @@ import { getCommentsForPost } from "./actions"
 import { CommentList } from "./components/CommentList";
 import { Suspense } from 'react'
 import { checkGuard, getCurrentUser } from "../auth/actions"
-import { Divider, RichTextField } from "@dir/ui"
+import { Divider } from "@dir/ui"
+import { RichTextField } from "~/components/Editor/RichTextField"
 import { ChevronLeftSquare, PenSquare, SeparatorHorizontal } from 'lucide-react'
 import { FullCommentForm } from "./components/FullCommentForm"
 import { applyEffects } from "~/itemEffects"
