@@ -9,16 +9,16 @@ import { Divider } from "@dir/ui"
 import { RichTextField } from "~/components/Editor/RichTextField"
 import { PenSquare } from 'lucide-react'
 import { applyEffects } from "~/itemEffects"
-export const SinglePost = async ({ slug, loggedIn }: { slug: string, loggedIn: boolean }) => {
-  const post = await getSinglePost({ slug: slug })
+import { Post, Tag } from "packages/db"
+import { UserWithInventory } from "~/lib/types"
+export const SinglePost = async ({ loggedIn, post }: { loggedIn: boolean, post: (Post & {user: UserWithInventory, tags: Tag[]}) }) => {
+
   let can = false
   if(loggedIn) {
-    can = await checkGuard({ rule: ["UPDATE", "post", slug] });
+    can = await checkGuard({ rule: ["UPDATE", "post", post.slug] });
   }
 
-  if (!post) {
-    redirect('/404')
-  }
+
 
   return (
     <div className="xl:mx-auto xl:w-[960px]">
@@ -34,7 +34,7 @@ export const SinglePost = async ({ slug, loggedIn }: { slug: string, loggedIn: b
           <div className="w-full bg-primary-900 rounded p-6 border-border-subtle">
             <RichTextField value={post.body} editable={false} onValueChange={undefined} />
             <div className="w-full flex justify-end">
-              {loggedIn && can && <Link href={`/posts/${slug}/edit`}><PenSquare className='text-link w-4 cursor-pointer h-4' /></Link>}
+              {loggedIn && can && <Link href={`/posts/${post.slug}/edit`}><PenSquare className='text-link w-4 cursor-pointer h-4' /></Link>}
             </div>
           </div>
         </div>

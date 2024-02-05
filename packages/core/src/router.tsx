@@ -47,6 +47,9 @@ import { Unsubscribe } from "./features/lists/action";
 import { ClosedSignupPage } from "./features/auth/screens/closed_signup";
 import { InviteSignupPage } from "./features/auth/screens/invite_signup";
 import { metadata } from "./lib/metadata";
+import { ographImageGenerator, size } from "./lib/ographImageGenerator";
+import { getSinglePost } from "./features/posts/actions";
+import { getComment } from "./features/comments/actions";
 
 const router = new Router();
 
@@ -87,23 +90,35 @@ export async function PageInit<T>({
     },
     take: 10 // Limit to the top 10 tags, adjust as needed
   });
-
+  let metaData = {
+    pageTitle: '',
+    author: ''
+  };
 
   const preFilledMetadata = ({ 
     pageTitle, 
-    type = 'website' 
+    type = 'website',
+    author 
   } : { 
     pageTitle: string, 
-    type?: 'website' | 'article' 
+    type?: 'website' | 'article',
+    author?: string 
   }) => {
+
+  let imageUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/ographimage?siteTitle=${encodeURIComponent(settings?.siteTitle as string)}&pageTitle=${encodeURIComponent(pageTitle)}`;
+
+
+  if (author) {
+    imageUrl += `&author=${encodeURIComponent(author)}`;
+  }
     const meta = metadata({
       siteTitle: settings?.siteTitle as string,
       pageTitle: pageTitle,
       description: settings?.siteDescription as string,
       keywords: tags?.map(tag => tag.slug) ?? [],
-      images: [{ width: 300, height: 300, url: 'https://avatars.githubusercontent.com/u/153545529?s=400&u=f2228eefdaa8424a171f818144da9ef657589a1d&v=4' }],
+      images: [{ ...size, url: imageUrl }],
       type: type,
-      authors: type === 'article' ? [{name: '', url: '', image: ''}] : [{ name: '', url: '', image: '' }]
+      author: type === 'article' ? author : undefined
     })
 
     return meta
@@ -317,15 +332,31 @@ export async function PageInit<T>({
 
   router.addRoute("/posts/:slug", async ({ slug }) => {
     const currentUser = await getCurrentUser()
-    return <SinglePost slug={slug} loggedIn={currentUser ? true : false} />
+    const post = await getSinglePost({ slug: slug })
+    if (!post) {
+      redirect('/404')
+    }
+    metaData = {
+      pageTitle: slug,
+      author: post?.user.username
+    };
+    return <SinglePost post={post} loggedIn={currentUser ? true : false} />
   }, "page", (params) => preFilledMetadata({
-    pageTitle: params.slug,
+    ...metaData
   }))
 
   router.addRoute("/posts/:slug/comments/:commentId", async ({ slug, commentId }) => {
-    return <SingleCommentScreen commentId={commentId} postSlug={slug} />
+    const comment = await getComment({ commentId: commentId })
+    if (!comment) {
+      redirect('/404')
+    }
+    metaData = {
+      pageTitle: `${slug} - Comment`,
+      author: comment.user.username
+    }
+    return <SingleCommentScreen postSlug={slug} comment={comment} />
   }, "page", (params) => preFilledMetadata({
-    pageTitle: `${params.slug} - Comment`,
+    ...metaData
   }))
 
   router.addRoute("/posts/:slug/comments/:commentId/edit", async ({ commentId }) => {
@@ -647,6 +678,10 @@ export async function PageInit<T>({
     }
     return UploadFileRoute(request!)
   }, 'api:POST')
+
+  router.addRoute('/ographimage', async (_, request) => {
+    return ographImageGenerator(request!)
+  }, 'api:GET')
 
   return router.init(getParams);
 }

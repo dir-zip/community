@@ -7,7 +7,7 @@ export const metadata = ({
   keywords,
   type,
   images,
-  authors,
+  author,
 }: {
   siteTitle: string;
   pageTitle?: string;
@@ -15,7 +15,7 @@ export const metadata = ({
   keywords: string[];
   type: 'article' | 'website',
   images: { url: string; width: number; height: number }[];
-  authors?: { name: string; url: string; image: string }[];
+  author?: string;
 }): Metadata => {
   return {
     title: pageTitle ? `${pageTitle} | ${siteTitle}` : siteTitle,
@@ -28,7 +28,7 @@ export const metadata = ({
       images: images,
       locale: 'en_US',
       type: type,
-      authors: type === 'article' ? authors?.map(author => author.name) : undefined,
+      authors: type === 'article' ? [author as string] : undefined,
     },
     robots: {
       follow: true,
