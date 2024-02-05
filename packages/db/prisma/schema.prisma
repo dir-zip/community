@@ -23,6 +23,7 @@ model User {
   sessions Session[]
 
   avatar String?
+  bannerImage String?
 
   verified Boolean @default(false)
 

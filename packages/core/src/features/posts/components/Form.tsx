@@ -85,7 +85,7 @@ const PostForm = ({ post, categories, canCreateBroadcast }: { post?: Post & { ta
         })} />
         {can ? <div className="flex flex-col w-full gap-6">
           <div className="bg-border-subtle w-full h-px" />
-          <div className="flex flex-col bg-primary-700 gap-4 py-4 px-3 rounded w-full -mb-5">
+          <div className="flex flex-col bg-primary-800 border gap-4 py-4 px-3 rounded w-full -mb-5">
             <Megaphone className="w-6 h-6 self-start  stroke-primary-100 -rotate-12" />
             <SwitchField name="broadcast" label="Broadcast" onSwitchChange={(value) => {
               setToggle(value)

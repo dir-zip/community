@@ -6,13 +6,14 @@ import { revalidatePath } from 'next/cache'
 import { effects } from '~/itemEffects'
 import { PasswordHandler, generateToken } from 'packages/auth'
 
-export const updateUser = createAction(async({validate}, {avatar, userId}) => {
+export const updateUser = createAction(async({validate}, {avatar, userId, bannerImage}) => {
   await validate(['UPDATE', "user", userId])
 
   const user = await prisma.user.update({
     where: {id: userId},
     data: {
-      avatar
+      avatar,
+      bannerImage
     }
   })
 
@@ -22,6 +23,7 @@ export const updateUser = createAction(async({validate}, {avatar, userId}) => {
 
 }, z.object({
   avatar: z.string().optional(),
+  bannerImage: z.string().optional(),
   userId: z.string()
 }), {authed: true})
 

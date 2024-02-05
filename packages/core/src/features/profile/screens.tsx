@@ -29,11 +29,11 @@ export const ProfileScreen = async ({ username }: { username: string }) => {
   return (
 
     <div className="pb-8 flex flex-col gap-4">
-      <img
+      {user.bannerImage ? <img
         alt="Header"
         className="h-56 w-full aspect-[3/1] object-cover"
-        src={user.avatar as string}
-      />
+        src={user.bannerImage as string}
+      /> : <div className="h-56 w-full bg-primary-800" />}
       <div className="xl:mx-auto xl:w-[960px]">
         <div className="flex relative gap-8 w-full justify-start pl-14 bottom-[100px]">
 
