@@ -32,11 +32,11 @@ export const metadata = ({
     },
     robots: {
       follow: true,
-      index: false,
+      index: true,
       nocache: true,
       googleBot: {
         index: true,
-        follow: false,
+        follow: true,
         noimageindex: true
       }
     },
