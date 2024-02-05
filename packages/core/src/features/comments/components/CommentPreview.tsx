@@ -1,8 +1,8 @@
 "use client"
 import React, { useEffect, useRef, useState } from 'react'
-import { buttonVariants, RichTextField } from '@dir/ui'
+import { buttonVariants } from '@dir/ui'
+import { RichTextField } from '~/components/Editor/RichTextField'
 import { MessageSquare, PenSquare, Hash, ChevronsRight, ChevronsLeft } from 'lucide-react'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@dir/ui'
 import Link from 'next/link'
 
 export type CommentPreviewProps = {

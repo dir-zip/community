@@ -1,30 +1,40 @@
 import { getComment } from "./actions"
 import { CommentForm } from "./components/CommentForm"
-import { redirect } from "next/navigation"
 import Link from "next/link"
 import { getCommentsForPost } from "./actions"
 import { CommentList } from "./components/CommentList";
 import { Suspense } from 'react'
 import { checkGuard, getCurrentUser } from "../auth/actions"
-import { Divider, RichTextField } from "@dir/ui"
+import { Divider } from "@dir/ui"
+import { RichTextField } from "~/components/Editor/RichTextField"
 import { ChevronLeftSquare, PenSquare, SeparatorHorizontal } from 'lucide-react'
 import { FullCommentForm } from "./components/FullCommentForm"
 import { applyEffects } from "~/itemEffects"
+import { Post, User, Comment } from "packages/db"
+import { UserWithInventory } from "~/lib/types";
 
 
+type CommentWithParentAndUsersAndReplies = Comment & {
+  parent: (Comment & { user: UserWithInventory }) | null,
+  post: Post & { user: UserWithInventory },
+  user: UserWithInventory,
+  replyCount: number,
+  replies: Array<Comment & {
+    user: UserWithInventory,
+    replyCount: number
+  }>
+};
 
-export const SingleCommentScreen = async ({ postSlug, commentId }: { postSlug: string, commentId: string }) => {
-  const comment = await getComment({ commentId: commentId })
+export const SingleCommentScreen = async ({ comment, postSlug }: { comment: CommentWithParentAndUsersAndReplies, postSlug: string }) => {
+
   const currentUser = await getCurrentUser()
 
   let can = false
   if(currentUser) {
-    can = await checkGuard({ rule: ["UPDATE", "comment", commentId] });
+    can = await checkGuard({ rule: ["UPDATE", "comment", comment.id] });
   }
 
-  if (!comment) {
-    redirect('/404')
-  }
+
 
   return (
     <div className="xl:mx-auto xl:w-[960px]">

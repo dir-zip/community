@@ -1,4 +1,4 @@
-import { Init1up } from "@dir/core";
+import { InitDirZip } from "@dir/core";
 
 export const {
   createAction,
@@ -7,9 +7,10 @@ export const {
   PageInit,
   LayoutInit,
   ApiRouteInit,
+  generateMetadata,
   auth,
   global,
-} = Init1up({
+} = InitDirZip({
   auth: {
     guards: async ({ sessionData }) => {
       console.log(sessionData);

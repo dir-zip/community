@@ -33,6 +33,7 @@ export const updateSiteSettings = createAction(
       },
       data: {
         siteTitle: params.siteTitle,
+        siteDescription: params.siteDescription,
         features: {
           updateMany: [
             {
@@ -71,6 +72,7 @@ export const updateSiteSettings = createAction(
   },
   z.object({
     siteTitle: z.string(),
+    siteDescription: z.string(),
     isPrivate: z.boolean(),
     broadcastPin: z.number(),
     signupFlow: z.string()

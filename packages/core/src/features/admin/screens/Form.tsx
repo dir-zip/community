@@ -22,6 +22,7 @@ export const SiteForm = ({ site }: { site: GlobalSetting & { features: FeatureTo
         submitText={"Save"}
         initialValues={{
           siteTitle: site.siteTitle,
+          siteDescription: site.siteDescription,
           isPrivate: isPrivate,
           broadcastPin: site.features.find(f => f.feature === 'broadcastPin')!.value,
           signupFlow: site.features.find(f => f.feature === 'signupFlow')!.value
@@ -48,6 +49,8 @@ export const SiteForm = ({ site }: { site: GlobalSetting & { features: FeatureTo
         }}  
       >
         <TextField name="siteTitle" label="Site Title" description="The title of your site" />
+        <div className="bg-border-subtle w-full h-px" />
+        <TextField name="siteDescription" label="Site Description" description="The description of your community" />
         <div className="bg-border-subtle w-full h-px" />
         <SwitchField name="isPrivate" label="Private" description="Require an account to view posts" />
         <div className="bg-border-subtle w-full h-px" />
