@@ -146,8 +146,8 @@ importers:
         specifier: ^0.1.2
         version: 0.1.2
       '@dir.zip/central-router':
-        specifier: ^0.2.6
-        version: 0.2.6
+        specifier: ^0.2.8
+        version: 0.2.8
       '@dir/auth':
         specifier: workspace:*
         version: link:../auth
@@ -1189,8 +1189,8 @@ packages:
       '@jridgewell/trace-mapping': 0.3.9
     dev: true
 
-  /@dir.zip/central-router@0.2.6:
-    resolution: {integrity: sha512-TOhGzO8QgDrxxSi0GB+TulYZ0x1qi2VPpn+n1MtL0CFix7BiCPNGpAK0/S2Q8affUVu1eQCWtNlQWnr3vmQ0qg==}
+  /@dir.zip/central-router@0.2.8:
+    resolution: {integrity: sha512-tutkKCC9kXOAV6+jmQ/ocgbj1xVQ8zvQF9PyZVQpVxbjtwnF6g2VQZzRYEAp29AwP+YyNOi/cRVSKtJGSkXnZw==}
     dev: false
 
   /@esbuild/android-arm64@0.16.4:

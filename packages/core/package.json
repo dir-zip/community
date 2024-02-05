@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@creatorsneverdie/prepare-array-for-prisma": "^0.1.2",
-    "@dir.zip/central-router": "^0.2.6",
+    "@dir.zip/central-router": "^0.2.8",
     "@dir/auth": "workspace:*",
     "@dir/db": "workspace:*",
     "@dir/files": "workspace:*",

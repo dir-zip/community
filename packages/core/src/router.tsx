@@ -688,10 +688,12 @@ export async function PageInit<T>({
 
 export async function LayoutInit({
   children,
+  params
 }: {
   children: React.ReactNode;
+  params: { "router": string[] }
 }) {
-  return await router.initLayout({ children })
+  return await router.initLayout({ children, pathArray: params.router })
 }
 
 export async function ApiRouteInit() {
