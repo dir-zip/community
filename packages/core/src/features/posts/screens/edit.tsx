@@ -1,6 +1,6 @@
 import { getCategories, getSinglePost } from "../actions"
 import PostForm from "../components/Form"
-import { Suspense } from 'react'
+import { Suspense } from "react"
 
 export const EditPost = async ({ slug }: { slug: string }) => {
   const post = await getSinglePost({ slug: slug })
@@ -12,7 +12,7 @@ export const EditPost = async ({ slug }: { slug: string }) => {
 
   return (
     <div className="xl:mx-auto xl:w-[960px]">
-      <div className="p-6">
+      <div className="p-4 md:p-6">
         <div className="flex flex-col gap-4 pb-6">
           <h2 className="text-2xl font-bold">Edit Post</h2>
           <div className="flex w-full items-center justify-center">

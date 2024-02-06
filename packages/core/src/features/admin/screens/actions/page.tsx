@@ -1,11 +1,11 @@
-import { Suspense } from "react";
-import { ActionForm } from "./components/Form";
-import Link from "next/link";
+import { Suspense } from "react"
+import { ActionForm } from "./components/Form"
+import Link from "next/link"
 
-import { cn } from "@/utils";
-import { buttonVariants } from "@/components/Button";
-import { getSingleAction } from "./actions";
-import { ActionsTable } from "./components/ActionsTable";
+import { cn } from "@/utils"
+import { buttonVariants } from "@/components/Button"
+import { getSingleAction } from "./actions"
+import { ActionsTable } from "./components/ActionsTable"
 
 export const AllActionsPage = async () => {
   return (
@@ -31,8 +31,8 @@ export const AllActionsPage = async () => {
         </Suspense>
       </div>
     </div>
-  );
-};
+  )
+}
 
 export const NewActionPage = async () => {
   return (
@@ -52,13 +52,13 @@ export const NewActionPage = async () => {
         </Suspense>
       </div>
     </div>
-  );
-};
+  )
+}
 
 export const SingleActionPage = async ({ id }: { id: string }) => {
-  const action = await getSingleAction({ id: id });
+  const action = await getSingleAction({ id: id })
   if (!action) {
-    throw new Error("Action not found");
+    throw new Error("Action not found")
   }
   return (
     <div className="xl:mx-auto xl:w-[960px]">
@@ -77,5 +77,5 @@ export const SingleActionPage = async ({ id }: { id: string }) => {
         </Suspense>
       </div>
     </div>
-  );
-};
+  )
+}
