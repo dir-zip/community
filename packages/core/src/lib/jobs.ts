@@ -21,12 +21,13 @@ export const createJob = <T>(name: string, func: (params: Job<T, any, string>) =
     connection: redisOptions
   });
 
-  worker.on("completed", (job) =>
-    console.log(`Completed job ${job.name} successfully`)
-  );
-  worker.on("failed", (job, err) =>
-    console.log(`Failed job ${job?.name} with ${err}`)
-  );
+  worker.on('completed', (job) => {
+    job.remove().then(() => console.log(`Removed completed job ${job.id}`));
+  });
+  
+  worker.on('failed', (job) => {
+    job?.remove().then(() => console.log(`Removed failed job ${job.id}`));
+  });
 
   return {worker, queue}
 }
