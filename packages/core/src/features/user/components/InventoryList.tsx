@@ -4,18 +4,21 @@ import { Badge, Inventory, InventoryItem, Item, User } from "@dir/db"
 import { useEffect, useState } from "react"
 import { toast } from "sonner";
 import { equipAndUnequipItem, getUserInventory } from "~/features/user/actions"
+import { UserWithInventory } from "~/lib/types";
 
 type InventoryItemWithDetails = InventoryItem & { badge?: Badge | null, item: Item | null, quantity: number };
 
-export const InventoryList = ({ currentUser }: { currentUser: User }) => {
+export const InventoryList = ({ currentUser }: { currentUser: UserWithInventory | null }) => {
   const [data, setData] = useState<Inventory & {collection: InventoryItemWithDetails[] } | null>(null);
 
   useEffect(() => {
     (async () => {
-      const result = await getUserInventory({ userId: currentUser.id })
-      setData(result)
+
+        const result = await getUserInventory({ userId: currentUser?.id! })
+        setData(result)
+
     })()
-  }, [])
+  }, [currentUser?.id])
 
   return (
     <div className="flex flex-col">
@@ -40,7 +43,7 @@ export const InventoryList = ({ currentUser }: { currentUser: User }) => {
                   new Promise(async (resolve, reject) => {
                     try {
                       await equipAndUnequipItem({itemId: item.id})
-                      const result = await getUserInventory({ userId: currentUser.id });
+                      const result = await getUserInventory({ userId: currentUser?.id! });
                       setData(result);
                       resolve(null)
                     } catch (err) {

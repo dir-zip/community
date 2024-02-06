@@ -31,7 +31,7 @@ interface ExtendedComment extends Comment {
   user: UserWithInventory;
 }
 
-interface ExtendedPost extends Post {
+export interface ExtendedPost extends Post {
   comments: ExtendedComment[];
   replyCount: number;
   lastCommentOrReply?: ExtendedComment;

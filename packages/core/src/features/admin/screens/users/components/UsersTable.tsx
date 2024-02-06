@@ -1,6 +1,6 @@
 "use client"
 import { User } from "packages/db"
-import { Table } from "@dir/ui"
+import { Badge, Table } from "@dir/ui"
 import Link from 'next/link'
 import { getAllUsers } from "../../../actions"
 import { useSearchParams, usePathname, useRouter } from "next/navigation"
@@ -80,7 +80,7 @@ const UsersTable = () => {
     {
       accessorKey: 'points',
       id: 'points',
-      cell: (info: any) => info.getValue()
+      cell: (info: any) => <Badge>{info.getValue()}</Badge>
     },
     {
       accessorKey: 'role',
@@ -88,14 +88,19 @@ const UsersTable = () => {
       cell: (info: any) => info.getValue()
     },
     {
+      accessorKey: 'verified',
+      id: 'verified',
+      cell: (info: any) => <Badge>{info.getValue().toString()}</Badge>
+    },
+    {
       accessorKey: 'createdAt',
       id: 'createdAt',
-      cell: (info: any) => info.getValue().toString()
+      cell: (info: any) => new Date(info.getValue()).toLocaleDateString()
     },
     {
       accessorKey: 'updatedAt',
       id: 'updatedAt',
-      cell: (info: any) => info.getValue().toString()
+      cell: (info: any) => new Date(info.getValue()).toLocaleDateString()
     },
   ]
 
@@ -111,6 +116,11 @@ const UsersTable = () => {
       totalCount={count}
       startPage={startPage}
       endPage={endPage}
+      routingContext={{
+        pathname: '/admin/users',
+        searchParams: JSON.parse(searchQuery as string)
+      }}
+      onNavigate={(url) => {  router.push(url) }}
     />
   )
 }

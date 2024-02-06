@@ -1,5 +1,5 @@
 'use server'
-
+import { JSDOM } from 'jsdom';
 import { prisma, type Post, Tag, Inventory } from "@dir/db";
 import { z } from "zod";
 import { createAction } from '~/lib/createAction';
@@ -12,16 +12,17 @@ import { userInventoryIncludes } from "~/lib/includes";
 import { sendEmail } from "~/jobs";
 
 
+
 export const getCategories = createAction(async () => {
   const categories = await prisma.category.findMany()
   return categories
 })
 
-export const getAllPosts = createAction(async ({}, params) => {
+export const getAllPosts = createAction(async ({ }, params) => {
   if (!params) {
     throw new Error('Parameters are undefined');
   }
-  const { skip, take, tags, categorySlug } = params;
+  const { skip, take, tags, categorySlug, title } = params;
 
   let whereClause: {
     tags?: {
@@ -30,6 +31,9 @@ export const getAllPosts = createAction(async ({}, params) => {
     },
     category?: {
       slug?: string
+    },
+    title?: {
+      contains: string
     }
   } = {};
 
@@ -53,6 +57,12 @@ export const getAllPosts = createAction(async ({}, params) => {
   if (categorySlug && categorySlug !== "all") {
     whereClause.category = {
       slug: categorySlug
+    };
+  }
+
+  if (title) { // Add this block
+    whereClause.title = {
+      contains: title
     };
   }
 
@@ -109,7 +119,7 @@ export const getAllPosts = createAction(async ({}, params) => {
     const allCommentsAndReplies = post.comments.concat(
       post.comments.flatMap(comment => comment.replies.map(reply => ({
         ...reply,
-        user: {...comment.user, inventory: comment.user.inventory,},
+        user: { ...comment.user, inventory: comment.user.inventory, },
         replies: []
       })))
     );
@@ -128,15 +138,23 @@ export const getAllPosts = createAction(async ({}, params) => {
   skip: z.number().optional(),
   take: z.number().optional(),
   tags: z.array(z.string()).optional(),
-  categorySlug: z.string().optional()
+  categorySlug: z.string().optional(),
+  title: z.string().optional()
 }),
-{ authed: false })
+  { authed: false })
 
-export const createPost = createAction(async ({ session }, { title, body, category, tags, broadcast }) => {
+export const createPost = createAction(async ({ session }, { title, body, category, tags, broadcast, broadcastToList }) => {
+  let generatedTitle: string = title
   
-  
+  if (title === "") {
+    const dom = new JSDOM(body);
+    const h1 = dom.window.document.querySelector('h1');
+    const p = dom.window.document.querySelector('p');
+    generatedTitle = h1 ? h1.textContent as string : (p ? p.textContent as string : 'Default Title');
+  }
+
   const createSlug = await findFreeSlug<Post>(
-    title.toLowerCase().replace(/[^a-z0-9]/g, "-"),
+    title !== "" ? title.toLowerCase().replace(/[^a-z0-9]/g, "-") : generatedTitle.toLowerCase().replace(/[^a-z0-9]/g, "-"),
     async (slug: string) =>
       await prisma.post.findUnique({ where: { slug } }),
   );
@@ -173,11 +191,11 @@ export const createPost = createAction(async ({ session }, { title, body, catego
   );
 
   const filteredTags = newTags.filter(Boolean);
-  
+
 
   const post = await prisma.post.create({
     data: {
-      title,
+      title: generatedTitle,
       body,
       slug: createSlug,
       categoryId: getCategory?.id!,
@@ -190,39 +208,66 @@ export const createPost = createAction(async ({ session }, { title, body, catego
     }
   })
 
-  if(post.title === "") {
-    await prisma.post.update({
+
+  if (broadcast) {
+    const unsubscribedList = await prisma.list.findUnique({
       where: {
-        id: post.id
+        slug: 'unsubscribed'
       },
-      data: {
-        title: post.id,
-        slug: post.id
+      include: {
+        users: true
       }
-    })
-  }
+    });
 
-  if(broadcast) {
-    const users = await prisma.user.findMany({})
+    // Extract user IDs from the unsubscribed list
+    const unsubscribedUserIds = unsubscribedList ? unsubscribedList.users.map(user => user.id) : [];
 
-    for(const user of users) {
-      await sendEmail.queue.add('sendEmail', {email: user.email, subject: post.title, template:post.body})
-
-      await prisma.broadcast.create({
-        data: {
-          sentTo: {
-            connect: {
-              id: user.id
-            }
-          },
-          post: {
-            connect: {
-              id: post.id
-            }
-          },
-          status: "SENT"
+    const targetLists = await prisma.list.findMany({
+      where: {
+        slug: {
+          in: broadcastToList
         }
-      })
+      },
+      include: {
+        users: true
+      }
+    });
+
+    // Initialize a set to keep track of user IDs that have already been processed
+    const processedUserIds = new Set();
+
+    for (const list of targetLists) {
+      for (const user of list.users) {
+        if (!unsubscribedUserIds.includes(user.id) && !processedUserIds.has(user.id)) {
+          await sendEmail.queue.add('sendEmail', { type:"BROADCAST", email: user.email, subject: post.title, html: post.body });
+          // Create a broadcast and connect it to the current list
+          await prisma.broadcast.create({
+            data: {
+              lists: {
+                connect: {
+                  id: list.id
+                }
+              },
+              users: {
+                connect: {
+                  id: user.id
+                }
+              },
+              post: {
+                connect: {
+                  id: post.id
+                }
+              },
+              status: "SENT"
+            }
+          });
+          // Mark the user as processed
+          processedUserIds.add(user.id);
+
+        }
+      }
+
+
     }
   }
 

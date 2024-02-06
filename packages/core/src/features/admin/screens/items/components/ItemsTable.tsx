@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useState } from "react"
-import { Table } from '@dir/ui'
+import { Table, Badge } from '@dir/ui'
 import Link from 'next/link'
 import { useSearchParams, usePathname, useRouter } from "next/navigation"
 import { getAllItems } from "../actions"
@@ -77,7 +77,7 @@ export const ItemsTable = () => {
     {
       accessorKey: 'price',
       id: 'price',
-      cell: (info: any) => info.getValue().toString()
+      cell: (info: any) => <Badge>{info.getValue().toString()}</Badge>
     }
   ]
 
@@ -93,6 +93,11 @@ export const ItemsTable = () => {
       totalCount={count}
       startPage={startPage}
       endPage={endPage}
+      routingContext={{
+        pathname: '/admin/items',
+        searchParams: JSON.parse(searchQuery as string)
+      }}
+      onNavigate={(url) => {  router.push(url) }}
     />
   )
 }

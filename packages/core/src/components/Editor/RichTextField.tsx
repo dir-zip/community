@@ -1,3 +1,4 @@
+"use client"
 import React, { useEffect, useRef } from 'react'
 import { useEditor, EditorContent, Editor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
@@ -11,8 +12,9 @@ import ts from 'highlight.js/lib/languages/typescript'
 import html from 'highlight.js/lib/languages/xml'
 import 'highlight.js/styles/github.css';
 import Placeholder from '@tiptap/extension-placeholder'
-import { EditorImageUpload, imageUploadPluginKey } from '@/editorPlugins/Image'
-import { Command, suggestion } from '@/editorPlugins/Command'
+import { EditorImageUpload, imageUploadPluginKey } from './plugins/Image'
+import { Command, suggestion } from './plugins/Command'
+import {  PostMentionNode } from './plugins/PostMention'
 
 
 
@@ -26,7 +28,6 @@ export const RichTextField = (
   { value, placeholder, onValueChange, editable = true, imageUploadUrl, onImageRemove }:
     { value: string, onValueChange?: (e: string) => void, editable?: boolean, placeholder?: string, imageUploadUrl?: string, onImageRemove?: (images: string[]) => Promise<void> }
 ) => {
-  
 
   const editorRef = useRef<Editor | null>(null);
 
@@ -62,7 +63,8 @@ export const RichTextField = (
       }),
       Command.configure({
         suggestion: suggestion
-      })
+      }),
+      PostMentionNode
     ],
     editorProps: {
       attributes: {

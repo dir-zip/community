@@ -23,6 +23,7 @@ model User {
   sessions Session[]
 
   avatar String?
+  bannerImage String?
 
   verified Boolean @default(false)
 
@@ -33,12 +34,12 @@ model User {
 
   inventory Inventory?
   events Event[]
-
-
-  recievedBroadcasts Broadcast[]
+  broadcasts Broadcast[]
 
 
   calendarEvents CalendarEvent[]
+
+  lists List[]
 }
 
 model Session {
@@ -61,7 +62,7 @@ model Token {
   hashedToken String
   type        String
   expiresAt   DateTime
-  sentTo      String
+  sentTo      String?
 
   user   User @relation(fields: [userId], references: [id])
   userId String
@@ -221,6 +222,7 @@ model Condition {
 model GlobalSetting {
   id          Int     @default(1) @unique
   siteTitle   String @default("dir.zip")
+  siteDescription String?
   features FeatureToggle[]
 }
 
@@ -241,6 +243,17 @@ model Broadcast {
   updatedAt   DateTime @updatedAt
   post Post @relation(fields: [postId], references: [id])
   postId String
-  sentTo User[]
   status String
+  users User[]
+  lists       List[]   
 }
+
+model List {
+  id String @id @default(cuid())
+  title String
+  slug String @unique
+  description String?
+  users User[]
+  broadcasts Broadcast[]
+}
+

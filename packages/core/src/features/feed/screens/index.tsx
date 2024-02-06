@@ -1,13 +1,12 @@
-import { Divider } from "@/components/Divider";
-import { FeedInput } from "../components/FeedInput";
-import { FeedList } from "../components/FeedList";
+import { Divider } from "@/components/Divider"
+import { FeedInput } from "../components/FeedInput"
+import { FeedList } from "../components/FeedList"
 
-import { Suspense } from "react";
-import { getCurrentUser } from "~/features/auth/actions";
+import { Suspense } from "react"
+import { getCurrentUser } from "~/features/auth/actions"
 
 export const FeedScreen = async () => {
-  const currentUser = await getCurrentUser();
-
+  const currentUser = await getCurrentUser()
   return (
     <div className="xl:mx-auto xl:w-[960px]">
       <div className="flex items-center gap-20 justify-center p-6 px-4 md:px-6 flex-col">
@@ -41,7 +40,7 @@ export const FeedScreen = async () => {
                   t
                 </span>
               </div>
-            );
+            )
           }}
         />
         <Suspense>
@@ -49,5 +48,5 @@ export const FeedScreen = async () => {
         </Suspense>
       </div>
     </div>
-  );
-};
+  )
+}

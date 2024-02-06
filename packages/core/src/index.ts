@@ -1,8 +1,8 @@
 import { type FunctionWithSchema, createAction } from "./lib/createAction";
 import createApiEndpoint from "./lib/createApiEndpoint";
-
+import { Metadata } from 'next'
 import { authInit } from "./lib/auth";
-import { PageInit, LayoutInit, ApiRouteInit } from "./router";
+import { PageInit, LayoutInit, ApiRouteInit, getMetadata } from "./router";
 
 import type { Tag, Post, User, Item, Category } from "@dir/db";
 import type { PostSchema } from "~/features/posts/schemas";
@@ -33,6 +33,7 @@ import {
   getSinglePost,
   updatePost,
 } from "./features/posts/actions";
+
 
 export type BaseRole = "ADMIN" | "USER";
 export type BaseSessionData = {
@@ -141,6 +142,7 @@ type BaseExportedPlugins<T> = {
   >;
   LayoutInit: typeof LayoutInit;
   ApiRouteInit: typeof ApiRouteInit;
+  generateMetadata: (params: {router: string[]}) => Promise<Metadata>;
 };
 
 type ExportedPlugins<T> = BaseExportedPlugins<T>;
@@ -229,7 +231,7 @@ interface Initializer<T> {
   build: () => ExportedPlugins<T>;
 }
 
-export function Init1up<S>({
+export function InitDirZip<S>({
   auth,
   sidebar,
 }: {
@@ -292,6 +294,10 @@ export function Init1up<S>({
     return result;
   };
 
+  exportedPlugins.generateMetadata = async function (params: { router: string[] }) {
+    return getMetadata(params)
+  };
+
   exportedPlugins.PageInit = async function ({ params, searchParams }) {
     const result = await PageInit<S>({
       params,
@@ -300,7 +306,7 @@ export function Init1up<S>({
       auth: _auth,
       sidebarLinks: sidebar ? sidebar.links : [],
       resources: _resources,
-    });
+    })
 
     if (result === null) {
       throw new Error("PageInit returned null");

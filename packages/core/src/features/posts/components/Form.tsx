@@ -7,22 +7,31 @@ import { useRouter } from "next/navigation"
 
 import { PostSchema } from "~/features/posts/schemas"
 import { createPost, updatePost } from "../actions"
-import { Category, Tag, type Post } from "packages/db"
+import { Category, Tag, type Post, List } from "packages/db"
 import { FancyEditorField } from "~/components/Forms/FancyEditorField"
 import { TagField } from "~/components/Forms/TagField"
 import { Megaphone } from 'lucide-react'
-import { getAllUserCount } from "~/features/user/actions"
+import { getAllLists } from "~/features/admin/screens/lists/actions"
+import CheckboxArrayField from "~/components/Forms/CheckboxArrayField"
 
 const PostForm = ({ post, categories, canCreateBroadcast }: { post?: Post & { tags: Tag[], category: Category }, categories: Category[], canCreateBroadcast?: boolean }) => {
   const router = useRouter()
   const can = canCreateBroadcast || false
-  const [membersCount, setMembersCount] = useState(0);
+  const [lists, setLists] = useState<List[]>([]);
   const [toggle, setToggle] = useState(false)
 
   useEffect(() => {
-    getAllUserCount().then(members => {
-      setMembersCount(members);
-    });
+    const getLists = async () => {
+      const lists = await getAllLists({skip: 0, take: 40, where: {
+        slug: {
+          not: {
+            equals: 'unsubscribed'
+          }
+        }
+      }})
+      setLists(lists.lists)
+    }
+    getLists()
   }, []);
 
 
@@ -43,7 +52,8 @@ const PostForm = ({ post, categories, canCreateBroadcast }: { post?: Post & { ta
               if (!post) {
                 const post = await createPost({
                   ...values,
-                  broadcast: values.broadcast
+                  broadcast: values.broadcast,
+                  broadcastToList: values.broadcastToList
                 })
                 router.push(`/posts/${post.slug}`)
               } else {
@@ -75,13 +85,13 @@ const PostForm = ({ post, categories, canCreateBroadcast }: { post?: Post & { ta
         })} />
         {can ? <div className="flex flex-col w-full gap-6">
           <div className="bg-border-subtle w-full h-px" />
-          <div className="flex flex-col bg-primary-700 gap-4 py-4 px-3 rounded w-full -mb-5">
+          <div className="flex flex-col bg-primary-800 border gap-4 py-4 px-3 rounded w-full -mb-5">
             <Megaphone className="w-6 h-6 self-start  stroke-primary-100 -rotate-12" />
             <SwitchField name="broadcast" label="Broadcast" onSwitchChange={(value) => {
               setToggle(value)
             }} />
-            {toggle ? <div className="flex flex-col gap-4">
-              <p className="text-xs antialiased">Being sent to {membersCount} member{membersCount > 1 ? "s" : ""}</p>
+            {toggle ? <div className="flex flex-col gap-4 py-4">
+              <CheckboxArrayField name="broadcastToList" label="Select a list" data={lists.map(list => ({value: list.slug, key: list.title}))}/>
             </div> : null}
           </div>
         </div> : null}

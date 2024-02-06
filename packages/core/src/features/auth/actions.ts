@@ -62,13 +62,51 @@ export const loginAction = createAction(async ({createSession}, { email, passwor
   return user
 }, LoginSchema, {authed: false})
 
-export const signUpAction = createAction(async ({createSession}, { email, password, username }) => {
+export const signUpAction = createAction(async ({createSession}, { email, password, username, inviteToken }) => {
+  const signupFlow = await prisma.featureToggle.findFirst({
+    where: {
+      feature: 'signupFlow'
+    }
+  })
+
+  const isInviteOnly = signupFlow?.value === 'invite'
+
+    // Check if signup is invite-only and inviteToken is provided
+    if (isInviteOnly && !inviteToken) {
+      throw new Error("An invite token is required for signup.");
+    }
+  
+    // If invite only, verify the invite token
+    if (isInviteOnly) {
+      const hashedToken = await PasswordHandler.hash(inviteToken as string);
+      const foundToken = await prisma.token.findFirst({
+        where: { hashedToken, type: "INVITE_TOKEN" }
+      });
+    
+      if (!foundToken) {
+        throw new Error("Invalid token");
+      }
+    
+      await prisma.token.delete({ where: { id: foundToken.id } });
+    
+      if (foundToken.expiresAt < new Date()) {
+        throw new Error("Token expired");
+      }
+
+    }
+
+
   const hashedPassword = await PasswordHandler.hash(password);
   const user = await prisma.user.create({
     data: {
       email,
       username,
-      hashedPassword: hashedPassword
+      hashedPassword: hashedPassword,
+      lists: {
+        connect: {
+          slug: 'general'
+        }
+      }
     },
   });
 
@@ -309,6 +347,11 @@ export const handleOauth = async ({email, auth}: {email: string, auth: AuthInit<
         email,
         username: email,
         role: "USER",
+        lists: {
+          connect: {
+            slug: 'general'
+          }
+        }
       },
     });
 

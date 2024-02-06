@@ -7,6 +7,7 @@ export const SignupSchema = z.object({
   username: z.string(),
   password: PasswordSchema,
   confirm_password: PasswordSchema,
+  inviteToken: z.string().optional()
 }).refine((data) => data.password === data.confirm_password, {
   message: 'Passwords do not match',
   path: ['confirm_password'],

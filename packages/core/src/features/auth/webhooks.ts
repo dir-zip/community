@@ -1,4 +1,4 @@
-import { BaseSessionData } from "@/index";
+import { BaseSessionData } from "~/index";
 import { type NextRequest } from "next/server";
 import { handleOauth, verifyUser } from "./actions";
 import { AuthInit } from "packages/auth";

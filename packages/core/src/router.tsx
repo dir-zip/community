@@ -1,71 +1,89 @@
-"use server";
-import Router from "@dir.zip/central-router";
-import { authInit } from "./lib/auth";
-import { getCurrentUser } from "./features/auth/actions";
-import { Breadcrumbs } from "./components/ui/Breadcrumbs";
-import { LoginPage } from "./features/auth/screens/login";
-import { SignupPage } from "./features/auth/screens/signup";
-import { ForgotPasswordPage } from "./features/auth/screens/forgot_password";
-import { ResetPasswordPage } from "./features/auth/screens/reset_password";
-import { Sidebar } from "./components/ui/Sidebar";
-import { MobileNavBar } from "./components/ui/MobileNavBar";
+"use server"
+import Router from "@dir.zip/central-router"
+import { authInit } from "./lib/auth"
+import { getCurrentUser } from "./features/auth/actions"
+import { Breadcrumbs } from "./components/ui/Breadcrumbs"
+import { LoginPage } from "./features/auth/screens/login"
+import { SignupPage } from "./features/auth/screens/signup"
+import { ForgotPasswordPage } from "./features/auth/screens/forgot_password"
+import { ResetPasswordPage } from "./features/auth/screens/reset_password"
+import { Sidebar } from "./components/ui/Sidebar"
+import { MobileNavBar } from "./components/ui/MobileNavBar"
 
-import AdminMenu from "./features/admin/screens";
-import UsersAdminPage from "./features/admin/screens/users/page";
-import SingleUserAdminPage from "./features/admin/screens/users/[id]/page";
+import AdminMenu from "./features/admin/screens"
+import { AdminSiteSettings } from "./features/admin/screens/site/page"
+import UsersAdminPage from "./features/admin/screens/users/page"
+import SingleUserAdminPage from "./features/admin/screens/users/[id]/page"
 
-import { BaseSessionData, type Resources, Routes } from ".";
+import { BaseSessionData, type Resources, Routes } from "."
 
-import ToastProvider from "./components/ui/Toaster";
-import { OAuthLogin, VerifyUser } from "./features/auth/webhooks";
-import { UploadFileRoute } from "./features/files/routes";
+import ToastProvider from "./components/ui/Toaster"
+import { OAuthLogin, VerifyUser } from "./features/auth/webhooks"
+import { UploadFileRoute } from "./features/files/routes"
 import {
   AllResourcePage,
   SingleResourcePage,
-} from "./features/admin/screens/resources/page";
-import { AllPosts } from "./features/posts/screens";
-import { AdminSiteSettings } from "./features/admin/screens/site/page";
+} from "./features/admin/screens/resources/page"
+import { AllPosts } from "./features/posts/screens"
 import {
   AllCategoriesPage,
   NewCategoryPage,
   SingleCategoryPage,
-} from "./features/admin/screens/categories/page";
-import { NewPost } from "./features/posts/screens/new";
-import { SinglePost } from "./features/posts/screens/single";
-import { EditComment, SingleCommentScreen } from "./features/comments/screens";
-import { ProfileScreen } from "./features/profile/screens";
+} from "./features/admin/screens/categories/page"
+import { NewPost } from "./features/posts/screens/new"
+import { SinglePost } from "./features/posts/screens/single"
+import { EditComment, SingleCommentScreen } from "./features/comments/screens"
+import { ProfileScreen } from "./features/profile/screens"
 import {
   AllItemsPage,
   NewItemPage,
   SingleItemPage,
-} from "./features/admin/screens/items/page";
+} from "./features/admin/screens/items/page"
 import {
   AllActionsPage,
   NewActionPage,
   SingleActionPage,
-} from "./features/admin/screens/actions/page";
+} from "./features/admin/screens/actions/page"
 import {
   AllBadgesPage,
   NewBadgePage,
   SingleBadgePage,
-} from "./features/admin/screens/badges/page";
-import { EditPost } from "./features/posts/screens/edit";
-import { ShopPage } from "./features/shop/screens";
+} from "./features/admin/screens/badges/page"
+import { EditPost } from "./features/posts/screens/edit"
+import { ShopPage } from "./features/shop/screens"
 
-import { redirect } from "next/navigation";
-import { FeedScreen } from "./features/feed/screens";
+import { headers } from "next/headers"
+import { redirect } from "next/navigation"
+import { FeedScreen } from "./features/feed/screens"
 import {
   UserInventoryScreen,
+  UserInviteSettings,
   UserSettingsScreen,
-} from "./features/user/screens";
-import { AdminSidebar } from "./components/ui/AdminSidebar";
-import { getUserInventory } from "./features/user/actions";
-import { Inventory } from "packages/db";
-import { headers } from "next/headers";
-import { UserWithInventory } from "./lib/types";
-import { BroadcastsIndex } from "./features/admin/screens/broadcasts/screens";
+} from "./features/user/screens"
+import { AdminSidebar } from "./components/ui/AdminSidebar"
+import { getUserInventory } from "./features/user/actions"
+import { Inventory } from "@dir/db"
+import { BroadcastsIndex } from "./features/admin/screens/broadcasts/screens"
+import {
+  AllListsPage,
+  EditListPage,
+  NewListPage,
+  SingleListPage,
+} from "./features/admin/screens/lists/screens"
+import { Unsubscribe } from "./features/lists/action"
+import { ClosedSignupPage } from "./features/auth/screens/closed_signup"
+import { InviteSignupPage } from "./features/auth/screens/invite_signup"
+import { metadata } from "./lib/metadata"
+import { ographImageGenerator, size } from "./lib/ographImageGenerator"
+import { getSinglePost } from "./features/posts/actions"
+import { getComment } from "./features/comments/actions"
 
-const router = new Router();
+const router = new Router()
+
+export async function getMetadata(params: { router: string[] }) {
+  const getParams = params["router"]
+  return router.generateMetadata(getParams)
+}
 
 export async function PageInit<T>({
   params,
@@ -75,33 +93,78 @@ export async function PageInit<T>({
   sidebarLinks,
   resources,
 }: {
-  params: { router: string[] };
-  searchParams: { [key: string]: string | string[] | undefined };
-  routes: Routes;
-  auth: ReturnType<typeof authInit<T & BaseSessionData>>;
-  sidebarLinks?: { icon?: React.ElementType; url: string; text: string }[];
-  resources: Resources;
+  params: { router: string[] }
+  searchParams: { [key: string]: string | string[] | undefined }
+  routes: Routes
+  auth: ReturnType<typeof authInit<T & BaseSessionData>>
+  sidebarLinks?: { icon?: React.ElementType; url: string; text: string }[]
+  resources: Resources
 }) {
-  const getParams = params["router"];
-  let rootPath: string;
+  const getParams = params["router"]
+  let rootPath: string
+  const settings = await prisma?.globalSetting.findFirst()
+  const tags = await prisma?.tag.findMany({
+    where: {
+      slug: {
+        not: "feed",
+      },
+    },
+    orderBy: {
+      posts: {
+        _count: "desc",
+      },
+    },
+    take: 10, // Limit to the top 10 tags, adjust as needed
+  })
+
+  const preFilledMetadata = ({
+    pageTitle,
+    type = "website",
+    author,
+  }: {
+    pageTitle: string
+    type?: "website" | "article"
+    author?: string
+  }) => {
+    let imageUrl = `${
+      process.env.NEXT_PUBLIC_APP_URL
+    }/api/ographimage?siteTitle=${encodeURIComponent(
+      settings?.siteTitle as string
+    )}&pageTitle=${encodeURIComponent(pageTitle)}`
+
+    if (author) {
+      imageUrl += `&author=${encodeURIComponent(author)}`
+    }
+    const meta = metadata({
+      siteTitle: settings?.siteTitle as string,
+      pageTitle: pageTitle,
+      description: settings?.siteDescription as string,
+      keywords: tags?.map((tag) => tag.slug) ?? [],
+      images: [{ ...size, url: imageUrl }],
+      type: type,
+      author: type === "article" ? author : undefined,
+    })
+
+    return meta
+  }
 
   for (const route of routes) {
     if (route.type === "page") {
       if (route.root) {
-        rootPath = route.route;
+        rootPath = route.route
       }
 
       if (route.resource) {
-        router.addRoute(`/:slug${route.route}`, route.handler);
+        router.addRoute(`/:slug${route.route}`, route.handler)
       } else {
-        router.addRoute(route.route, route.handler);
+        router.addRoute(route.route, route.handler)
       }
     }
 
     if (route.type === "layout") {
       router.createLayout(route.route, async ({ children }) => {
-        return <route.handler>{children}</route.handler>;
-      });
+        return <route.handler>{children}</route.handler>
+      })
     }
   }
 
@@ -113,8 +176,8 @@ export async function PageInit<T>({
           resource={resource.name.toLowerCase()}
           schema={resource.schema}
         />
-      );
-    });
+      )
+    })
 
     router.addRoute(
       `/admin/${resource.name.toLowerCase()}/:id`,
@@ -125,9 +188,9 @@ export async function PageInit<T>({
             params={params}
             schema={resource.schema}
           />
-        );
-      },
-    );
+        )
+      }
+    )
   }
 
   router.createLayout("/admin/*", async ({ children }) => {
@@ -135,24 +198,24 @@ export async function PageInit<T>({
       include: {
         features: true,
       },
-    });
+    })
 
-    const user = await getCurrentUser();
-    let inventory: Inventory | null = null;
+    const user = await getCurrentUser()
+    let inventory: Inventory | null = null
     if (user) {
       inventory = await getUserInventory({
         userId: user.id,
-      });
+      })
     }
 
-    const memberCount = await prisma?.user.findMany();
+    const memberCount = await prisma?.user.findMany()
     const tags = await prisma?.tag.findMany({
       where: {
         slug: {
           not: "feed",
         },
       },
-    });
+    })
     const tagsWithPostCount = tags
       ? await Promise.all(
           tags.map(async (tag) => {
@@ -167,21 +230,21 @@ export async function PageInit<T>({
                   },
                 },
               },
-            });
+            })
             return {
               ...tag,
               postCount: count ?? 0,
-            };
-          }),
+            }
+          })
         )
-      : [];
+      : []
 
     if (!user) {
-      redirect("/login");
+      redirect("/login")
     }
 
     if (user.role !== "ADMIN") {
-      throw new Error("You are not authorized to access this page.");
+      throw new Error("You are not authorized to access this page.")
     }
 
     return (
@@ -196,13 +259,7 @@ export async function PageInit<T>({
           />
         </div>
         <div className="flex md:hidden">
-          <MobileNavBar
-            siteTitle={settings?.siteTitle!}
-            memberCount={memberCount!.length}
-            tags={tagsWithPostCount}
-            open={true}
-            user={user}
-          />
+          <MobileNavBar user={user} />
         </div>
         <div className="flex min-w-0 flex-1">
           <div className="ml-20 hidden md:block">
@@ -223,32 +280,32 @@ export async function PageInit<T>({
         </div>
         <ToastProvider />
       </div>
-    );
-  });
+    )
+  })
 
   router.createLayout("/*", async ({ children }) => {
     const settings = await prisma?.globalSetting.findFirst({
       include: {
         features: true,
       },
-    });
+    })
 
-    const user = await getCurrentUser();
-    let inventory: Inventory | null = null;
+    const user = await getCurrentUser()
+    let inventory: Inventory | null = null
     if (user) {
       inventory = await getUserInventory({
         userId: user.id,
-      });
+      })
     }
 
-    const memberCount = await prisma?.user.findMany();
+    const memberCount = await prisma?.user.findMany()
     const tags = await prisma?.tag.findMany({
       where: {
         slug: {
           not: "feed",
         },
       },
-    });
+    })
     const tagsWithPostCount = tags
       ? await Promise.all(
           tags.map(async (tag) => {
@@ -263,17 +320,17 @@ export async function PageInit<T>({
                   },
                 },
               },
-            });
+            })
             return {
               ...tag,
               postCount: count ?? 0,
-            };
-          }),
+            }
+          })
         )
-      : [];
+      : []
 
     return (
-      <div className="flex h-screen pb-20 lg:pb-0">
+      <div className="flex h-screen pb-20 md:pb-0">
         <div className="hidden md:flex md:flex-shrink-0">
           <div className="flex flex-col w-64">
             <Sidebar
@@ -286,13 +343,7 @@ export async function PageInit<T>({
           </div>
         </div>
         <div className="md:hidden flex">
-          <MobileNavBar
-            siteTitle={settings?.siteTitle!}
-            memberCount={memberCount!.length}
-            tags={tagsWithPostCount}
-            open={true}
-            user={user}
-          />
+          <MobileNavBar user={user} />
         </div>
         <main className="flex flex-col w-0 flex-1 overflow-hidden">
           <div className="border-b border-b-border-subtle flex items-center">
@@ -306,73 +357,185 @@ export async function PageInit<T>({
         </main>
         <ToastProvider />
       </div>
-    );
-  });
+    )
+  })
 
   router.addRoute("/", async () => {
-    redirect("/feed");
-  });
+    redirect("/feed")
+  })
 
-  router.addRoute("/feed", async () => {
-    return <FeedScreen />;
-  });
+  router.addRoute(
+    "/feed",
+    async () => {
+      return <FeedScreen />
+    },
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: "Feed",
+      })
+  )
 
-  router.addRoute("/posts", async () => {
-    return <AllPosts />;
-  });
+  router.addRoute(
+    "/posts",
+    async () => {
+      return <AllPosts />
+    },
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: "Posts",
+      })
+  )
 
-  router.addRoute("/posts/:slug", async ({ slug }) => {
-    const currentUser = await getCurrentUser();
-    return <SinglePost slug={slug} loggedIn={currentUser ? true : false} />;
-  });
+  router.addRoute(
+    "/posts/:slug",
+    async ({ slug }) => {
+      const currentUser = await getCurrentUser()
+      const post = await getSinglePost({ slug: slug })
+
+      if (!post) {
+        redirect("/404")
+      }
+
+      return <SinglePost post={post} loggedIn={currentUser ? true : false} />
+    },
+    "page",
+    async (params) => {
+      const post = await getSinglePost({ slug: params.slug })
+      return preFilledMetadata({
+        pageTitle: post?.title as string,
+        author: post?.user.username,
+      })
+    }
+  )
 
   router.addRoute(
     "/posts/:slug/comments/:commentId",
     async ({ slug, commentId }) => {
-      return <SingleCommentScreen commentId={commentId} postSlug={slug} />;
+      const comment = await getComment({ commentId: commentId })
+      if (!comment) {
+        redirect("/404")
+      }
+
+      return <SingleCommentScreen postSlug={slug} comment={comment} />
     },
-  );
+    "page",
+    async (params) => {
+      const comment = await getComment({ commentId: params.commentId })
+      const post = await getSinglePost({ slug: params.slug })
+      return preFilledMetadata({
+        pageTitle: `Comment on ${post?.title}`,
+        author: comment.user.username,
+      })
+    }
+  )
 
   router.addRoute(
     "/posts/:slug/comments/:commentId/edit",
     async ({ commentId }) => {
-      return <EditComment commentId={commentId} />;
+      return <EditComment commentId={commentId} />
     },
-  );
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: `Edit Comment - ${params.slug}`,
+      })
+  )
 
-  router.addRoute("/profile/:username", async ({ username }) => {
-    return <ProfileScreen username={username} />;
-  });
+  router.addRoute(
+    "/profile/:username",
+    async ({ username }) => {
+      return <ProfileScreen username={username} />
+    },
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: `${params.username} Profile`,
+      })
+  )
 
-  router.addRoute("/settings", async () => {
-    return <UserSettingsScreen />;
-  });
+  router.addRoute(
+    "/settings",
+    async () => {
+      return <UserSettingsScreen />
+    },
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: "Settings",
+      })
+  )
 
-  router.addRoute("/settings/inventory", async () => {
-    return <UserInventoryScreen />;
-  });
+  router.addRoute(
+    "/settings/inventory",
+    async () => {
+      return <UserInventoryScreen />
+    },
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: "Inventory",
+      })
+  )
 
-  router.addRoute("/posts/new", async () => {
-    const session = await auth.getSession();
-    if (!session) {
-      redirect("/login");
-    }
+  router.addRoute(
+    "/settings/invites",
+    async () => {
+      return <UserInviteSettings />
+    },
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: "Invite",
+      })
+  )
 
-    return <NewPost />;
-  });
+  router.addRoute(
+    "/posts/new",
+    async () => {
+      const session = await auth.getSession()
+      if (!session) {
+        redirect("/login")
+      }
 
-  router.addRoute("/posts/:slug/edit", async ({ slug }) => {
-    const session = await auth.getSession();
-    if (!session) {
-      redirect("/login");
-    }
+      return <NewPost />
+    },
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: "New Post",
+      })
+  )
 
-    return <EditPost slug={slug} />;
-  });
+  router.addRoute(
+    "/posts/:slug/edit",
+    async ({ slug }) => {
+      const session = await auth.getSession()
+      if (!session) {
+        redirect("/login")
+      }
 
-  router.addRoute("/shop", async () => {
-    return <ShopPage />;
-  });
+      return <EditPost slug={slug} />
+    },
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: `Edit Post - ${params.slug}`,
+      })
+  )
+
+  router.addRoute(
+    "/shop",
+    async () => {
+      return <ShopPage />
+    },
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: "Shop",
+      })
+  )
 
   /**
    *
@@ -394,8 +557,8 @@ export async function PageInit<T>({
           <ToastProvider />
         </main>
       </div>
-    );
-  });
+    )
+  })
 
   router.createLayout("/signup", async ({ children }) => {
     return (
@@ -405,8 +568,8 @@ export async function PageInit<T>({
           <ToastProvider />
         </main>
       </div>
-    );
-  });
+    )
+  })
 
   router.createLayout("/forgot-password", async ({ children }) => {
     return (
@@ -416,8 +579,8 @@ export async function PageInit<T>({
           <ToastProvider />
         </main>
       </div>
-    );
-  });
+    )
+  })
 
   router.createLayout("/reset-password", async ({ children }) => {
     return (
@@ -427,26 +590,72 @@ export async function PageInit<T>({
           <ToastProvider />
         </main>
       </div>
-    );
-  });
+    )
+  })
 
   // AUTH ROUTES
 
-  router.addRoute("/login", async () => {
-    return <LoginPage auth={auth} />;
-  });
+  router.addRoute(
+    "/login",
+    async () => {
+      return <LoginPage auth={auth} />
+    },
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: "Login",
+      })
+  )
 
-  router.addRoute("/signup", async () => {
-    return <SignupPage searchParams={searchParams} />;
-  });
+  router.addRoute(
+    "/signup",
+    async () => {
+      const signupFlow = await prisma?.featureToggle.findFirst({
+        where: {
+          feature: "signupFlow",
+        },
+      })
 
-  router.addRoute("/forgot-password", async () => {
-    return <ForgotPasswordPage />;
-  });
+      if (signupFlow?.value === "closed") {
+        return <ClosedSignupPage />
+      }
 
-  router.addRoute("/reset-password", async () => {
-    return <ResetPasswordPage />;
-  });
+      if (signupFlow?.value === "invite") {
+        return <InviteSignupPage />
+      }
+
+      return <SignupPage searchParams={searchParams} />
+    },
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: "Signup",
+      })
+  )
+
+  router.addRoute(
+    "/forgot-password",
+    async () => {
+      return <ForgotPasswordPage />
+    },
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: "Forgot Password",
+      })
+  )
+
+  router.addRoute(
+    "/reset-password",
+    async () => {
+      return <ResetPasswordPage />
+    },
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: "Reset Password",
+      })
+  )
 
   /**
    *
@@ -456,127 +665,334 @@ export async function PageInit<T>({
    *
    *
    **/
-  router.addRoute("/admin", async () => {
-    const headersList = headers();
-    const userAgent = headersList.get("user-agent");
-    const isMobile = /mobile/i.test(userAgent ?? "");
 
-    if (!isMobile) {
-      redirect("/admin/site");
-    }
+  router.addRoute(
+    "/admin",
+    async () => {
+      const headersList = headers()
+      const userAgent = headersList.get("user-agent")
+      const isMobile = /mobile/i.test(userAgent ?? "")
 
-    return <AdminMenu />;
-  });
+      if (!isMobile) {
+        redirect("/admin/site")
+      }
 
-  router.addRoute("/admin/site", async () => {
-    return <AdminSiteSettings />;
-  });
+      return <AdminMenu />
+    },
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: "Admin",
+      })
+  )
 
-  router.addRoute("/admin/categories", async () => {
-    return <AllCategoriesPage />;
-  });
+  router.addRoute(
+    "/admin/site",
+    async () => {
+      return <AdminSiteSettings />
+    },
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: "Admin - General",
+      })
+  )
 
-  router.addRoute("/admin/categories/new", async () => {
-    return <NewCategoryPage />;
-  });
+  router.addRoute(
+    "/admin/categories",
+    async () => {
+      return <AllCategoriesPage />
+    },
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: "Admin - Categories",
+      })
+  )
 
-  router.addRoute("/admin/categories/:id", async ({ id }) => {
-    return <SingleCategoryPage id={id} />;
-  });
+  router.addRoute(
+    "/admin/categories/new",
+    async () => {
+      return <NewCategoryPage />
+    },
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: "Admin - New Category",
+      })
+  )
 
-  router.addRoute("/admin/items", async () => {
-    return <AllItemsPage />;
-  });
+  router.addRoute(
+    "/admin/categories/:id",
+    async ({ id }) => {
+      return <SingleCategoryPage id={id} />
+    },
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: `Admin - Category ${params.id}`,
+      })
+  )
 
-  router.addRoute("/admin/items/new", async () => {
-    return <NewItemPage />;
-  });
+  router.addRoute(
+    "/admin/items",
+    async () => {
+      return <AllItemsPage />
+    },
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: "Admin - Items",
+      })
+  )
 
-  router.addRoute("/admin/items/:id", async ({ id }) => {
-    return <SingleItemPage id={id} />;
-  });
+  router.addRoute(
+    "/admin/items/new",
+    async () => {
+      return <NewItemPage />
+    },
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: "Admin - New Item",
+      })
+  )
 
-  router.addRoute("/admin/actions", async () => {
-    return <AllActionsPage />;
-  });
+  router.addRoute(
+    "/admin/items/:id",
+    async ({ id }) => {
+      return <SingleItemPage id={id} />
+    },
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: `Admin - Item ${params.id}`,
+      })
+  )
 
-  router.addRoute("/admin/actions/new", async () => {
-    return <NewActionPage />;
-  });
+  router.addRoute(
+    "/admin/actions",
+    async () => {
+      return <AllActionsPage />
+    },
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: "Admin - Actions",
+      })
+  )
 
-  router.addRoute("/admin/actions/:id", async ({ id }) => {
-    return <SingleActionPage id={id} />;
-  });
+  router.addRoute(
+    "/admin/actions/new",
+    async () => {
+      return <NewActionPage />
+    },
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: "Admin - New Action",
+      })
+  )
 
-  router.addRoute("/admin/badges", async () => {
-    return <AllBadgesPage />;
-  });
+  router.addRoute(
+    "/admin/actions/:id",
+    async ({ id }) => {
+      return <SingleActionPage id={id} />
+    },
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: `Admin - Action ${params.id}`,
+      })
+  )
 
-  router.addRoute("/admin/badges/new", async () => {
-    return <NewBadgePage />;
-  });
+  router.addRoute(
+    "/admin/badges",
+    async () => {
+      return <AllBadgesPage />
+    },
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: "Admin - Badges",
+      })
+  )
 
-  router.addRoute("/admin/badges/:id", async ({ id }) => {
-    return <SingleBadgePage id={id} />;
-  });
+  router.addRoute(
+    "/admin/badges/new",
+    async () => {
+      return <NewBadgePage />
+    },
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: "Admin - New Badge",
+      })
+  )
 
-  router.addRoute("/admin/users", async () => {
-    return <UsersAdminPage />;
-  });
+  router.addRoute(
+    "/admin/badges/:id",
+    async ({ id }) => {
+      return <SingleBadgePage id={id} />
+    },
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: `Admin - Badge ${params.id}`,
+      })
+  )
 
-  router.addRoute("/admin/users/:id", async (params) => {
-    return <SingleUserAdminPage id={params.id} />;
-  });
+  router.addRoute(
+    "/admin/users",
+    async () => {
+      return <UsersAdminPage />
+    },
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: "Admin - Users",
+      })
+  )
 
-  router.addRoute("/admin/broadcasts", async () => {
-    return <BroadcastsIndex />;
-  });
+  router.addRoute(
+    "/admin/users/:id",
+    async (params) => {
+      return <SingleUserAdminPage id={params.id} />
+    },
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: `Admin - User ${params.id}`,
+      })
+  )
+
+  router.addRoute(
+    "/admin/broadcasts",
+    async () => {
+      return <BroadcastsIndex />
+    },
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: "Admin - Broadcasts",
+      })
+  )
+
+  router.addRoute(
+    "/admin/lists",
+    async () => {
+      return <AllListsPage />
+    },
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: "Admin - Lists",
+      })
+  )
+
+  router.addRoute(
+    "/admin/lists/:slug",
+    async (params) => {
+      return <SingleListPage slug={params.slug} />
+    },
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: `Admin - List ${params.slug}`,
+      })
+  )
+
+  router.addRoute(
+    "/admin/lists/new",
+    async () => {
+      return <NewListPage />
+    },
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: "Admin - New List",
+      })
+  )
+
+  router.addRoute(
+    "/admin/lists/:slug/edit",
+    async (params) => {
+      return <EditListPage slug={params.slug} />
+    },
+    "page",
+    async (params) =>
+      preFilledMetadata({
+        pageTitle: `Admin - Edit List ${params.slug}`,
+      })
+  )
+
+  router.addRoute(
+    "/unsubscribe",
+    async (_, request) => {
+      return Unsubscribe(request!)
+    },
+    "api:GET"
+  )
 
   router.addRoute(
     "/activateAccount",
     async (_, request) => {
-      return VerifyUser(request!);
+      return VerifyUser(request!)
     },
-    "api:GET",
-  );
+    "api:GET"
+  )
 
   router.addRoute(
     "/auth/google",
     async (_, request) => {
-      return OAuthLogin(request!, "google", auth);
+      return OAuthLogin(request!, "google", auth)
     },
-    "api:GET",
-  );
+    "api:GET"
+  )
 
   router.addRoute(
     "/auth/github",
     async (_, request) => {
-      return OAuthLogin(request!, "github", auth);
+      return OAuthLogin(request!, "github", auth)
     },
-    "api:GET",
-  );
+    "api:GET"
+  )
 
   router.addRoute(
     "/files/upload",
     async (_, request) => {
-      const user = await getCurrentUser();
+      const user = await getCurrentUser()
 
       if (!user) {
-        throw new Error("You are not authorized");
+        throw new Error("You are not authorized")
       }
-      return UploadFileRoute(request!);
+      return UploadFileRoute(request!)
     },
-    "api:POST",
-  );
+    "api:POST"
+  )
 
-  return router.init(getParams);
+  router.addRoute(
+    "/ographimage",
+    async (_, request) => {
+      return ographImageGenerator(request!)
+    },
+    "api:GET"
+  )
+
+  return router.init(getParams)
 }
 
-export async function LayoutInit({ children }: { children: React.ReactNode }) {
-  return await router.initLayout({ children });
+export async function LayoutInit({
+  children,
+  params,
+}: {
+  children: React.ReactNode
+  params: { router: string[] }
+}) {
+  return await router.initLayout({ children, pathArray: params.router })
 }
 
 export async function ApiRouteInit() {
-  const routes = router.initApiRoute();
-  return routes;
+  const routes = router.initApiRoute()
+  return routes
 }

@@ -1,10 +1,13 @@
+"use client"
 import { Extension } from '@tiptap/core'
 import Suggestion from '@tiptap/suggestion'
 import { Editor } from '@tiptap/core'
 import { Range } from '@tiptap/core'
-import React, { useState, useEffect, useRef, useCallback, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback, ReactNode } from 'react';
 import { ReactRenderer } from '@tiptap/react'
 import tippy, { Instance, Props } from "tippy.js";
+import { PostSelectList } from './PostMention';
+import {Heading1, Heading2, Heading3, FileText} from 'lucide-react'
 
 interface ReactRendererWithKeyDown extends ReactRenderer {
   ref: {
@@ -28,6 +31,7 @@ interface SuggestionProps {
 
 type Item = {
   title: string,
+  icon: ReactNode,
   command: (props: CommandFunctionProps) => void
 }
 
@@ -113,6 +117,8 @@ const CommandList = ({
     }
   }, []);
 
+
+
   return (
     <div
       ref={commandListRef}
@@ -129,7 +135,8 @@ const CommandList = ({
             onClick={() => selectItem(index)}
           >
 
-            <div>
+            <div className="flex gap-4 items-center">
+             <span>{item.icon}</span>
               <p className="font-medium">{item.title}</p>
             </div>
           </button>
@@ -144,7 +151,8 @@ export const suggestion = {
   items: ({ query }: { query: string }): Item[] => {
     return [
       {
-        title: 'H1',
+        title: 'Heading 1',
+        icon: <Heading1 className='w-4 h-4'/>,
         command: ({ editor, range }: { editor: Editor, range: Range }) => {
           editor
             .chain()
@@ -155,7 +163,8 @@ export const suggestion = {
         },
       },
       {
-        title: 'H2',
+        title: 'Heading 2',
+        icon: <Heading2 className='w-4 h-4'/>,
         command: ({ editor, range }: { editor: Editor, range: Range }) => {
           editor
             .chain()
@@ -166,7 +175,8 @@ export const suggestion = {
         },
       },
       {
-        title: 'H3',
+        title: 'Heading 3',
+        icon: <Heading3 className='w-4 h-4'/>,
         command: ({ editor, range }: { editor: Editor, range: Range }) => {
           editor
             .chain()
@@ -175,12 +185,38 @@ export const suggestion = {
             .setNode('heading', { level: 3 })
             .run()
         },
+      },
+      {
+        title: 'Mention a post',
+        icon: <FileText className='w-4 h-4'/>,
+        command: ({ editor, range }: { editor: Editor, range: Range }) => {
+          editor.chain().focus().deleteRange(range).run();
+
+          const comp = new ReactRenderer(() => {
+            const handleChange = () => {
+              comp.destroy()
+            }
+            return <PostSelectList editor={editor} range={range} onChange={handleChange} />
+          }, {
+            editor: editor
+          });
+
+
+          document.body.appendChild(comp.element);
+
+          const event = new CustomEvent('hideCommandListPopup');
+          document.dispatchEvent(event);
+
+
+
+        },
       }
     ].filter(item => item.title.toLowerCase().startsWith(query.toLowerCase())).slice(0, 10)
   },
   render: () => {
     let component: ReactRenderer | null = null;
     let popup: Instance<Props>[] | null = null;
+    let isPopupDestroyed = true;
 
     return {
       onStart: (props: SuggestionProps) => {
@@ -199,21 +235,38 @@ export const suggestion = {
           trigger: "manual",
           placement: "bottom-start",
         });
+        isPopupDestroyed = false;
+
+      const hidePopupListener = () => {
+        if (!isPopupDestroyed) {
+          popup?.[0]?.hide();
+        }
+      };
+      document.addEventListener('hideCommandListPopup', hidePopupListener);
+
+      // Cleanup listener on exit
+      return () => {
+        document.removeEventListener('hideCommandListPopup', hidePopupListener);
+      };
       },
 
       onUpdate(props: SuggestionProps) {
-        component?.updateProps(props);
-        popup &&
-          popup[0]?.setProps({
-            getReferenceClientRect: props.clientRect,
-          });
+        if (!isPopupDestroyed) { // Check the flag before updating
+          component?.updateProps(props);
+          popup &&
+            popup[0]?.setProps({
+              getReferenceClientRect: props.clientRect,
+            });
+        }
       },
 
       onKeyDown(props: SuggestionProps) {
         const componentWithKeyDown = component as ReactRendererWithKeyDown;
 
         if (props.event.key === "Escape") {
-          popup?.[0]?.hide();
+          if (!isPopupDestroyed) { // Check the flag before hiding
+            popup?.[0]?.hide();
+          }
           return true;
         }
 
@@ -227,8 +280,11 @@ export const suggestion = {
       },
 
       onExit() {
-        popup?.[0]?.destroy();
-        component?.destroy();
+        if (!isPopupDestroyed) { // Check the flag before destroying
+          popup?.[0]?.destroy();
+          component?.destroy();
+          isPopupDestroyed = true; // Update the flag after destruction
+        }
       },
     }
   },

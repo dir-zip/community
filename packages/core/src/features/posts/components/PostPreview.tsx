@@ -1,7 +1,8 @@
 "use client"
 import React, { useEffect, useRef, useState } from 'react'
-import { MessageSquare, PenSquare, LucideSquareStack, Hash, ChevronsLeft, ChevronsRight, Megaphone } from 'lucide-react'
-import { RichTextField, buttonVariants, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@dir/ui'
+import { MessageSquare, PenSquare, Shapes, Hash, ChevronsLeft, ChevronsRight, Megaphone } from 'lucide-react'
+import { buttonVariants, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@dir/ui'
+import { RichTextField } from '~/components/Editor/RichTextField'
 import Link from 'next/link'
 import { cn } from '@/utils'
 
@@ -99,7 +100,7 @@ export const PostPreview = (props: PostPreviewProps) => {
 
           {showEdit ? <div className="flex items-center space-x-4">
             <DropdownMenu onOpenChange={(isOpen) => setIsDropdownOpen(isOpen)}>
-              <DropdownMenuTrigger><LucideSquareStack className="text-link w-4 h-4" /></DropdownMenuTrigger>
+              <DropdownMenuTrigger><Shapes className="text-link w-4 h-4" /></DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 {categories.map((category, i) => {
                   return (

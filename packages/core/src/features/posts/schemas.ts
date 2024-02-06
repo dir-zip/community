@@ -6,6 +6,7 @@ export const PostSchema = z.object({
   body: z.string(),
   category: z.string(),
   broadcast: z.boolean().optional(),
+  broadcastToList: z.array(z.string()).optional(),
   tags: z.array(z.string()),
 });
 

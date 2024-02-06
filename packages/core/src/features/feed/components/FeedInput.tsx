@@ -8,8 +8,10 @@ import { useRouter } from "next/navigation";
 import { applyEffects } from "~/itemEffects";
 import { UserWithInventory } from "~/lib/types";
 
+
 export const FeedInput = ({ user }: { user: UserWithInventory }) => {
   const router = useRouter()
+
   return (
     <div className="flex w-full space-x-4">
       <div>
