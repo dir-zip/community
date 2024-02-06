@@ -53,6 +53,7 @@ import { getComment } from "./features/comments/actions";
 
 const router = new Router();
 
+
 export async function getMetadata(params: { "router": string[] }) {
   const getParams = params["router"]
   return router.generateMetadata(getParams)
@@ -90,6 +91,8 @@ export async function PageInit<T>({
     },
     take: 10 // Limit to the top 10 tags, adjust as needed
   });
+
+
   let metaData = {
     pageTitle: '',
     author: ''
@@ -333,17 +336,20 @@ export async function PageInit<T>({
   router.addRoute("/posts/:slug", async ({ slug }) => {
     const currentUser = await getCurrentUser()
     const post = await getSinglePost({ slug: slug })
+
     if (!post) {
       redirect('/404')
     }
     metaData = {
-      pageTitle: slug,
+      pageTitle: post.title,
       author: post?.user.username
     };
     return <SinglePost post={post} loggedIn={currentUser ? true : false} />
-  }, "page", (params) => preFilledMetadata({
-    ...metaData
-  }))
+  }, "page", (params) => {
+    return preFilledMetadata({
+      ...metaData
+    })
+  })
 
   router.addRoute("/posts/:slug/comments/:commentId", async ({ slug, commentId }) => {
     const comment = await getComment({ commentId: commentId })

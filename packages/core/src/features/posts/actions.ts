@@ -1,5 +1,5 @@
 'use server'
-
+import { JSDOM } from 'jsdom';
 import { prisma, type Post, Tag, Inventory } from "@dir/db";
 import { z } from "zod";
 import { createAction } from '~/lib/createAction';
@@ -144,10 +144,17 @@ export const getAllPosts = createAction(async ({ }, params) => {
   { authed: false })
 
 export const createPost = createAction(async ({ session }, { title, body, category, tags, broadcast, broadcastToList }) => {
-
+  let generatedTitle: string = title
+  
+  if (title === "") {
+    const dom = new JSDOM(body);
+    const h1 = dom.window.document.querySelector('h1');
+    const p = dom.window.document.querySelector('p');
+    generatedTitle = h1 ? h1.textContent as string : (p ? p.textContent as string : 'Default Title');
+  }
 
   const createSlug = await findFreeSlug<Post>(
-    title.toLowerCase().replace(/[^a-z0-9]/g, "-"),
+    title !== "" ? title.toLowerCase().replace(/[^a-z0-9]/g, "-") : generatedTitle.toLowerCase().replace(/[^a-z0-9]/g, "-"),
     async (slug: string) =>
       await prisma.post.findUnique({ where: { slug } }),
   );
@@ -188,7 +195,7 @@ export const createPost = createAction(async ({ session }, { title, body, catego
 
   const post = await prisma.post.create({
     data: {
-      title,
+      title: generatedTitle,
       body,
       slug: createSlug,
       categoryId: getCategory?.id!,
@@ -201,17 +208,6 @@ export const createPost = createAction(async ({ session }, { title, body, catego
     }
   })
 
-  if (post.title === "") {
-    await prisma.post.update({
-      where: {
-        id: post.id
-      },
-      data: {
-        title: post.id,
-        slug: post.id
-      }
-    })
-  }
 
   if (broadcast) {
     const unsubscribedList = await prisma.list.findUnique({
