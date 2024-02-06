@@ -1,32 +1,10 @@
 "use client";
-import {
-  NavBarContainer,
-  // UserInfo,
-  // SiteInfo,
-  // NavWrapper,
-  // InnerNavBarContainer,
-  type NavBarProps as _NavBarProps,
-} from "@dir/ui";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import {
-  Layers,
-  Settings,
-  LogOut,
-  Store,
-  FileText,
-  Settings2,
-  UserCircle,
-} from "lucide-react";
-import { logoutAction } from "../../features/auth/actions";
-import { TagCloud } from "./TagCloud";
-import { Inventory, InventoryItem, Item, Tag } from "@dir/db";
-import { applyEffects } from "~/itemEffects";
+import { Layers, Store, FileText, Settings2, UserCircle } from "lucide-react";
 import { UserWithInventory } from "~/lib/types";
-import { AdminSidebar } from "./AdminSidebar";
 
-export type NavBarProps = Omit<_NavBarProps, "children" | "user"> & {
-  tags?: (Tag & { postCount: number })[];
+export type NavBarProps = {
   user: UserWithInventory | null;
 };
 
@@ -41,11 +19,11 @@ export const MobileNavBar = (props: NavBarProps) => {
       icon: Settings2,
       text: "Admin",
       link: "/admin",
-      toShow: props.user && props.user.role === "ADMIN",
+      hide: !props.user || props.user.role !== "ADMIN",
     },
     {
       icon: UserCircle,
-      text: "Profile",
+      text: props.user ? "Profile" : "Login",
       link: props.user ? `/profile/${props.user.username}` : `/login`,
     },
   ];
@@ -56,6 +34,10 @@ export const MobileNavBar = (props: NavBarProps) => {
     >
       {_navbarItems.map((item, i) => {
         const Icon = item["icon"];
+
+        if (item.hide) {
+          return null;
+        }
 
         return (
           <Link
@@ -74,107 +56,4 @@ export const MobileNavBar = (props: NavBarProps) => {
       })}
     </div>
   );
-
-  return (
-    <NavBarContainer open={props.open}>here navigation yo</NavBarContainer>
-  );
-
-  // return (
-  //   <NavBarContainer open={props.open}>
-  //     <InnerNavBarContainer>
-  //       <SiteInfo
-  //         siteTitle={props.siteTitle}
-  //         memberCount={props.memberCount}
-  //         open={props.open}
-  //       />
-  //       <NavWrapper open={props.open}>
-  //         {_sidebarLinks.map((link, i) => {
-  //           const Icon = link["icon"];
-  //           return (
-  //             <Link
-  //               href={link.link}
-  //               key={i}
-  //               className={`${
-  //                 pathname === link.link || pathname.startsWith(`${link.link}/`)
-  //                   ? "bg-primary-900"
-  //                   : null
-  //               } text-sm rounded px-4 py-2 flex items-center space-x-2`}
-  //             >
-  //               <Icon className="w-4 h-4" />
-  //               {props.open && <span>{link.text}</span>}
-  //             </Link>
-  //           );
-  //         })}
-  //       </NavWrapper>
-  //     </InnerNavBarContainer>
-
-  //     <InnerNavBarContainer>
-  //       {props.open ? (
-  //         <div className="py-6">
-  //           <TagCloud tags={props.tags || []} />
-  //         </div>
-  //       ) : null}
-
-  //       {props.user ? (
-  //         <UserInfo
-  //           open={props.open}
-  //           username={props.user.username}
-  //           customUsernameComponent={applyEffects(
-  //             "username",
-  //             { username: props.user.username },
-  //             props.user.inventory,
-  //           )}
-  //           avatar={applyEffects(
-  //             "avatar",
-  //             {
-  //               username: props.user.username,
-  //               avatar: props.user.avatar || "",
-  //             },
-  //             props.user.inventory,
-  //           )}
-  //           points={props.user.points}
-  //         />
-  //       ) : (
-  //         <div className="flex bg-primary-700 rounded p-4 flex-col gap-2">
-  //           <p className="text-xs">You're not logged in</p>
-  //           <div className="flex flex-row gap-1 text-sm">
-  //             <Link href={"/login"}>
-  //               <span className="text-link">Login</span>
-  //             </Link>
-  //             <span>Or</span>
-  //             <Link href={"/signup"}>
-  //               <span className="text-link">Create an account</span>
-  //             </Link>
-  //           </div>
-  //         </div>
-  //       )}
-
-  //       {props.user ? (
-  //         <NavWrapper open={props.open}>
-  //           <Link
-  //             href={`/settings`}
-  //             className={`${
-  //               pathname === "/settings" || pathname.startsWith("/settings/")
-  //                 ? "bg-primary-900"
-  //                 : null
-  //             } text-sm rounded px-4 py-2 flex items-center space-x-2`}
-  //           >
-  //             <Settings className="w-4 h-4" />
-  //             {props.open && <span>Settings</span>}
-  //           </Link>
-  //           <button
-  //             onClick={(e) => {
-  //               e.preventDefault();
-  //               logoutAction();
-  //             }}
-  //             className="text-sm rounded px-4 py-2 flex items-center space-x-2"
-  //           >
-  //             <LogOut className="w-4 h-4" />
-  //             {props.open && <span>Logout</span>}
-  //           </button>
-  //         </NavWrapper>
-  //       ) : null}
-  //     </InnerNavBarContainer>
-  //   </NavBarContainer>
-  // );
 };
