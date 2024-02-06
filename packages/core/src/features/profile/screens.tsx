@@ -1,33 +1,33 @@
-import { redirect } from "next/navigation";
-import { getUser } from "./actions";
+import { redirect } from "next/navigation"
+import { getUser } from "./actions"
 
-import { Suspense } from "react";
+import { Suspense } from "react"
 
-import { UserPostsList } from "./components/UserPostsList";
-import { UserMobileSettings } from "./components/UserMobileSettings";
-import { applyEffects } from "~/itemEffects";
-import { getUserInventory } from "../user/actions";
-import { getUserBadges } from "../user/actions";
+import { UserPostsList } from "./components/UserPostsList"
+import { UserMobileSettings } from "./components/UserMobileSettings"
+import { applyEffects } from "~/itemEffects"
+import { getUserInventory } from "../user/actions"
+import { getUserBadges } from "../user/actions"
 
-import { HoverCard } from "@dir/ui";
+import { HoverCard } from "@dir/ui"
 
 export const ProfileScreen = async ({ username }: { username: string }) => {
-  const user = await getUser({ username });
+  const user = await getUser({ username })
   if (!user) {
-    return redirect("/404");
+    return redirect("/404")
   }
 
   const inventory = await getUserInventory({
     userId: user.id,
-  });
+  })
 
-  const badges = await getUserBadges({ userId: user.id });
+  const badges = await getUserBadges({ userId: user.id })
 
   const usernameWithEffect = applyEffects(
     "username",
     { username: user.username },
-    inventory,
-  );
+    inventory
+  )
   const avatarWithEffect = applyEffects(
     "avatar",
     {
@@ -35,16 +35,20 @@ export const ProfileScreen = async ({ username }: { username: string }) => {
       avatar: user.avatar || "",
       className: "text-5xl w-48 h-48",
     },
-    inventory,
-  );
+    inventory
+  )
 
   return (
     <div className="pb-8 flex flex-col gap-4">
-      {user.bannerImage ? <img
-        alt="Header"
-        className="h-56 w-full aspect-[3/1] object-cover"
-        src={user.bannerImage as string}
-      /> : <div className="h-56 w-full bg-primary-800" />}
+      {user.bannerImage ? (
+        <img
+          alt="Header"
+          className="h-56 w-full aspect-[3/1] object-cover"
+          src={user.bannerImage as string}
+        />
+      ) : (
+        <div className="h-56 w-full bg-primary-800" />
+      )}
       <div className="xl:mx-auto xl:w-[960px]">
         <div className="flex relative gap-8 w-full justify-start pl-14 bottom-[100px]">
           {avatarWithEffect}
@@ -78,7 +82,7 @@ export const ProfileScreen = async ({ username }: { username: string }) => {
                     }
                     content={<span className="text-xs">{i.badge?.title}</span>}
                   />
-                );
+                )
               })}
             </div>
           </div>
@@ -90,10 +94,14 @@ export const ProfileScreen = async ({ username }: { username: string }) => {
             </Suspense>
           </div>
 
-          {user ? <UserMobileSettings /> : null}
+          {user ? (
+            <div className="block md:hidden">
+              <UserMobileSettings />
+            </div>
+          ) : null}
         </div>
       </div>
       {/* </div> */}
     </div>
-  );
-};
+  )
+}
