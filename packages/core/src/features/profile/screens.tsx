@@ -49,11 +49,11 @@ export const ProfileScreen = async ({ username }: { username: string }) => {
       ) : (
         <div className="h-56 w-full bg-primary-800" />
       )}
-      <div className="xl:mx-auto xl:w-[960px]">
-        <div className="flex relative gap-8 w-full justify-start pl-14 bottom-[100px]">
+      <div className="px-8 xl:px-0 xl:mx-auto xl:w-[960px]">
+        <div className="flex relative flex-col md:flex-row gap-8 w-full xl:justify-start md:pl-14 bottom-[100px]">
           {avatarWithEffect}
 
-          <div className="flex flex-col gap-2 bottom-[-120px] relative">
+          <div className="flex flex-col gap-2 md:bottom-[-120px] relative">
             <div className="rounded px-4 py-2 bg-primary-900">
               <span className="text-lg font-bold">{usernameWithEffect}</span>
             </div>
