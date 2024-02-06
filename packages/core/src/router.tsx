@@ -669,14 +669,6 @@ export async function PageInit<T>({
   router.addRoute(
     "/admin",
     async () => {
-      const headersList = headers()
-      const userAgent = headersList.get("user-agent")
-      const isMobile = /mobile/i.test(userAgent ?? "")
-
-      if (!isMobile) {
-        redirect("/admin/site")
-      }
-
       return <AdminMenu />
     },
     "page",

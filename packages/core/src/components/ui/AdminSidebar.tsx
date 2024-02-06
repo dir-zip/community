@@ -14,7 +14,7 @@ import {
 } from "lucide-react"
 
 const _adminSidebarLinks = [
-  { icon: Monitor, text: "Site", link: "/admin" },
+  { icon: Monitor, text: "Site", link: "/admin/site" },
   { icon: Box, text: "Items", link: "/admin/items" },
   { icon: Star, text: "Badges", link: "/admin/badges" },
   { icon: Zap, text: "Actions", link: "/admin/actions" },
@@ -32,12 +32,18 @@ export const AdminSidebar = () => {
       <div className={cn("flex flex-col space-y-0 md:space-y-2")}>
         {_adminSidebarLinks.map((link, i) => {
           const Icon = link["icon"]
+          let isSelected = pathname === link.link
+
+          if (link.link === "/admin/site") {
+            isSelected = pathname === "/admin/site" || pathname === "/admin"
+          }
+
           return (
             <Link
               href={link.link}
               key={i}
               className={`${
-                pathname === link.link ? "bg-primary-900" : null
+                isSelected ? "md:bg-primary-900" : null
               } text-base md:text-sm rounded px-8 md:px-4 py-4 md:py-2 flex items-center space-x-2 border-b md:border-none`}
             >
               <Icon className="w-4 h-4" />
