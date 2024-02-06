@@ -93,10 +93,6 @@ export async function PageInit<T>({
   });
 
 
-  let metaData = {
-    pageTitle: '',
-    author: ''
-  };
 
   const preFilledMetadata = ({ 
     pageTitle, 
@@ -323,13 +319,13 @@ export async function PageInit<T>({
 
   router.addRoute("/feed", async () => {
     return <FeedScreen />
-  }, "page", (params) => preFilledMetadata({
+  }, "page", async (params) => preFilledMetadata({
     pageTitle: "Feed",
   }))
 
   router.addRoute('/posts', async () => {
     return <AllPosts />
-  }, 'page', (params) => preFilledMetadata({
+  }, 'page', async (params) => preFilledMetadata({
     pageTitle: "Posts",
   }))
 
@@ -340,14 +336,13 @@ export async function PageInit<T>({
     if (!post) {
       redirect('/404')
     }
-    metaData = {
-      pageTitle: post.title,
-      author: post?.user.username
-    };
+
     return <SinglePost post={post} loggedIn={currentUser ? true : false} />
-  }, "page", (params) => {
+  }, "page", async(params) => {
+    const post = await getSinglePost({ slug: params.slug })
     return preFilledMetadata({
-      ...metaData
+      pageTitle: post?.title as string,
+      author: post?.user.username
     })
   })
 
@@ -356,42 +351,44 @@ export async function PageInit<T>({
     if (!comment) {
       redirect('/404')
     }
-    metaData = {
-      pageTitle: `${slug} - Comment`,
-      author: comment.user.username
-    }
+
     return <SingleCommentScreen postSlug={slug} comment={comment} />
-  }, "page", (params) => preFilledMetadata({
-    ...metaData
-  }))
+  }, "page", async (params) => {
+    const comment = await getComment({ commentId: params.commentId })
+    const post = await getSinglePost({ slug: params.slug })
+    return preFilledMetadata({
+      pageTitle: `Comment on ${post?.title}`,
+      author: comment.user.username
+    })
+  })
 
   router.addRoute("/posts/:slug/comments/:commentId/edit", async ({ commentId }) => {
     return <EditComment commentId={commentId} />
-  }, "page", (params) => preFilledMetadata({
+  }, "page", async (params) => preFilledMetadata({
     pageTitle: `Edit Comment - ${params.slug}`,
   }))
 
   router.addRoute("/profile/:username", async ({ username }) => {
     return <ProfileScreen username={username} />
-  }, "page", (params) => preFilledMetadata({
+  }, "page", async (params) => preFilledMetadata({
     pageTitle: `${params.username} Profile`,
   }))
 
   router.addRoute("/settings", async () => {
     return <UserSettingsScreen />
-  }, "page", (params) => preFilledMetadata({
+  }, "page", async (params) => preFilledMetadata({
     pageTitle: "Settings",
   }))
 
   router.addRoute("/settings/inventory", async () => {
     return <UserInventoryScreen />
-  }, "page", (params) => preFilledMetadata({
+  }, "page", async (params) => preFilledMetadata({
     pageTitle: "Inventory",
   }))
 
   router.addRoute("/settings/invites", async () => {
     return <UserInviteSettings />
-  }, "page", (params) => preFilledMetadata({
+  }, "page", async (params) => preFilledMetadata({
     pageTitle: "Invite",
   }))
 
@@ -403,7 +400,7 @@ export async function PageInit<T>({
     }
 
     return <NewPost />
-  }, "page", (params) => preFilledMetadata({
+  }, "page", async (params) => preFilledMetadata({
     pageTitle: "New Post",
   }))
 
@@ -414,13 +411,13 @@ export async function PageInit<T>({
     }
 
     return <EditPost slug={slug} />
-  }, "page", (params) => preFilledMetadata({
+  }, "page", async (params) => preFilledMetadata({
     pageTitle: `Edit Post - ${params.slug}`,
   }))
 
   router.addRoute('/shop', async () => {
     return <ShopPage />
-  }, "page", (params) => preFilledMetadata({
+  }, "page", async (params) => preFilledMetadata({
     pageTitle: "Shop",
   }))
 
@@ -484,7 +481,7 @@ export async function PageInit<T>({
 
   router.addRoute("/login", async () => {
     return <LoginPage auth={auth} />
-  }, "page", (params) => preFilledMetadata({
+  }, "page", async (params) => preFilledMetadata({
     pageTitle: "Login",
   }))
 
@@ -507,19 +504,19 @@ export async function PageInit<T>({
 
 
     return <SignupPage searchParams={searchParams} />
-  }, "page", (params) => preFilledMetadata({
+  }, "page", async (params) => preFilledMetadata({
     pageTitle: "Signup",
   }))
 
   router.addRoute('/forgot-password', async () => {
     return <ForgotPasswordPage />
-  }, "page", (params) => preFilledMetadata({
+  }, "page", async (params) => preFilledMetadata({
     pageTitle: "Forgot Password",
   }))
 
   router.addRoute('/reset-password', async () => {
     return <ResetPasswordPage />
-  }, "page", (params) => preFilledMetadata({
+  }, "page", async (params) => preFilledMetadata({
     pageTitle: "Reset Password",
   }))
 
@@ -538,122 +535,122 @@ export async function PageInit<T>({
 
   router.addRoute("/admin", async () => {
     return <Admin />;
-  }, "page", (params) => preFilledMetadata({
+  }, "page", async (params) => preFilledMetadata({
     pageTitle: "Admin",
   }));
 
   router.addRoute('/admin/categories', async () => {
     return <AllCategoriesPage />
-  }, "page", (params) => preFilledMetadata({
+  }, "page", async (params) => preFilledMetadata({
     pageTitle: "Admin - Categories",
   }))
 
   router.addRoute('/admin/categories/new', async () => {
     return <NewCategoryPage />
-  }, "page", (params) => preFilledMetadata({
+  }, "page", async (params) => preFilledMetadata({
     pageTitle: "Admin - New Category",
   }))
 
   router.addRoute('/admin/categories/:id', async ({ id }) => {
     return <SingleCategoryPage id={id} />
-  }, "page", (params) => preFilledMetadata({
+  }, "page", async (params) => preFilledMetadata({
     pageTitle: `Admin - Category ${params.id}`,
   }))
 
   router.addRoute('/admin/items', async () => {
     return <AllItemsPage />
-  }, "page", (params) => preFilledMetadata({
+  }, "page", async (params) => preFilledMetadata({
     pageTitle: "Admin - Items",
   }))
 
   router.addRoute('/admin/items/new', async () => {
     return <NewItemPage />
-  }, "page", (params) => preFilledMetadata({
+  }, "page", async (params) => preFilledMetadata({
     pageTitle: "Admin - New Item",
   }))
 
   router.addRoute('/admin/items/:id', async ({ id }) => {
     return <SingleItemPage id={id} />
-  }, "page", (params) => preFilledMetadata({
+  }, "page", async (params) => preFilledMetadata({
     pageTitle: `Admin - Item ${params.id}`,
   }))
 
   router.addRoute('/admin/actions', async () => {
     return <AllActionsPage />
-  }, "page", (params) => preFilledMetadata({
+  }, "page", async (params) => preFilledMetadata({
     pageTitle: "Admin - Actions",
   }))
 
   router.addRoute('/admin/actions/new', async () => {
     return <NewActionPage />
-  }, "page", (params) => preFilledMetadata({
+  }, "page", async (params) => preFilledMetadata({
     pageTitle: "Admin - New Action",
   }))
 
   router.addRoute('/admin/actions/:id', async ({ id }) => {
     return <SingleActionPage id={id} />
-  }, "page", (params) => preFilledMetadata({
+  }, "page", async (params) => preFilledMetadata({
     pageTitle: `Admin - Action ${params.id}`,
   }))
 
   router.addRoute('/admin/badges', async () => {
     return <AllBadgesPage />
-  }, "page", (params) => preFilledMetadata({
+  }, "page", async (params) => preFilledMetadata({
     pageTitle: "Admin - Badges",
   }))
 
   router.addRoute('/admin/badges/new', async () => {
     return <NewBadgePage />
-  }, "page", (params) => preFilledMetadata({
+  }, "page", async (params) => preFilledMetadata({
     pageTitle: "Admin - New Badge",
   }))
 
   router.addRoute('/admin/badges/:id', async ({ id }) => {
     return <SingleBadgePage id={id} />
-  }, "page", (params) => preFilledMetadata({
+  }, "page", async (params) => preFilledMetadata({
     pageTitle: `Admin - Badge ${params.id}`,
   }))
 
 
   router.addRoute('/admin/users', async () => {
     return <UsersAdminPage />
-  }, "page", (params) => preFilledMetadata({
+  }, "page", async (params) => preFilledMetadata({
     pageTitle: "Admin - Users",
   }))
 
   router.addRoute('/admin/users/:id', async (params) => {
     return <SingleUserAdminPage id={params.id} />
-  }, "page", (params) => preFilledMetadata({
+  }, "page", async (params) => preFilledMetadata({
     pageTitle: `Admin - User ${params.id}`,
   }))
 
   router.addRoute('/admin/broadcasts', async () => {
     return <BroadcastsIndex />
-  }, "page", (params) => preFilledMetadata({
+  }, "page", async (params) => preFilledMetadata({
     pageTitle: "Admin - Broadcasts",
   }))
 
   router.addRoute('/admin/lists', async () => {
     return <AllListsPage />
-  }, "page", (params) => preFilledMetadata({
+  }, "page", async (params) => preFilledMetadata({
     pageTitle: "Admin - Lists",
   }))
 
   router.addRoute('/admin/lists/:slug', async (params) => {
     return <SingleListPage slug={params.slug} />
-  }, "page", (params) => preFilledMetadata({
+  }, "page", async (params) => preFilledMetadata({
     pageTitle: `Admin - List ${params.slug}`,
   }))
 
   router.addRoute('/admin/lists/new', async () => {
     return <NewListPage />
-  }, "page", (params) => preFilledMetadata({
+  }, "page", async (params) => preFilledMetadata({
     pageTitle: "Admin - New List",
   }))
 
   router.addRoute('/admin/lists/:slug/edit', async (params) => {
     return <EditListPage slug={params.slug} />
-  }, "page", (params) => preFilledMetadata({
+  }, "page", async (params) => preFilledMetadata({
     pageTitle: `Admin - Edit List ${params.slug}`,
   }))
 
