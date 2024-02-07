@@ -29,7 +29,7 @@ export async function ographImageGenerator(request: NextRequest) {
       justifyContent: 'center',
       padding: '4rem'
     }}>
-      {author ? <span style={{alignSelf:'flex-start', display: 'flex', alignItems: 'center', gap: '0.5rem'}}><h2 style={{fontSize: '2rem'}}>@{author} Posted</h2></span> : null}
+      {author ? <span style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}><h2 style={{fontSize: '2rem'}}>@{author} Posted</h2></span> : null}
       <h1 style={{fontSize: '5vw', lineHeight: '5'}}>{pageTitle}</h1>
       <h3 style={{fontSize: '2rem', lineHeight: '2'}}>{siteTitle}</h3>
     </div>
