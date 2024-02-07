@@ -10,7 +10,7 @@ import { getAllActions } from "../actions/actions";
 
 export const AllBadgesPage = async () => {
   return (
-    <div className="xl:mx-auto xl:w-[960px]">
+    <div className="px-4 xl:mx-auto xl:w-[960px]">
       <div className="py-6 px-2 md:px-0">
         <div className="flex flex-col gap-4 pb-6">
           <div className="flex justify-between">
@@ -38,7 +38,7 @@ export const AllBadgesPage = async () => {
 export const NewBadgePage = async () => {
   const actions = await getAllActions({ skip: 0, take: 10 });
   return (
-    <div className="xl:mx-auto xl:w-[960px]">
+    <div className="px-4 xl:mx-auto xl:w-[960px]">
       <div className="py-6 px-2 md:px-0">
         <div className="flex flex-col gap-4 pb-6">
           <div className="flex justify-between">
@@ -64,7 +64,7 @@ export const SingleBadgePage = async ({ id }: { id: string }) => {
     throw new Error("Badge not found");
   }
   return (
-    <div className="xl:mx-auto xl:w-[960px]">
+    <div className="px-4 xl:mx-auto xl:w-[960px]">
       <div className="py-6 px-2 md:px-0">
         <div className="flex flex-col gap-4 pb-6">
           <div className="flex justify-between">

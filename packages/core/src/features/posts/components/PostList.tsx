@@ -97,8 +97,8 @@ export const PostList = ({ categories }: { categories: Category[] }) => {
 
   return (
     <div className="flex flex-col gap-12">
-      <div className="flex justify-between items-center gap-2 md:gap-8 px-4 md:px-0">
-        <div className="pl-0 md:pl-4 w-full h-[40px] md:h-auto md:w-4/12">
+      <div className="flex justify-between items-center gap-2 md:gap-8">
+        <div className="w-full h-[40px] md:h-auto md:w-4/12">
           <Select
             value={selectedCategory}
             onValueChange={(e) => {
@@ -166,7 +166,7 @@ export const PostList = ({ categories }: { categories: Category[] }) => {
               {post.broadcasts && post.broadcasts.length ? (
                 <Megaphone className="transform -rotate-12 w-4 h-4 absolute top-2 left-2" />
               ) : null}
-              <div className="flex gap-4 mr-4 flex-[2_2_0%] min-w-0">
+              <div className="flex gap-4 mr-4 md:flex-[4_4_0%] flex-[3_3_0%] lg:flex-[2_2_0%] min-w-0">
                 {applyEffects(
                   "avatar",
                   {
@@ -204,11 +204,11 @@ export const PostList = ({ categories }: { categories: Category[] }) => {
                   href={`/posts/${post.slug}`}
                   className="text-link text-sm font-medium flex items-center space-x-2"
                 >
-                  <MessageSquare className="w-4 h-4" />{" "}
-                  <span>{post.replyCount} replies</span>
+                  <MessageSquare className="w-4 h-4" />
+                  <div>{post.replyCount} <span className="hidden">replies</span></div>
                 </Link>
               </div>
-              <div className="hidden md:flex flex-1 min-w-0">
+              <div className="hidden lg:flex flex-1 min-w-0 justify-end">
                 <div className="flex flex-col items-end">
                   <span className="text-primary-100 text-xs self-end">
                     Last reply

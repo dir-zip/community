@@ -8,7 +8,7 @@ import { buttonVariants } from "@/components/Button";
 
 export const AllCategoriesPage = async () => {
   return (
-    <div className="xl:mx-auto xl:w-[960px]">
+    <div className="px-4 xl:mx-auto xl:w-[960px]">
       <div className="py-6 px-2 md:px-0">
         <div className="flex flex-col gap-4 pb-6">
           <div className="flex justify-between">
@@ -35,7 +35,7 @@ export const AllCategoriesPage = async () => {
 
 export const NewCategoryPage = async () => {
   return (
-    <div className="xl:mx-auto xl:w-[960px]">
+    <div className="px-4 xl:mx-auto xl:w-[960px]">
       <div className="py-6 px-2 md:px-0">
         <div className="flex flex-col gap-4 pb-6">
           <div className="flex justify-between">
@@ -60,7 +60,7 @@ export const SingleCategoryPage = async ({ id }: { id: string }) => {
     throw new Error("Category not found");
   }
   return (
-    <div className="xl:mx-auto xl:w-[960px]">
+    <div className="px-4 xl:mx-auto xl:w-[960px]">
       <div className="py-6 px-2 md:px-0">
         <div className="flex flex-col gap-4 pb-6">
           <div className="flex justify-between">
