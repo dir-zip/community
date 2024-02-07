@@ -1,11 +1,10 @@
-import {Suspense} from 'react'
-import { BroadcastsTable } from './components/BroadcastsTable'
+import { Suspense } from "react";
+import { BroadcastsTable } from "./components/BroadcastsTable";
 
 export const BroadcastsIndex = async () => {
   return (
-    <div className="xl:mx-auto xl:w-[960px]">
-      <div className="py-6">
-
+    <div className="px-4 xl:mx-auto xl:w-[960px]">
+      <div className="py-6 px-2 md:px-0">
         <div className="flex flex-col gap-4 pb-6">
           <div className="flex justify-between">
             <h2 className="text-2xl font-bold">Broadcasts</h2>
@@ -18,8 +17,7 @@ export const BroadcastsIndex = async () => {
         <Suspense>
           <BroadcastsTable />
         </Suspense>
-
       </div>
     </div>
-  )
-}
+  );
+};

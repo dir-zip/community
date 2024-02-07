@@ -1,20 +1,22 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: ["class"],
-  content: ["./src/**/*.{ts,tsx}"],
+  darkMode: ["class", 'html[class~="dark"]'],
+  content: [
+    "./src/**/*.{ts,tsx}",
+    "../core/**/*.{ts,tsx}"
+  ],
   corePlugins: {
     preflight: false,
   },
-  darkMode: ["class", 'html[class~="dark"]'],
   theme: {
-    container: {
-      center: true,
-      padding: "2rem",
-      screens: {
-        "2xl": "1400px",
-      },
-    },
     extend: {
+      container: {
+        center: true,
+        padding: "2rem",
+        screens: {
+          "2xl": "1400px",
+        },
+      },
       colors: {
         border: {
           DEFAULT: "var(--border)",

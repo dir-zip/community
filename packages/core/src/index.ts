@@ -7,7 +7,7 @@ import { PageInit, LayoutInit, ApiRouteInit, getMetadata } from "./router";
 import type { Tag, Post, User, Item, Category } from "@dir/db";
 import type { PostSchema } from "~/features/posts/schemas";
 
-import "@dir/ui/dist/index.css"
+import "@dir/ui/dist/index.css";
 import "../dist/output.css";
 
 import authDriver from "./authDriver";
@@ -67,9 +67,21 @@ type BaseExportedPlugins<T> = {
   };
   posts: {
     getAll: () => Promise<(Category & { posts: (Post & { user: User })[] })[]>;
-    get: ({ slug }: { slug: string }) => Promise<(Post & {user: User, category: Category, tags: Tag[]}) | null>;
-    create: (data: z.infer<typeof PostSchema> ) => Promise<Post>;
-    edit: ({ slug, data }: { slug: string; data: z.infer<typeof PostSchema> }) => Promise<Post>;
+    get: ({
+      slug,
+    }: {
+      slug: string;
+    }) => Promise<
+      (Post & { user: User; category: Category; tags: Tag[] }) | null
+    >;
+    create: (data: z.infer<typeof PostSchema>) => Promise<Post>;
+    edit: ({
+      slug,
+      data,
+    }: {
+      slug: string;
+      data: z.infer<typeof PostSchema>;
+    }) => Promise<Post>;
   };
   members: {
     getAll: () => Promise<User[]>;
@@ -123,7 +135,7 @@ type BaseExportedPlugins<T> = {
     params,
     searchParams,
   }: {
-    params: { "router": string[] };
+    params: { router: string[] };
     searchParams: { [key: string]: string | string[] };
   }) => Promise<
     ReactElement<any, string | JSXElementConstructor<any>> | Response
@@ -145,8 +157,8 @@ export type RouteParams<Path extends string> =
       ? { [K in Param]: string } & RouteParams<Rest>
       : RouteParams<Rest>
     : Path extends `:${infer Param}`
-      ? { [K in Param]: string }
-      : Record<string, never>;
+    ? { [K in Param]: string }
+    : Record<string, never>;
 
 export type Route<Path extends string> = {
   type: "page" | "layout";
@@ -375,48 +387,45 @@ export function InitDirZip<S>({
           return editPost;
         },
       };
-      
 
       exportedPlugins.members = {
-        getAll: async() => {
-          const users = await prisma!.user.findMany()
-          return users
+        getAll: async () => {
+          const users = await prisma!.user.findMany();
+          return users;
         },
-        get: async ({username}) => {
+        get: async ({ username }) => {
           const user = await prisma!.user.findFirst({
             where: {
-              username
-            }
-          })
-          
-          return user
-        }
-      };
+              username,
+            },
+          });
 
+          return user;
+        },
+      };
 
       exportedPlugins.tags = {
         getAll: async () => {
-          const tags = await prisma!.tag.findMany()
+          const tags = await prisma!.tag.findMany();
 
-          return tags
-        }
+          return tags;
+        },
       };
-
 
       exportedPlugins.items = {
         getAll: async () => {
-          const items = await prisma!.item.findMany()
-          return items
+          const items = await prisma!.item.findMany();
+          return items;
         },
-        get: async ({id}) => {
+        get: async ({ id }) => {
           const item = await prisma!.item.findFirst({
             where: {
-              id
-            }
-          })
+              id,
+            },
+          });
 
-          return item
-        }
+          return item;
+        },
       };
 
       exportedPlugins.auth = {

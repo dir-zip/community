@@ -1,23 +1,17 @@
-import { getSiteSettings } from "../actions";
-import { SiteForm } from "./Form";
+import { AdminSidebar } from "../../../components/ui/AdminSidebar"
+import { AdminSiteSettings } from "./site/page"
 
-
-const AdminDashboardPage = async () => {
-  const site = await getSiteSettings()
-
+const AdminMenu = async () => {
   return (
-    <div className="xl:mx-auto xl:w-[960px]">
-      <div className="py-6">
-      <div className="flex flex-col gap-4 pb-6">
-          <h2 className="text-2xl font-bold">Site Settings</h2>
-          <div className="flex w-full items-center justify-center">
-            <div className="border-t flex-grow" />
-          </div>
-        </div>
-        <SiteForm site={site} />
-        </div>
-    </div>
-  );
-};
+    <>
+      <div className="flex md:hidden flex-col">
+        <AdminSidebar />
+      </div>
+      <div className="hidden md:flex flex-col">
+        <AdminSiteSettings />
+      </div>
+    </>
+  )
+}
 
-export default AdminDashboardPage;
+export default AdminMenu

@@ -9,7 +9,7 @@ const SingleUserAdminPage = async ({id}: {id: string}) => {
     throw new Error("User not found")
   }
   return (
-    <div className="xl:mx-auto xl:w-[960px]">
+    <div className="px-4 xl:mx-auto xl:w-[960px]">
     <div className="py-6">
 
       <div className="flex flex-col gap-4 pb-6">
