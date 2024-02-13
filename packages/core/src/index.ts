@@ -29,7 +29,6 @@ import { sendEmail } from "./jobs";
 import { z, type ZodTypeAny } from "zod";
 import {
   createPost,
-  getAllPosts,
   getSinglePost,
   updatePost,
 } from "./features/posts/actions";
@@ -66,7 +65,6 @@ type BaseExportedPlugins<T> = {
     getAll: () => Promise<Tag[]>;
   };
   posts: {
-    getAll: () => Promise<(Category & { posts: (Post & { user: User })[] })[]>;
     get: ({
       slug,
     }: {
@@ -370,10 +368,6 @@ export function InitDirZip<S>({
       };
 
       exportedPlugins.posts = {
-        getAll: async () => {
-          const posts = await getAllPosts();
-          return posts;
-        },
         get: async ({ slug }) => {
           const getPost = await getSinglePost({ slug });
           return getPost;
