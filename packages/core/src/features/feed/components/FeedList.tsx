@@ -33,21 +33,20 @@ export const FeedList = ({ currentUser }: { currentUser: User | null }) => {
   if (endPage > count) {
     endPage = count
   }
+  // TODO: Use react-query. duh.
+  const getFeedData = async () => {
+    const feed = await getFeed({ skip: (page) * pageSize, take: pageSize })
 
+
+    setData(feed.data);
+    setCount(feed.count)
+
+    const categories = await getAllCategories({ skip: 0, take: 20 })
+    setCategoriesSelect(categories.categories)
+  }
 
   useEffect(() => {
-    const getFeedData = async () => {
-      const feed = await getFeed({ skip: (page) * pageSize, take: pageSize })
-
-
-      setData(feed.data);
-      setCount(feed.count)
-
-      const categories = await getAllCategories({ skip: 0, take: 20 })
-      setCategoriesSelect(categories.categories)
-    }
     getFeedData()
-
   }, [page, pageSize, searchParams])
 
 

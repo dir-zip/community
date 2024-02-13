@@ -69,30 +69,26 @@ export const PostList = ({ categories }: { categories: Category[] }) => {
     endPage = count;
   }
 
-  useEffect(() => {
-    if (tags.length > 0) {
-      setSelectedCategory("all");
-    }
-  }, [tags]);
+
+  if (searchTags) {
+    setTags([searchTags]);
+  }
+
+
+  // TODO: Use react-query. duh.
+  const getPostsData = async () => {
+    const result = await getAllPosts({
+      skip: skip,
+      take: ITEMS_PER_PAGE,
+      tags: tags,
+      categorySlug: selectedCategory,
+    });
+    setData(result.posts);
+    setCount(result.count);
+  }
 
   useEffect(() => {
-    if (searchTags) {
-      setTags([searchTags]);
-    }
-  }, [searchTags]);
-
-  useEffect(() => {
-    (async () => {
-      const result = await getAllPosts({
-        skip: skip,
-        take: ITEMS_PER_PAGE,
-        tags: tags,
-        categorySlug: selectedCategory,
-      });
-      setData(result.posts);
-      setCount(result.count);
-    })();
-    router.refresh();
+    getPostsData()
   }, [pathname, page, searchQuery, router, selectedCategory, tags]);
 
   return (
