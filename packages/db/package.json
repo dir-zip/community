@@ -3,26 +3,26 @@
   "version": "0.1.0",
   "main": "./index.ts",
   "types": "./index.ts",
-  "prisma": {
-    "seed": "ts-node --transpile-only --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
-  },
   "scripts": {
     "clean": "rm -rf .turbo node_modules",
-    "db:generate": "pnpm with-env prisma generate",
-    "db:push": "pnpm with-env prisma db push --skip-generate",
-    "db:reset": "pnpm with-env prisma db push --force-reset",
-    "db:seed": "pnpm with-env prisma db seed",
-    "dev": "pnpm with-env prisma studio --port 5556",
+    "db:generate": "pnpm with-env drizzle-kit generate:sqlite",
+    "db:migrate": "pnpm with-env tsx migrate.ts",
+    "db:push": "pnpm with-env drizzle-kit push:sqlite",
+    "db:seed": "pnpm with-env tsx seed.ts",
+    "dev": "drizzle-kit studio",
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
-    "@prisma/client": "^5.5.2"
+    "better-sqlite3": "^9.4.1",
+    "drizzle-orm": "^0.29.3",
   },
   "devDependencies": {
+    "@paralleldrive/cuid2": "^2.2.2",
+    "@types/better-sqlite3": "^7.6.9",
     "@types/node": "^20.9.2",
     "dotenv-cli": "^6.0.0",
-    "prisma": "^5.5.2",
-    "ts-node": "^10.9.1",
+    "drizzle-kit": "^0.20.14",
+    "tsx": "^4.7.1",
     "typescript": "5.1.6"
   }
 }

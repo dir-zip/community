@@ -10,6 +10,7 @@ coverage
 
 # database
 db.sqlite
+sqlite.db
 
 # next.js
 .next/
