@@ -1,11 +1,10 @@
-import {User, Inventory, Item, InventoryItem, Post, Category} from '@dir/db'
+import { schema, InferSelectModel } from '@dir/db'
 
 
-
-export type UserWithInventory = User & {
-  inventory: (Inventory & {
-    collection: (InventoryItem & {
-      item: Item | null;
+export type UserWithInventory = InferSelectModel<typeof schema.user> & {
+  inventory: (InferSelectModel<typeof schema.inventory> & {
+    collection: (InferSelectModel<typeof schema.inventoryItem> & {
+      item: InferSelectModel<typeof schema.item> | null;
     })[];
   }) | null;
 };

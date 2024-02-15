@@ -1,7 +1,7 @@
 "use server"
 import {z} from 'zod'
 import { createAction } from "~/lib/createAction"
-import {InventoryItem, Item, prisma} from "@dir/db"
+import {schema, InferSelectModel, eq, db} from "@dir/db"
 import { revalidatePath } from 'next/cache'
 import { effects } from '~/itemEffects'
 import { PasswordHandler, generateToken } from 'packages/auth'
@@ -9,13 +9,10 @@ import { PasswordHandler, generateToken } from 'packages/auth'
 export const updateUser = createAction(async({validate}, {avatar, userId, bannerImage}) => {
   await validate(['UPDATE', "user", userId])
 
-  const user = await prisma.user.update({
-    where: {id: userId},
-    data: {
-      avatar,
-      bannerImage
-    }
-  })
+  const user = await db.update(schema.user).set({
+    avatar,
+    bannerImage
+  }).where(eq(schema.user.id, userId))
 
   revalidatePath('/')
 
@@ -31,15 +28,15 @@ export const updateUser = createAction(async({validate}, {avatar, userId, banner
 export const getUserInventory = createAction(async({validate}, { userId}) => {
   // await validate(['UPDATE', "user", userId])
 
-  const inventory = await prisma.inventory.findFirst({
-    where: {
-      userId: userId
-    },
-    include: {
-      collection: {
-        include: {
+
+
+  const inventory = await db.query.inventory.findFirst({
+    where: (i, {eq}) => eq(i.userId, userId),
+    with: {
+      inventoryItems: {
+        with: {
           badge: true,
-          item: true,
+          item: true
         }
       }
     }
@@ -53,13 +50,13 @@ export const getUserInventory = createAction(async({validate}, { userId}) => {
   const itemCounts = new Map();
 
   // Iterate over the items and count them
-  inventory.collection.forEach((collectionItem) => {
+  inventory.inventoryItems.forEach((collectionItem) => {
     const itemId = collectionItem.item?.id;
     itemCounts.set(itemId, (itemCounts.get(itemId) || 0) + 1);
   });
 
   // Create a new collection array with unique items and their quantities
-  const uniqueCollectionWithQuantity = inventory.collection.reduce<(InventoryItem & {item: Item | null, quantity: number})[]>((unique, collectionItem) => {
+  const uniqueCollectionWithQuantity = inventory.inventoryItems.reduce<(InferSelectModel<typeof schema.inventoryItem> & {item: InferSelectModel<typeof schema.item> | null, quantity: number})[]>((unique, collectionItem) => {
     const itemId = collectionItem.item?.id;
     if (itemId && !unique.some(item => item.item?.id === itemId)) {
       unique.push({

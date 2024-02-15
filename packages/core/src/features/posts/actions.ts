@@ -1,6 +1,6 @@
 'use server'
 import { JSDOM } from 'jsdom';
-import { prisma, type Post, Tag, Inventory } from "@dir/db";
+import { db } from "@dir/db";
 import { z } from "zod";
 import { createAction } from '~/lib/createAction';
 import { PostSchema } from "~/features/posts/schemas";
@@ -14,7 +14,7 @@ import { sendEmail } from "~/jobs";
 
 
 export const getCategories = createAction(async () => {
-  const categories = await prisma.category.findMany()
+  const categories = await db.query.category.findMany()
   return categories
 })
 
@@ -145,7 +145,7 @@ export const getAllPosts = createAction(async ({ }, params) => {
 
 export const createPost = createAction(async ({ session }, { title, body, category, tags, broadcast, broadcastToList }) => {
   let generatedTitle: string = title
-  
+
   if (title === "") {
     const dom = new JSDOM(body);
     const h1 = dom.window.document.querySelector('h1');
@@ -239,7 +239,7 @@ export const createPost = createAction(async ({ session }, { title, body, catego
     for (const list of targetLists) {
       for (const user of list.users) {
         if (!unsubscribedUserIds.includes(user.id) && !processedUserIds.has(user.id)) {
-          await sendEmail.queue.add('sendEmail', { type:"BROADCAST", email: user.email, subject: post.title, html: post.body });
+          await sendEmail.queue.add('sendEmail', { type: "BROADCAST", email: user.email, subject: post.title, html: post.body });
           // Create a broadcast and connect it to the current list
           await prisma.broadcast.create({
             data: {
@@ -396,6 +396,3 @@ export const createComment = createAction(async ({ session }, { postSlug, body, 
   parentId: z.string().nullable(),
   body: z.string()
 }), { authed: true })
-
-
-

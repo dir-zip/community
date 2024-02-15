@@ -1,0 +1,13 @@
+{
+  "version": "5",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1708040129195,
+      "tag": "0000_clever_sleeper",
+      "breakpoints": true
+    }
+  ]
+}

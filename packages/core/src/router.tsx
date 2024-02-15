@@ -62,7 +62,7 @@ import {
 } from "./features/user/screens"
 import { AdminSidebar } from "./components/ui/AdminSidebar"
 import { getUserInventory } from "./features/user/actions"
-import { Inventory } from "@dir/db"
+import { db, schema, InferSelectModel } from "@dir/db"
 import { BroadcastsIndex } from "./features/admin/screens/broadcasts/screens"
 import {
   AllListsPage,
@@ -90,18 +90,16 @@ export async function PageInit<T>({
   searchParams,
   routes,
   auth,
-  sidebarLinks,
   resources,
 }: {
   params: { router: string[] }
   searchParams: { [key: string]: string | string[] | undefined }
   routes: Routes
   auth: ReturnType<typeof authInit<T & BaseSessionData>>
-  sidebarLinks?: { icon?: React.ElementType; url: string; text: string }[]
   resources: Resources
 }) {
   const getParams = params["router"]
-  let rootPath: string
+
   const settings = await prisma?.globalSetting.findFirst()
   const tags = await prisma?.tag.findMany({
     where: {
@@ -291,7 +289,7 @@ export async function PageInit<T>({
     })
 
     const user = await getCurrentUser()
-    let inventory: Inventory | null = null
+    let inventory: InferSelectModel<typeof schema.inventory> | null = null
     if (user) {
       inventory = await getUserInventory({
         userId: user.id,

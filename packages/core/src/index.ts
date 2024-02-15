@@ -4,8 +4,6 @@ import { Metadata } from 'next'
 import { authInit } from "./lib/auth";
 import { PageInit, LayoutInit, ApiRouteInit, getMetadata } from "./router";
 
-import type { Tag, Post, User, Item, Category } from "@dir/db";
-import type { PostSchema } from "~/features/posts/schemas";
 
 import "@dir/ui/dist/index.css";
 import "../dist/output.css";
@@ -15,23 +13,13 @@ export { PageInit, LayoutInit } from "./router";
 import type { AuthInit, Provider, TCreateGuard } from "@dir/auth";
 import { createGuards, guards } from "./guards";
 import {
-  forgotPasswordAction,
   handleOauth,
-  loginAction,
-  logoutAction,
-  resetPasswordAction,
-  signUpAction,
 } from "./features/auth/actions";
 import { type JSXElementConstructor, type ReactElement } from "react";
 import { createJob } from "./lib/jobs";
+import { ZodTypeAny } from "zod";
+import { schema, InferSelectModel } from '@dir/db'
 
-import { sendEmail } from "./jobs";
-import { z, type ZodTypeAny } from "zod";
-import {
-  createPost,
-  getSinglePost,
-  updatePost,
-} from "./features/posts/actions";
 
 
 export type BaseRole = "ADMIN" | "USER";
@@ -49,7 +37,7 @@ export type SidebarLinks = {
 }[];
 
 type ExtendedAuthInit<T> = ReturnType<typeof authInit<T & BaseSessionData>> & {
-  handleOauth: ({ email }: { email: string }) => Promise<User>;
+  handleOauth: ({ email }: { email: string }) => Promise<InferSelectModel<typeof schema.user>>;
 };
 
 type BaseExportedPlugins<T> = {
@@ -61,74 +49,6 @@ type BaseExportedPlugins<T> = {
   ) => Promise<F>;
   createApiEndpoint: typeof createApiEndpoint;
   createJob: typeof createJob;
-  tags: {
-    getAll: () => Promise<Tag[]>;
-  };
-  posts: {
-    get: ({
-      slug,
-    }: {
-      slug: string;
-    }) => Promise<
-      (Post & { user: User; category: Category; tags: Tag[] }) | null
-    >;
-    create: (data: z.infer<typeof PostSchema>) => Promise<Post>;
-    edit: ({
-      slug,
-      data,
-    }: {
-      slug: string;
-      data: z.infer<typeof PostSchema>;
-    }) => Promise<Post>;
-  };
-  members: {
-    getAll: () => Promise<User[]>;
-    get: ({ username }: { username: string }) => Promise<User | null>;
-  };
-  items: {
-    getAll: () => Promise<Item[]>;
-    get: ({ id }: { id: string }) => Promise<Item | null>;
-  };
-  auth: {
-    login: ({
-      email,
-      password,
-    }: {
-      email: string;
-      password: string;
-    }) => Promise<User>;
-    signup: ({
-      email,
-      password,
-      username,
-    }: {
-      username: string;
-      email: string;
-      password: string;
-    }) => Promise<void>;
-    logout: () => Promise<void>;
-    forgotPassword: ({ email }: { email: string }) => Promise<void>;
-    resetPassword: ({
-      password,
-      token,
-    }: {
-      email: string;
-      password: string;
-      token: string;
-    }) => Promise<User>;
-  };
-  global: {
-    sidebarLinks?: SidebarLinks;
-    sendEmail: ({
-      to,
-      subject,
-      body,
-    }: {
-      to: string;
-      subject: string;
-      body: string;
-    }) => Promise<void>;
-  };
   PageInit: ({
     params,
     searchParams,
@@ -140,7 +60,7 @@ type BaseExportedPlugins<T> = {
   >;
   LayoutInit: typeof LayoutInit;
   ApiRouteInit: typeof ApiRouteInit;
-  generateMetadata: (params: {router: string[]}) => Promise<Metadata>;
+  generateMetadata: (params: { router: string[] }) => Promise<Metadata>;
 };
 
 type ExportedPlugins<T> = BaseExportedPlugins<T>;
@@ -151,12 +71,12 @@ export type RouteHandler<T extends RouteParams<string>> = (
 
 export type RouteParams<Path extends string> =
   Path extends `${infer Segment}/${infer Rest}`
-    ? Segment extends `:${infer Param}`
-      ? { [K in Param]: string } & RouteParams<Rest>
-      : RouteParams<Rest>
-    : Path extends `:${infer Param}`
-    ? { [K in Param]: string }
-    : Record<string, never>;
+  ? Segment extends `:${infer Param}`
+  ? { [K in Param]: string } & RouteParams<Rest>
+  : RouteParams<Rest>
+  : Path extends `:${infer Param}`
+  ? { [K in Param]: string }
+  : Record<string, never>;
 
 export type Route<Path extends string> = {
   type: "page" | "layout";
@@ -167,10 +87,10 @@ export type Route<Path extends string> = {
 export type LayoutHandler =
   | React.ComponentType<{ children: React.ReactNode }>
   | (({
-      children,
-    }: {
-      children: React.ReactNode;
-    }) => Promise<React.ReactElement>);
+    children,
+  }: {
+    children: React.ReactNode;
+  }) => Promise<React.ReactElement>);
 
 export type Layout<Path extends string> = {
   type: "layout";
@@ -180,12 +100,12 @@ export type Layout<Path extends string> = {
 
 export type Routes = Array<
   | {
-      type: "page";
-      root?: boolean;
-      resource?: boolean;
-      route: string;
-      handler: RouteHandler<any>;
-    }
+    type: "page";
+    root?: boolean;
+    resource?: boolean;
+    route: string;
+    handler: RouteHandler<any>;
+  }
   | { type: "layout"; route: string; handler: LayoutHandler }
 >;
 
@@ -231,7 +151,6 @@ interface Initializer<T> {
 
 export function InitDirZip<S>({
   auth,
-  sidebar,
 }: {
   auth: {
     guards: TCreateGuard<S & BaseSessionData>;
@@ -241,9 +160,6 @@ export function InitDirZip<S>({
       };
       baseUrl: string;
     };
-  };
-  sidebar?: {
-    links: SidebarLinks;
   };
 }): Initializer<S> {
   const exportedPlugins: ExportedPlugins<S> = {} as ExportedPlugins<S>;
@@ -292,17 +208,16 @@ export function InitDirZip<S>({
     return result;
   };
 
-  exportedPlugins.generateMetadata = async function (params: { router: string[] }) {
+  exportedPlugins.generateMetadata = async function(params: { router: string[] }) {
     return getMetadata(params)
   };
 
-  exportedPlugins.PageInit = async function ({ params, searchParams }) {
+  exportedPlugins.PageInit = async function({ params, searchParams }) {
     const result = await PageInit<S>({
       params,
       searchParams,
       routes: _routes,
       auth: _auth,
-      sidebarLinks: sidebar ? sidebar.links : [],
       resources: _resources,
     })
 
@@ -356,100 +271,6 @@ export function InitDirZip<S>({
       exportedPlugins.createJob = createJob;
       exportedPlugins.LayoutInit = LayoutInit;
       exportedPlugins.ApiRouteInit = ApiRouteInit;
-      exportedPlugins.global = {
-        sidebarLinks: sidebar ? sidebar.links : [],
-        sendEmail: async ({ to, body, subject }) => {
-          await sendEmail.queue.add("sendEmail", {
-            email: to,
-            template: body,
-            subject: subject,
-          });
-        },
-      };
-
-      exportedPlugins.posts = {
-        get: async ({ slug }) => {
-          const getPost = await getSinglePost({ slug });
-          return getPost;
-        },
-        create: async (data) => {
-          const post = await createPost(data);
-          return post;
-        },
-        edit: async ({ slug, data }) => {
-          const editPost = await updatePost({ slug, data });
-          return editPost;
-        },
-      };
-
-      exportedPlugins.members = {
-        getAll: async () => {
-          const users = await prisma!.user.findMany();
-          return users;
-        },
-        get: async ({ username }) => {
-          const user = await prisma!.user.findFirst({
-            where: {
-              username,
-            },
-          });
-
-          return user;
-        },
-      };
-
-      exportedPlugins.tags = {
-        getAll: async () => {
-          const tags = await prisma!.tag.findMany();
-
-          return tags;
-        },
-      };
-
-      exportedPlugins.items = {
-        getAll: async () => {
-          const items = await prisma!.item.findMany();
-          return items;
-        },
-        get: async ({ id }) => {
-          const item = await prisma!.item.findFirst({
-            where: {
-              id,
-            },
-          });
-
-          return item;
-        },
-      };
-
-      exportedPlugins.auth = {
-        login: async ({ email, password }) => {
-          const user = await loginAction({ email, password });
-          return user;
-        },
-        signup: async ({ email, password, username }) => {
-          await signUpAction({
-            email,
-            password,
-            username,
-            confirm_password: password,
-          });
-        },
-        logout: async () => {
-          await logoutAction();
-        },
-        forgotPassword: async ({ email }) => {
-          await forgotPasswordAction({ email });
-        },
-        resetPassword: async ({ password, token }) => {
-          const user = await resetPasswordAction({
-            token,
-            password,
-            confirm_password: password,
-          });
-          return user;
-        },
-      };
       return exportedPlugins;
     },
   };
