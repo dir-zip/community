@@ -1,8 +1,18 @@
-import { drizzle } from "drizzle-orm/better-sqlite3";
-import { migrate } from "drizzle-orm/better-sqlite3/migrator";
-import Database from "better-sqlite3";
+// I'm not sure this works yet.
 
-const sqlite = new Database("sqlite.db");
-const db = drizzle(sqlite);
+import postgres = require("postgres") // https://github.com/TypeStrong/ts-node/issues/1096#issuecomment-959454477 :D
+// import postgres from "postgres"
+import { drizzle } from "drizzle-orm/postgres-js"
+import { migrate } from "drizzle-orm/postgres-js/migrator"
+import * as schema from "./drizzle/schema"
 
-migrate(db, { migrationsFolder: "./drizzle" });
+const migrationClient = postgres(process.env.DATABASE_URL || "", { max: 1 })
+const db = drizzle(migrationClient, { schema })
+migrate(db, { migrationsFolder: "./drizzle" })
+
+// import { neon } from "@neondatabase/serverless"
+
+// const sql = neon(process.env.DATABASE_URL || "")
+// export const db = drizzle(sql, { schema })
+
+// migrate(db, { migrationsFolder: "./drizzle" })
