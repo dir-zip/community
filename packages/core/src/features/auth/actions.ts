@@ -12,6 +12,9 @@ import {
 } from "@dir/auth"
 
 import { prisma } from "@dir/db"
+import { db, schema } from "@dir/db"
+import { eq, and } from "drizzle-orm"
+
 import sendEmail from "../../jobs/sendEmail"
 import { cookies } from "next/headers"
 
@@ -34,8 +37,8 @@ import { userInventoryIncludes } from "~/lib/includes"
 
 export const loginAction = createAction(
   async ({ createSession }, { email, password }) => {
-    const user = await prisma.user.findUnique({
-      where: { email },
+    const user = await db.query.user.findFirst({
+      where: (user, { eq }) => eq(user.email, email),
     })
 
     if (!user) {
@@ -64,13 +67,26 @@ export const loginAction = createAction(
   { authed: false }
 )
 
+export const checkActions = createAction(
+  async () => {
+    const result1 = await db.query.action.findMany({
+      // with: {
+      //   posts: true
+      // },
+    })
+    console.log(result1)
+  },
+  SignupSchema,
+  { authed: false }
+)
+
 export const signUpAction = createAction(
   async ({ createSession }, { email, password, username, inviteToken }) => {
-    const signupFlow = await prisma.featureToggle.findFirst({
-      where: {
-        feature: "signupFlow",
-      },
+    const signupFlow = await db.query.featureToggle.findFirst({
+      where: (feature, { eq }) => eq(feature.feature, "signupFlow"),
     })
+    console.log("signupFlow")
+    console.log(signupFlow)
 
     const isInviteOnly = signupFlow?.value === "invite"
 
@@ -82,15 +98,19 @@ export const signUpAction = createAction(
     // If invite only, verify the invite token
     if (isInviteOnly) {
       const hashedToken = await PasswordHandler.hash(inviteToken as string)
-      const foundToken = await prisma.token.findFirst({
-        where: { hashedToken, type: "INVITE_TOKEN" },
+      const foundToken = await db.query.token.findFirst({
+        where: (token, { eq, and }) =>
+          and(
+            eq(token.hashedToken, hashedToken),
+            eq(token.type, "INVITE_TOKEN")
+          ),
       })
 
       if (!foundToken) {
         throw new Error("Invalid token")
       }
 
-      await prisma.token.delete({ where: { id: foundToken.id } })
+      await db.delete(schema.token).where(eq(schema.token.id, foundToken.id))
 
       if (foundToken.expiresAt < new Date()) {
         throw new Error("Token expired")
@@ -98,42 +118,48 @@ export const signUpAction = createAction(
     }
 
     const hashedPassword = await PasswordHandler.hash(password)
-    const user = await prisma.user.create({
-      data: {
+
+    const user = await db
+      .insert(schema.user)
+      .values({
         email,
         username,
         hashedPassword: hashedPassword,
-        lists: {
-          connect: {
-            slug: "general",
-          },
-        },
-      },
+      })
+      .returning()
+    const generalList = await db.query.list.findFirst({
+      where: (list, { eq }) => eq(list.slug, "general"),
+    })
+    if (generalList) {
+      await db
+        .insert(schema.userList)
+        .values({
+          listId: generalList.id,
+          userId: user.id,
+        })
+        .execute()
+    }
+
+    await db.insert(schema.inventory).values({
+      userId: user.id,
     })
 
-    await prisma.inventory.create({
-      data: {
-        user: {
-          connect: {
-            id: user.id,
-          },
-        },
-      },
-    })
-
-    await prisma.token.deleteMany({
-      where: { type: "ACTIVATE_TOKEN", userId: user.id },
-    })
+    await db
+      .delete(schema.token)
+      .where(
+        and(
+          eq(schema.token.type, "ACTIVATE_TOKEN"),
+          eq(schema.token.userId, user.id)
+        )
+      )
     const token = generateToken(32)
     const hashedToken = await PasswordHandler.hash(token)
-    await prisma.token.create({
-      data: {
-        type: "ACTIVATE_TOKEN",
-        userId: user.id,
-        sentTo: user.email,
-        hashedToken: hashedToken,
-        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
-      },
+    await db.insert(schema.token).values({
+      type: "ACTIVATE_TOKEN",
+      userId: user.id,
+      sentTo: user.email,
+      hashedToken: hashedToken,
+      expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24).toString(),
     })
 
     const activateUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/activateAccount?token=${token}`
@@ -156,8 +182,9 @@ export const signUpAction = createAction(
 
 export const verifyUser = createAction(
   async ({ session, updateSession }, { token }) => {
-    const user = await prisma.user.findUnique({
-      where: { id: session?.data.userId },
+    const user = await db.query.user.findFirst({
+      // TODO
+      where: ({ id }, { eq }) => eq(id, session?.data.userId),
     })
 
     if (!user) {
@@ -165,25 +192,33 @@ export const verifyUser = createAction(
     }
 
     const hashedToken = await PasswordHandler.hash(token)
-    const foundToken = await prisma.token.findFirst({
-      where: { hashedToken, type: "ACTIVATE_TOKEN" },
-      include: { user: true },
+    const foundToken = await db.query.token.findFirst({
+      where: (token, { eq, and }) =>
+        and(
+          eq(token.hashedToken, hashedToken),
+          eq(token.type, "ACTIVATE_TOKEN")
+        ),
+      with: {
+        user: true,
+      },
     })
 
     if (!foundToken) {
       throw new Error("Invalid token")
     }
 
-    await prisma.token.delete({ where: { id: foundToken.id } })
+    await db.delete(schema.token).where(eq(schema.token.id, foundToken.id))
 
     if (foundToken.expiresAt < new Date()) {
       throw new Error("Token expired")
     }
 
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { verified: true },
-    })
+    await db
+      .update(schema.user)
+      .set({
+        verified: true,
+      })
+      .where(eq(schema.user.id, user.id))
 
     await updateSession({
       verified: true,
@@ -197,8 +232,8 @@ export const verifyUser = createAction(
 export const getCurrentUser = cache(
   createAction(async ({ session }) => {
     const userId = session?.data.userId
-    const globalSettings = await prisma.globalSetting.findFirst({
-      include: {
+    const globalSettings = await db.query.globalSetting.findFirst({
+      with: {
         features: true,
       },
     })
@@ -214,10 +249,11 @@ export const getCurrentUser = cache(
       throw new Error("No user id")
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      include: {
-        inventory: userInventoryIncludes.user.include.inventory,
+    const user = await db.query.user.findFirst({
+      where: ({ id }, { eq }) => eq(id, userId),
+      with: {
+        // TODO
+        // inventory: userInventoryIncludes.user.include.inventory,
       },
     })
 
@@ -253,24 +289,27 @@ export const checkGuard = createAction(
 
 export const forgotPasswordAction = createAction(
   async ({}, { email }) => {
-    const user = await prisma.user.findUnique({
-      where: { email },
+    const user = await db.query.user.findFirst({
+      where: (user) => eq(user.email, email),
     })
 
     if (user) {
-      await prisma.token.deleteMany({
-        where: { type: "RESET_PASSWORD", userId: user.id },
-      })
+      await db
+        .delete(schema.token)
+        .where(
+          and(
+            eq(schema.token.type, "RESET_PASSWORD"),
+            eq(schema.token.userId, user.id)
+          )
+        )
       const token = generateToken(32)
       const hashedToken = await PasswordHandler.hash(token)
-      await prisma.token.create({
-        data: {
-          type: "RESET_PASSWORD",
-          userId: user.id,
-          sentTo: user.email,
-          hashedToken: hashedToken,
-          expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
-        },
+      await db.insert(schema.token).values({
+        type: "RESET_PASSWORD",
+        userId: user.id,
+        sentTo: user.email,
+        hashedToken: hashedToken,
+        expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24).toString(),
       })
 
       const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password?token=${token}`
@@ -296,28 +335,35 @@ export const resetPasswordAction = createAction(
     }
 
     const hashedToken = await PasswordHandler.hash(token)
-    const foundToken = await prisma.token.findFirst({
-      where: { hashedToken, type: "RESET_PASSWORD" },
-      include: { user: true },
+    const foundToken = await db.query.token.findFirst({
+      where: (token, { eq, and }) =>
+        and(
+          eq(token.hashedToken, hashedToken),
+          eq(token.type, "RESET_PASSWORD")
+        ),
+      with: { user: true },
     })
 
     if (!foundToken) {
       throw new Error("Invalid token")
     }
 
-    await prisma.token.delete({ where: { id: foundToken.id } })
+    await db.delete(schema.token).where(eq(schema.token.id, foundToken.id))
 
+    // TODO
     if (foundToken.expiresAt < new Date()) {
       throw new Error("Token expired")
     }
 
     const hashedPassword = await PasswordHandler.hash(password)
-    const user = await prisma.user.update({
-      where: { id: foundToken.userId },
-      data: { hashedPassword },
-    })
+    const user = await db
+      .update(schema.user)
+      .set({
+        hashedPassword,
+      })
+      .where(eq(schema.user.id, foundToken.userId))
 
-    await prisma.session.deleteMany({ where: { userId: user.id } })
+    await db.delete(schema.session).where(eq(schema.session.userId, user.id))
 
     await createSession({
       userId: user.id,
@@ -341,10 +387,8 @@ export const handleOauth = async ({
   email: string
   auth: AuthInit<BaseSessionData>
 }) => {
-  const foundUser = await prisma.user.findFirst({
-    where: {
-      email,
-    },
+  const foundUser = await db.query.user.findFirst({
+    where: (user) => eq(user.email, email),
   })
 
   if (foundUser) {
@@ -361,18 +405,32 @@ export const handleOauth = async ({
   }
 
   if (!foundUser) {
-    const user = await prisma.user.create({
-      data: {
+    const user = await db
+      .insert(schema.user)
+      .values({
         email,
         username: email,
         role: "USER",
-        lists: {
-          connect: {
-            slug: "general",
-          },
-        },
-      },
-    })
+        // TODO: connect list
+        // lists: {
+        //   connect: {
+        //     slug: "general",
+        //   },
+        // },
+      })
+      .returning()
+    // const user = await prisma.user.create({
+    //   data: {
+    //     email,
+    //     username: email,
+    //     role: "USER",
+    //     lists: {
+    //       connect: {
+    //         slug: "general",
+    //       },
+    //     },
+    //   },
+    // })
 
     await auth.createSession({
       userId: user.id,
@@ -384,8 +442,8 @@ export const handleOauth = async ({
     /** This is because we call the createWorkspace function after creating the user.
      * The original user "const" doesn't have any workspace on it yet.
      * So we make a db call to get the updated version.  */
-    const getNewUser = await prisma.user.findUnique({
-      where: { id: user.id },
+    const getNewUser = await db.query.user.findFirst({
+      where: ({ id }, { eq }) => eq(id, user.id),
     })
 
     return getNewUser
