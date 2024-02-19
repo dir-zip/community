@@ -7,7 +7,10 @@ import { Prisma, PrismaClient } from "@prisma/client"
 export * as schema from "./drizzle/schema"
 export * from "drizzle-orm"
 
-const sql = neon(process.env.DATABASE_URL || "")
+const sql = neon(
+  "postgresql://ignatif:oc5habz3iBSg@ep-muddy-meadow-a5z0dmsd.us-east-2.aws.neon.tech/neondb?sslmode=require"
+  // process.env.DATABASE_URL || ""
+)
 export const db = drizzle(sql, { schema })
 
 type UserWithInventory = Prisma.UserGetPayload<{
@@ -50,3 +53,22 @@ export * from "@prisma/client"
 if (process.env.NODE_ENV !== "production") {
   global.prisma = prisma
 }
+
+const a = async () => {
+  // await db.insert(schema.action).values({ title: "test", value: 1 })
+
+  const result = await db.query.user.findMany({
+    // with: {
+    //   posts: true
+    // },
+  })
+  console.log(result)
+
+  const result1 = await db.query.action.findMany({
+    // with: {
+    //   posts: true
+    // },
+  })
+  console.log(result1)
+}
+a()

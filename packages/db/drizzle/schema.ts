@@ -1,3 +1,4 @@
+// TODO: action, event
 import {
   pgTable,
   numeric,
@@ -10,7 +11,10 @@ import { sql, relations } from "drizzle-orm"
 import { createId } from "@paralleldrive/cuid2"
 
 export const user = pgTable("User", {
-  id: text("id").primaryKey().notNull().default(createId()),
+  id: text("id")
+    .primaryKey()
+    .notNull()
+    .$defaultFn(() => createId()),
   createdAt: timestamp("createdAt")
     .default(sql`now()`)
     .notNull(),
@@ -206,12 +210,12 @@ export const event = pgTable("Event", {
   updatedAt: timestamp("updatedAt")
     .default(sql`now()`)
     .notNull(),
-  userId: text("userId")
-    .notNull()
-    .references(() => user.id, { onDelete: "restrict", onUpdate: "cascade" }),
-  actionId: text("actionId")
-    .notNull()
-    .references(() => action.id, { onDelete: "restrict", onUpdate: "cascade" }),
+  // userId: text("userId")
+  //   .notNull()
+  //   .references(() => user.id, { onDelete: "restrict", onUpdate: "cascade" }),
+  // actionId: text("actionId")
+  //   .notNull()
+  //   .references(() => action.id, { onDelete: "restrict", onUpdate: "cascade" }),
 })
 
 export const inventory = pgTable("Inventory", {
@@ -249,7 +253,7 @@ export const inventoryItem = pgTable("InventoryItem", {
       onUpdate: "cascade",
     }),
   type: text("type").notNull(),
-  equipped: boolean(true).notNull(),
+  equipped: boolean("equipped").default(true).notNull(),
   itemId: text("itemId").references(() => item.id, {
     onDelete: "set null",
     onUpdate: "cascade",
@@ -290,9 +294,9 @@ export const condition = pgTable("Condition", {
   updatedAt: timestamp("updatedAt")
     .default(sql`now()`)
     .notNull(),
-  actionId: text("actionId")
-    .notNull()
-    .references(() => action.id, { onDelete: "restrict", onUpdate: "cascade" }),
+  // actionId: text("actionId")
+  //   .notNull()
+  //   .references(() => action.id, { onDelete: "restrict", onUpdate: "cascade" }),
   quantity: integer("quantity").default(1).notNull(),
   badgeId: text("badgeId")
     .notNull()
@@ -311,7 +315,7 @@ export const featureToggle = pgTable("FeatureToggle", {
     .default(sql`now()`)
     .notNull(),
   feature: text("feature").notNull().unique(),
-  isActive: boolean("isActive").notNull(),
+  isActive: boolean("isActive").default(false).notNull(),
   globalSettingId: integer("globalSettingId")
     .default(1)
     .notNull()
@@ -471,7 +475,7 @@ export const userRelations = relations(user, ({ many, one }) => ({
   lists: many(userList),
   posts: many(post),
   comments: many(comment),
-  events: many(event),
+  // events: many(event),
   inventory: one(inventory, {
     fields: [user.inventoryId],
     references: [inventory.id],
@@ -493,12 +497,12 @@ export const globalSettingRelations = relations(globalSetting, ({ many }) => ({
   features: many(featureToggle),
 }))
 
-export const eventsRelations = relations(event, ({ one }) => ({
-  user: one(user, {
-    fields: [event.userId],
-    references: [user.id],
-  }),
-}))
+// export const eventsRelations = relations(event, ({ one }) => ({
+//   user: one(user, {
+//     fields: [event.userId],
+//     references: [user.id],
+//   }),
+// }))
 
 export const commentRelations = relations(comment, ({ one, many }) => ({
   post: one(post, {
