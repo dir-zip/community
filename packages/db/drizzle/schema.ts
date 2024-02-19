@@ -10,10 +10,7 @@ import { sql, relations } from "drizzle-orm"
 import { createId } from "@paralleldrive/cuid2"
 
 export const user = pgTable("User", {
-  id: text("id")
-    .primaryKey()
-    .notNull()
-    .$defaultFn(() => createId()),
+  id: text("id").primaryKey().notNull().default(createId()),
   createdAt: timestamp("createdAt")
     .default(sql`now()`)
     .notNull(),
@@ -25,7 +22,7 @@ export const user = pgTable("User", {
   hashedPassword: text("hashedPassword"),
   role: text("role").default("USER").notNull(),
   avatar: text("avatar"),
-  verified: numeric("verified").notNull(),
+  verified: boolean("verified").default(false).notNull(),
   points: integer("points").default(0).notNull(),
   bannerImage: text("bannerImage"),
   inventoryId: text("inventoryId"),
@@ -252,7 +249,7 @@ export const inventoryItem = pgTable("InventoryItem", {
       onUpdate: "cascade",
     }),
   type: text("type").notNull(),
-  equipped: boolean("equipped").notNull(),
+  equipped: boolean(true).notNull(),
   itemId: text("itemId").references(() => item.id, {
     onDelete: "set null",
     onUpdate: "cascade",

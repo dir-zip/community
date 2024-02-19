@@ -1,0 +1,258 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL_PRISMA")
+}
+
+
+model User {
+  id             String      @id @default(cuid())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  email          String   @unique
+  username       String @unique
+  hashedPassword String?
+  role           String   @default("USER")
+  tokens   Token[]
+  sessions Session[]
+
+  avatar String?
+  bannerImage String?
+
+  verified Boolean @default(false)
+
+  points Int @default(0)
+
+  posts    Post[]
+  comments Comment[]
+
+  inventory Inventory?
+  events Event[]
+  broadcasts Broadcast[]
+
+
+  calendarEvents CalendarEvent[]
+
+  lists List[]
+}
+
+model Session {
+  id                 String      @id @default(cuid())
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  expiresAt          DateTime?
+  hashedSessionToken String?
+  csrfToken          String?
+  data               String?
+  user   User? @relation(fields: [userId], references: [id])
+  userId String?
+}
+
+
+model Token {
+  id          String      @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  hashedToken String
+  type        String
+  expiresAt   DateTime
+  sentTo      String?
+
+  user   User @relation(fields: [userId], references: [id])
+  userId String
+
+
+  lastFour String?
+
+  @@unique([hashedToken, type])
+}
+
+model Post {
+  id          String      @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title       String
+  slug        String @unique
+  body        String
+  comments    Comment[]
+  tags        Tag[]
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
+  userId      String
+  user        User @relation(fields: [userId], references: [id])
+  broadcasts  Broadcast[]
+}
+
+model Comment {
+  id          String      @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  body        String
+  postId      String
+  post        Post @relation(fields: [postId], references: [id])
+  userId      String
+  user        User @relation(fields: [userId], references: [id])
+
+  parentId    String? // This is the id of the parent comment
+  parent      Comment? @relation("CommentToComment", fields: [parentId], references: [id]) // This is the parent comment
+  replies     Comment[] @relation("CommentToComment") // These are the replies to the comment
+}
+
+
+
+model CalendarEvent {
+  id          String      @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title       String
+  date        DateTime
+  description String
+  going       User[]
+}
+
+
+
+model Item {
+  id          String      @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title       String
+  description String
+  image       String?
+  price       Int
+  purchasedItems   InventoryItem[]
+  effect      String? @unique
+}
+
+model Badge {
+  id          String      @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title       String
+  description String
+  image       String?
+  conditions   Condition[]
+  unlockedBadges InventoryItem[]
+}
+
+model Action {
+  id          String      @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title String @unique
+  value Int
+  conditions Condition[]
+  events Event[]
+}
+
+model Tag {
+  id          String      @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title       String
+  slug        String @unique
+  posts       Post[]
+}
+
+model Category {
+  id          String      @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  title String
+  slug  String @unique
+  posts Post[]
+}
+
+model Event {
+  id          String      @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user User @relation(fields: [userId], references: [id])
+  userId String
+  action Action @relation(fields: [actionId], references: [id])
+  actionId String
+}
+
+model Inventory {
+  id          String      @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user User @relation(fields: [userId], references: [id])
+  userId String @unique
+
+  collection InventoryItem[]
+}
+
+model InventoryItem {
+  id          String      @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  inventory Inventory @relation(fields: [inventoryId], references: [id])
+  inventoryId String
+
+  type String
+
+  equipped Boolean @default(false)
+
+  itemId           String?
+  item             Item? @relation(fields: [itemId], references: [id])
+
+  badgeId           String?
+  badge             Badge? @relation(fields: [badgeId], references: [id])
+
+}
+
+model Condition {
+  id          String      @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  action      Action @relation(fields: [actionId], references: [id])
+  actionId    String
+  quantity    Int       @default(1)
+  badge Badge @relation(fields: [badgeId], references: [id])
+  badgeId String
+}
+
+model GlobalSetting {
+  id          Int     @default(1) @unique
+  siteTitle   String @default("dir.zip")
+  siteDescription String?
+  features FeatureToggle[]
+}
+
+model FeatureToggle {
+  id          String      @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  feature   String   @unique
+  isActive  Boolean  @default(false)
+  globalSetting GlobalSetting @relation(fields: [globalSettingId], references: [id])
+  globalSettingId Int @default(1)
+  value String? 
+}
+
+model Broadcast {
+  id String @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  post Post @relation(fields: [postId], references: [id])
+  postId String
+  status String
+  users User[]
+  lists       List[]   
+}
+
+model List {
+  id String @id @default(cuid())
+  title String
+  slug String @unique
+  description String?
+  users User[]
+  broadcasts Broadcast[]
+}

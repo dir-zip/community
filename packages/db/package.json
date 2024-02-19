@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "main": "./index.ts",
   "types": "./index.ts",
+  "prisma": {
+    "seed": "ts-node --transpile-only --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+  },
   "scripts": {
     "clean": "rm -rf .turbo node_modules",
     "db:generate": "pnpm with-env drizzle-kit generate:pg",
@@ -14,9 +17,12 @@
   },
   "dependencies": {
     "@neondatabase/serverless": "^0.8.1",
+    "@prisma/client": "^5.9.1",
     "better-sqlite3": "^9.4.1",
     "drizzle-orm": "^0.29.3",
-    "postgres": "^3.4.3"
+    "pg": "^8.11.3",
+    "postgres": "^3.4.3",
+    "prisma": "^5.9.1"
   },
   "devDependencies": {
     "@paralleldrive/cuid2": "^2.2.2",
