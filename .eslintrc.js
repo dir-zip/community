@@ -13,8 +13,7 @@ const config = {
   },
   settings: {
     next: {
-      // rootDir: ["apps/web"],
-      rootDir: ["apps/next13"],
+      rootDir: ["apps/web"]
     },
   },
   extends: ["turbo", "plugin:@typescript-eslint/recommended", "prettier"],
@@ -27,6 +26,7 @@ const config = {
     "@next/next/no-html-link-for-pages": "off",
     "@typescript-eslint/no-empty-function": "off",
     "@typescript-eslint/restrict-template-expressions": "off",
+    "@typescript-eslint/no-import-type-side-effects": "error",
     "@typescript-eslint/no-this-alias": "off",
     "@typescript-eslint/no-unused-vars": [
       "error",
