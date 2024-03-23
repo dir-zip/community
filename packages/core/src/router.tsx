@@ -62,7 +62,7 @@ import {
 } from "./features/user/screens"
 import { AdminSidebar } from "./components/ui/AdminSidebar"
 import { getUserInventory } from "./features/user/actions"
-import { Inventory } from "@dir/db"
+import { db, schema, InferSelectModel, count, eq, and, not, inArray } from "@dir/db"
 import { BroadcastsIndex } from "./features/admin/screens/broadcasts/screens"
 import {
   AllListsPage,
@@ -77,6 +77,7 @@ import { metadata } from "./lib/metadata"
 import { ographImageGenerator, size } from "./lib/ographImageGenerator"
 import { getSinglePost } from "./features/posts/actions"
 import { getComment } from "./features/comments/actions"
+import { post, postTags, tag } from "packages/db/drizzle/schema"
 
 const router = new Router()
 
@@ -90,31 +91,37 @@ export async function PageInit<T>({
   searchParams,
   routes,
   auth,
-  sidebarLinks,
   resources,
 }: {
   params: { router: string[] }
   searchParams: { [key: string]: string | string[] | undefined }
   routes: Routes
   auth: ReturnType<typeof authInit<T & BaseSessionData>>
-  sidebarLinks?: { icon?: React.ElementType; url: string; text: string }[]
   resources: Resources
 }) {
   const getParams = params["router"]
-  let rootPath: string
-  const settings = await prisma?.globalSetting.findFirst()
-  const tags = await prisma?.tag.findMany({
-    where: {
-      slug: {
-        not: "feed",
-      },
-    },
-    orderBy: {
-      posts: {
-        _count: "desc",
-      },
-    },
-    take: 10, // Limit to the top 10 tags, adjust as needed
+
+  // FIXME: Remove this block as needed
+  // const settings = await prisma?.globalSetting.findFirst()
+  const settings = await db.query.globalSetting.findFirst();
+
+  // FIXME: Remove this block as needed
+  // const tags = await prisma?.tag.findMany({
+  //   where: {
+  //     slug: {
+  //       not: "feed",
+  //     },
+  //   },
+  //   orderBy: {
+  //     posts: {
+  //       _count: "desc",
+  //     },
+  //   },
+  //   take: 10, // Limit to the top 10 tags, adjust as needed
+  // })
+  const tags = await db.query.tag.findMany({
+    where: (tag, { not, eq }) => not(eq(tag.slug, "feed")),
+    limit: 10
   })
 
   const preFilledMetadata = ({
@@ -126,11 +133,10 @@ export async function PageInit<T>({
     type?: "website" | "article"
     author?: string
   }) => {
-    let imageUrl = `${
-      process.env.NEXT_PUBLIC_APP_URL
-    }/api/ographimage?siteTitle=${encodeURIComponent(
-      settings?.siteTitle as string
-    )}&pageTitle=${encodeURIComponent(pageTitle)}`
+    let imageUrl = `${process.env.NEXT_PUBLIC_APP_URL
+      }/api/ographimage?siteTitle=${encodeURIComponent(
+        settings?.siteTitle as string
+      )}&pageTitle=${encodeURIComponent(pageTitle)}`
 
     if (author) {
       imageUrl += `&author=${encodeURIComponent(author)}`
@@ -151,7 +157,7 @@ export async function PageInit<T>({
   for (const route of routes) {
     if (route.type === "page") {
       if (route.root) {
-        rootPath = route.route
+        var rootPath = route.route
       }
 
       if (route.resource) {
@@ -194,10 +200,16 @@ export async function PageInit<T>({
   }
 
   router.createLayout("/admin/*", async ({ children }) => {
-    const settings = await prisma?.globalSetting.findFirst({
-      include: {
-        features: true,
-      },
+    // FIXME: Remove this block as needed
+    // const settings = await prisma?.globalSetting.findFirst({
+    //   include: {
+    //     features: true,
+    //   },
+    // })
+    const settings = await db.query.globalSetting.findFirst({
+      with: {
+        features: true
+      }
     })
 
     const user = await getCurrentUser()
@@ -208,35 +220,65 @@ export async function PageInit<T>({
       })
     }
 
-    const memberCount = await prisma?.user.findMany()
-    const tags = await prisma?.tag.findMany({
-      where: {
-        slug: {
-          not: "feed",
-        },
-      },
+    // FIXME: Remove this block as needed
+    // const memberCount = await prisma?.user.findMany()
+    const memberCount = await db.query.user.findMany()
+
+    // FIXME: Remove this block as needed
+    // const tags = await prisma?.tag.findMany({
+    //   where: {
+    //     slug: {
+    //       not: "feed",
+    //     },
+    //   },
+    // })
+    const tags = await db.query.tag.findMany({
+      where: (tag, { not, eq }) => not(eq(tag.slug, "feed"))
     })
+
     const tagsWithPostCount = tags
       ? await Promise.all(
-          tags.map(async (tag) => {
-            const count = await prisma?.post.count({
-              where: {
-                tags: {
-                  some: {
-                    id: tag.id,
-                  },
-                  none: {
-                    slug: "feed",
-                  },
-                },
-              },
-            })
-            return {
-              ...tag,
-              postCount: count ?? 0,
-            }
-          })
-        )
+        tags.map(async (tagItem) => {
+          // FIXME: Remove this block as needed
+          // const count = await prisma?.post.count({
+          //   where: {
+          //     tags: {
+          //       some: {
+          //         id: tag.id,
+          //       },
+          //       none: {
+          //         slug: "feed",
+          //       },
+          //     },
+          //   },
+          // })
+
+          const subQueryTags = db.select({ id: tag.id })
+            .from(tag)
+            .where(and(
+              not(eq(tag.slug, 'feed')),
+              eq(tag.id, tagItem.id)
+            ))
+            .as('subQuery');
+
+          const subQueryPostTags = db.select({ postId: postTags.postId })
+            .from(postTags)
+            .where(inArray(postTags.tagId, subQueryTags.id))
+            .as('subQuery')
+
+          const postCountResult = await db
+            .select({ count: count() })
+            .from(post)
+            .where(eq(post.id, subQueryPostTags.postId))
+
+          const postCount: number = postCountResult.reduce((accumulator, currentValue) => accumulator + currentValue.count, 0);
+
+          return {
+            ...tagItem,
+            postCount,
+          }
+        })
+      )
       : []
 
     if (!user) {
@@ -284,49 +326,85 @@ export async function PageInit<T>({
   })
 
   router.createLayout("/*", async ({ children }) => {
-    const settings = await prisma?.globalSetting.findFirst({
-      include: {
-        features: true,
-      },
+    //FIXME: Remove this block as needed
+    // const settings = await prisma?.globalSetting.findFirst({
+    //   include: {
+    //     features: true,
+    //   },
+    // })
+    const settings = await db.query.globalSetting.findFirst({
+      with: {
+        features: true
+      }
     })
 
     const user = await getCurrentUser()
-    let inventory: Inventory | null = null
+    let inventory: InferSelectModel<typeof schema.inventory> | null = null
     if (user) {
       inventory = await getUserInventory({
         userId: user.id,
       })
     }
 
-    const memberCount = await prisma?.user.findMany()
-    const tags = await prisma?.tag.findMany({
-      where: {
-        slug: {
-          not: "feed",
-        },
-      },
+    //FIXME: Remove this block as needed
+    // const memberCount = await prisma?.user.findMany()
+    const memberCount = await db.query.user.findMany()
+    
+    // const tags = await prisma?.tag.findMany({
+    //   where: {
+    //     slug: {
+    //       not: "feed",
+    //     },
+    //   },
+    // })
+
+     //FIXME: Remove this block as needed
+    const tags = await db.query.tag.findMany({
+      where: (tag, { not, eq }) => not(eq(tag.slug, "feed"))
     })
+
     const tagsWithPostCount = tags
       ? await Promise.all(
-          tags.map(async (tag) => {
-            const count = await prisma?.post.count({
-              where: {
-                tags: {
-                  some: {
-                    id: tag.id,
-                  },
-                  none: {
-                    slug: "feed",
-                  },
-                },
-              },
-            })
-            return {
-              ...tag,
-              postCount: count ?? 0,
-            }
-          })
-        )
+        tags.map(async (tagItem) => {
+          
+          //FIXME: Remove this block as needed
+          // const count = await prisma?.post.count({
+          //   where: {
+          //     tags: {
+          //       some: {
+          //         id: tag.id,
+          //       },
+          //       none: {
+          //         slug: "feed",
+          //       },
+          //     },
+          //   },
+          // })
+
+          const subQueryTags = db.select({ id: tag.id })
+          .from(tag)
+          .where(and(
+            not(eq(tag.slug, 'feed')),
+            eq(tag.id, tagItem.id)
+          ))
+          .as('subQuery');
+
+        const subQueryPostTags = db.select({ postId: postTags.postId })
+          .from(postTags)
+          .where(inArray(postTags.tagId, subQueryTags.id))
+          .as('subQuery')
+
+        const postCountResult = await db
+          .select({ count: count() })
+          .from(post)
+          .where(eq(post.id, subQueryPostTags.postId))
+
+          return {
+            ...tagItem,
+            postCount: count ?? 0,
+          }
+        })
+      )
       : []
 
     return (
@@ -422,7 +500,7 @@ export async function PageInit<T>({
     },
     "page",
     async (params) => {
-      const comment = await getComment({ commentId: params.commentId })
+      const comment = await getComment({ commentId: params.commentId }) as any
       const post = await getSinglePost({ slug: params.slug })
       return preFilledMetadata({
         pageTitle: `Comment on ${post?.title}`,
@@ -610,10 +688,14 @@ export async function PageInit<T>({
   router.addRoute(
     "/signup",
     async () => {
-      const signupFlow = await prisma?.featureToggle.findFirst({
-        where: {
-          feature: "signupFlow",
-        },
+      // FIXME: Remove this block as needed
+      // const signupFlow = await prisma?.featureToggle.findFirst({
+      //   where: {
+      //     feature: "signupFlow",
+      //   },
+      // })
+      const signupFlow = await db.query.featureToggle.findFirst({
+        where: (toggle, { eq }) => eq(toggle.feature, "signupFlow")
       })
 
       if (signupFlow?.value === "closed") {

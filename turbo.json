@@ -2,19 +2,19 @@
   "$schema": "https://turborepo.org/schema.json",
   "pipeline": {
     "db:generate": {
-      "inputs": ["prisma/schema.prisma"],
+      "inputs": ["drizzle/schema.ts"],
       "cache": false
     },
     "db:reset": {
-      "inputs": ["prisma/schema.prisma"],
+      "inputs": ["drizzle/schema.ts"],
       "cache": false
     },
     "db:seed": {
-      "inputs": ["prisma/seed.ts"],
+      "inputs": ["drizzle/seed.ts"],
       "cache": false
     },
     "db:push": {
-      "inputs": ["prisma/schema.prisma"],
+      "inputs": ["drizzle/schema.ts"],
       "cache": false
     },
     "build:tailwind": {
@@ -41,6 +41,11 @@
   },
   "globalEnv": [
     "DATABASE_URL",
+    "DB_HOST",
+    "DB_PORT",
+    "DB_USER",
+    "DB_PASSWORD",
+    "DB_NAME",
     "REDIS_HOST",
     "REDIS_PORT",
     "REDIS_USER",

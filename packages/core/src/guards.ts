@@ -1,5 +1,5 @@
 import { TCreateGuard } from "@dir/auth";
-import { prisma } from "@dir/db";
+import { db } from "@dir/db";
 import { BaseSessionData } from ".";
 
 export const createGuards = <T>({guards, internal}: {guards: TCreateGuard<T & BaseSessionData>,internal: TCreateGuard<BaseSessionData>}) => {
@@ -29,29 +29,29 @@ export const guards: TCreateGuard<BaseSessionData> = async ({sessionData, can, c
       can("CREATE", "broadcast");
     }
 
-    can("UPDATE", "post", async (args) => {
-      const post = await prisma.post.findFirst({
-        where: { OR: [{ id: args }, { slug: args }] }
-      });
+    // can("UPDATE", "post", async (args) => {
+    //   const post = await prisma.post.findFirst({
+    //     where: { OR: [{ id: args }, { slug: args }] }
+    //   });
 
-      return post && post.userId === sessionData.userId ? true : false
-    });
+    //   return post && post.userId === sessionData.userId ? true : false
+    // });
 
-    can("UPDATE", "comment", async (args) => {
-      const comment = await prisma.comment.findFirst({
-        where: { OR: [{ id: args }, { id: args }] }
-      });
+    // can("UPDATE", "comment", async (args) => {
+    //   const comment = await prisma.comment.findFirst({
+    //     where: { OR: [{ id: args }, { id: args }] }
+    //   });
 
-      return comment && comment.userId === sessionData.userId ? true : false
-    });
+    //   return comment && comment.userId === sessionData.userId ? true : false
+    // });
 
-    can("UPDATE", "user", async (args) => {
-      const user = await prisma.user.findFirst({
-        where: { OR: [{ id: args }, { id: args }] }
-      });
+    // can("UPDATE", "user", async (args) => {
+    //   const user = await prisma.user.findFirst({
+    //     where: { OR: [{ id: args }, { id: args }] }
+    //   });
 
-      return user && user.id === sessionData.userId ? true : false
-    });
+    //   return user && user.id === sessionData.userId ? true : false
+    // });
   }
 
 

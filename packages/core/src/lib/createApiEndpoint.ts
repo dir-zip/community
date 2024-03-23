@@ -1,6 +1,6 @@
 import { PasswordHandler } from '@dir/auth';
 import { type NextRequest, type NextResponse } from 'next/server';
-import { prisma } from '@dir/db';
+import { db, schema, eq, and } from '@dir/db';
 
 type ApiHandler = (request: NextRequest) => Promise<NextResponse>
 
@@ -8,18 +8,18 @@ const createApiEndpoint = (handler: ApiHandler) => {
 
   return async (request: NextRequest) => {
     const token = request.headers.get('authorization')?.split(" ")[1];
-    if(!token) {
+    if (!token) {
       throw new Error("Token not found")
     }
 
-    const findApiKey = await prisma.token.findFirst({
-      where: {
-        hashedToken: await PasswordHandler.hash(token),
-        AND: {
-          type: "API_KEY",
-        },
-      }
-    });
+    const hashedToken = await PasswordHandler.hash(token)
+
+    const findApiKey = await db.select().from(schema.token).where(
+      and(
+        eq(schema.token.hashedToken, hashedToken),
+        eq(schema.token.type, 'API_KEY')
+      )
+    )
 
     if (!findApiKey) {
       return new Response("Invalid Token", { status: 401 })
