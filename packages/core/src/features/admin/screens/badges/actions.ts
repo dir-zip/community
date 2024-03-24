@@ -1,6 +1,6 @@
 "use server"
 
-import { count, db, eq, or } from "@dir/db";
+import { and, count, db, eq, or } from "@dir/db";
 import { z } from 'zod'
 import { prepareArrayField } from "@creatorsneverdie/prepare-array-for-prisma"
 
@@ -15,7 +15,7 @@ export const getAllBadges = createAction(
     }
     const { skip, take, where } = params
 
-    const whereIdCondition = where?.OR.find((condition: any) => condition?.id !== undefined)?.id;
+    const whereIdCondition = where?.OR?.find((condition: any) => condition?.id !== undefined)?.id;
 
     // FIXME: Remove this block as needed
     // const badges = await prisma.badge.findMany({
@@ -195,7 +195,12 @@ export const updateBadge = createAction(async ({ }, params) => {
   }
   if (preparedConditions.update && updatedBadge) {
     await Promise.all(preparedConditions.update.map(async (item) => {
-      await db.update(condition).set({ quantity: item.data.quantity }).where(eq(condition.badgeId, updatedBadge.id))
+      await db.update(condition)
+        .set({ quantity: item.data.quantity })
+        .where(and(
+          eq(condition.badgeId, updatedBadge.id),
+          eq(condition.id, item.where.id),
+        ))
     }))
   }
 
@@ -206,7 +211,7 @@ export const updateBadge = createAction(async ({ }, params) => {
 
 export const deleteBadge = createAction(async ({ }, params) => {
   // Delete all conditions associated with the badge
-  
+
   // FIXME: Remove this block as needed
   // await prisma.condition.deleteMany({
   //   where: {

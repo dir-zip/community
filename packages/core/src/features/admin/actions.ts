@@ -185,8 +185,8 @@ export const getAllResource = createAction(
 
     const table = getDbTable(resource.slice(0, -1));
 
-    const whereIdCondition = where?.OR.find((condition: any) => condition?.id !== undefined)?.id;
-    const whereUserIdCondition = where?.OR.find((condition: any) => condition?.userId !== undefined)?.userId;
+    const whereIdCondition = where?.OR?.find((condition: any) => condition?.id !== undefined)?.id;
+    const whereUserIdCondition = where?.OR?.find((condition: any) => condition?.userId !== undefined)?.userId;
 
     const findResource = await db.select()
       .from(table)
@@ -278,8 +278,8 @@ export const getAllUsers = createAction(
     const { skip, take, where } = params
 
     const whereUsernameCondition = where?.username;
-    const whereIdCondition = where?.OR.find((condition: any) => condition?.id !== undefined)?.id;
-    const whereEmailCondition = where?.OR.find((condition: any) => condition?.email !== undefined)?.email;
+    const whereIdCondition = where?.OR?.find((condition: any) => condition?.id !== undefined)?.id;
+    const whereEmailCondition = where?.OR?.find((condition: any) => condition?.email !== undefined)?.email;
 
 
     // FIXME: Remove this block as needed

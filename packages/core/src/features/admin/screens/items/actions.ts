@@ -16,7 +16,7 @@ export const getAllItems = createAction(
     }
     const { skip, take, where } = params
 
-    const whereIdCondition = where?.OR.find((condition: any) => condition?.id !== undefined)?.id;
+    const whereIdCondition = where?.OR?.find((condition: any) => condition?.id !== undefined)?.id;
 
     // FIXME: Remove this block as needed
     // const items = await prisma.item.findMany({

@@ -15,8 +15,8 @@ export const getAllLists = createAction(
     }
     const { skip, take, where } = params
 
-    const whereOrSlugCondition = where?.OR.find((condition: any) => condition?.slug !== undefined)?.slug;
-    const whereOrTitleCondition = where?.OR.find((condition: any) => condition?.title !== undefined)?.title;
+    const whereOrSlugCondition = where?.OR?.find((condition: any) => condition?.slug !== undefined)?.slug;
+    const whereOrTitleCondition = where?.OR?.find((condition: any) => condition?.title !== undefined)?.title;
     const whereSlugNotEqualCondition = where?.slug.not.equals;
 
     // FIXME: Remove this block as needed
@@ -180,24 +180,25 @@ export const getUsersFromList = createAction(async ({ }, { slug, skip, take, whe
   //   }
   // })
 
-  const whereOrUsernameCondition = where?.OR.find((condition: any) => condition?.username !== undefined)?.username.contains;
-  const whereOrEmailCondition = where?.OR.find((condition: any) => condition?.email !== undefined)?.email.contains;
+  const whereOrUsernameCondition = where?.OR?.find((condition: any) => condition?.username !== undefined)?.username.contains;
+  const whereOrEmailCondition = where?.OR?.find((condition: any) => condition?.email !== undefined)?.email.contains;
 
-  const userSubquery = db.select()
-    .from(user)
-    .where(or(
-      whereOrUsernameCondition ? like(user.username, whereOrUsernameCondition) : undefined,
-      whereOrEmailCondition ? like(user.email, whereOrEmailCondition) : undefined,
-    ))
-    .as('subQuery')
+  const userSubquery = (whereOrUsernameCondition || whereOrEmailCondition)
+    ? await db.select()
+      .from(user)
+      .where(or(
+        whereOrUsernameCondition ? like(user.username, whereOrUsernameCondition) : undefined,
+        whereOrEmailCondition ? like(user.email, whereOrEmailCondition) : undefined,
+      ))
+    : undefined
 
   const lists = await db.query.list.findMany({
     where: (list, { eq }) => eq(list.slug, slug),
     with: {
       users: {
-        where: (user, { like, and, or }) => and(
-          (whereOrUsernameCondition || whereOrEmailCondition)
-            ? inArray(user.userId, userSubquery.id)
+        where: (user, { and }) => and(
+          (userSubquery && userSubquery.length > 0)
+            ? inArray(user.userId, userSubquery.map(item => item.id))
             : undefined
         )
       }

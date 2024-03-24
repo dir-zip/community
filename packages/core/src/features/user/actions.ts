@@ -11,12 +11,12 @@ export const updateUser = createAction(async ({ validate }, { avatar, userId, ba
   await validate(['UPDATE', "user", userId])
 
   const updatedUsers = await db.update(schema.user)
-  .set({
-    avatar,
-    bannerImage
-  })
-  .where(eq(schema.user.id, userId))
-  .returning()
+    .set({
+      avatar,
+      bannerImage
+    })
+    .where(eq(schema.user.id, userId))
+    .returning()
 
   revalidatePath('/')
 
@@ -225,17 +225,19 @@ export const getUsersPosts = createAction(async ({ }, { username, skip, take }) 
   //   }
   // })
 
-  const subQueryUsers = db.select({ id: user.id }).from(user).where(eq(user.username, username)).as('subQuery');
-  const subQueryTags = db.select({ id: tag.id }).from(tag).where(eq(tag.slug, 'feed')).as('subQuery');
-  const subQueryPostTags = db.select({ postId: postTags.postId }).from(postTags).where(inArray(postTags.tagId, subQueryTags.id)).as('subQuery')
+  const subQueryUsers = await db.select({ id: user.id }).from(user).where(eq(user.username, username));
+  const subQueryTags = await db.select({ id: tag.id }).from(tag).where(eq(tag.slug, 'feed'));
+  const subQueryPostTags = (subQueryTags.length > 0)
+    ? await db.select({ postId: postTags.postId }).from(postTags).where(inArray(postTags.tagId, subQueryTags.map(item => item.id)))
+    : undefined
 
   const posts = await db
     .select()
     .from(post)
     .where(
       and(
-        inArray(post.userId, subQueryUsers.id),
-        notInArray(post.id, subQueryPostTags.postId)
+        inArray(post.userId, subQueryUsers.map(item => item.id)),
+        (subQueryPostTags && subQueryPostTags.length > 0) ? notInArray(post.id, subQueryPostTags.map(item => item.postId)) : undefined
       )
     )
     .limit(take || 1000)
@@ -259,8 +261,8 @@ export const getUsersPosts = createAction(async ({ }, { username, skip, take }) 
     .from(post)
     .where(
       and(
-        inArray(post.userId, subQueryUsers.id),
-        notInArray(post.id, subQueryPostTags.postId)
+        inArray(post.userId, subQueryUsers.map(item => item.id)),
+        (subQueryPostTags && subQueryPostTags.length > 0) ? notInArray(post.id, subQueryPostTags.map(item => item.postId)) : undefined
       )
     )
 
@@ -333,7 +335,7 @@ export const createInvite = createAction(async ({ validate }, { userId }) => {
     type: "INVITE_TOKEN",
     userId: userId,
     hashedToken: hashedToken,
-    expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24).toString()
+    expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24)
   })
 
   revalidatePath('/settings/invites')

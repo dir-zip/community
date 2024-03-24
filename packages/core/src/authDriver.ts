@@ -15,7 +15,7 @@ export const storeSession = async (session: SessionModel<BaseSessionData>) => {
 
   return await db.insert(schema.session).values({
     ...session,
-    expiresAt: session.expiresAt?.toString(),
+    expiresAt: session.expiresAt,
     data: JSON.stringify(session.data),
     userId: user?.id
   });

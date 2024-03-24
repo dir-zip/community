@@ -253,23 +253,27 @@ export async function PageInit<T>({
           //   },
           // })
 
-          const subQueryTags = db.select({ id: tag.id })
+          const subQueryTags = await db.select({ id: tag.id })
             .from(tag)
             .where(and(
               not(eq(tag.slug, 'feed')),
               eq(tag.id, tagItem.id)
-            ))
-            .as('subQuery');
+            ));
 
-          const subQueryPostTags = db.select({ postId: postTags.postId })
-            .from(postTags)
-            .where(inArray(postTags.tagId, subQueryTags.id))
-            .as('subQuery')
+          const subQueryPostTags = (subQueryTags.length > 0)
+            ? await db.select({ postId: postTags.postId })
+              .from(postTags)
+              .where(inArray(postTags.tagId, subQueryTags.map(item => item.id)))
+            : undefined
 
           const postCountResult = await db
             .select({ count: count() })
             .from(post)
-            .where(eq(post.id, subQueryPostTags.postId))
+            .where(and(
+              (subQueryPostTags && subQueryPostTags.length > 0)
+                ? inArray(post.id, subQueryPostTags.map(item => item.postId))
+                : undefined
+            ))
 
           const postCount: number = postCountResult.reduce((accumulator, currentValue) => accumulator + currentValue.count, 0);
 
@@ -349,7 +353,7 @@ export async function PageInit<T>({
     //FIXME: Remove this block as needed
     // const memberCount = await prisma?.user.findMany()
     const memberCount = await db.query.user.findMany()
-    
+
     // const tags = await prisma?.tag.findMany({
     //   where: {
     //     slug: {
@@ -358,7 +362,7 @@ export async function PageInit<T>({
     //   },
     // })
 
-     //FIXME: Remove this block as needed
+    //FIXME: Remove this block as needed
     const tags = await db.query.tag.findMany({
       where: (tag, { not, eq }) => not(eq(tag.slug, "feed"))
     })
@@ -366,7 +370,7 @@ export async function PageInit<T>({
     const tagsWithPostCount = tags
       ? await Promise.all(
         tags.map(async (tagItem) => {
-          
+
           //FIXME: Remove this block as needed
           // const count = await prisma?.post.count({
           //   where: {
@@ -381,27 +385,33 @@ export async function PageInit<T>({
           //   },
           // })
 
-          const subQueryTags = db.select({ id: tag.id })
-          .from(tag)
-          .where(and(
-            not(eq(tag.slug, 'feed')),
-            eq(tag.id, tagItem.id)
-          ))
-          .as('subQuery');
+          const subQueryTags = await db.select({ id: tag.id })
+            .from(tag)
+            .where(and(
+              not(eq(tag.slug, 'feed')),
+              eq(tag.id, tagItem.id)
+            ));
 
-        const subQueryPostTags = db.select({ postId: postTags.postId })
-          .from(postTags)
-          .where(inArray(postTags.tagId, subQueryTags.id))
-          .as('subQuery')
+          const subQueryPostTags = (subQueryTags.length > 0)
+            ? await db.select({ postId: postTags.postId })
+              .from(postTags)
+              .where(inArray(postTags.tagId, subQueryTags.map(item => item.id)))
+            : undefined
 
-        const postCountResult = await db
-          .select({ count: count() })
-          .from(post)
-          .where(eq(post.id, subQueryPostTags.postId))
+            const postCountResult = await db
+            .select({ count: count() })
+            .from(post)
+            .where(and(
+              (subQueryPostTags && subQueryPostTags.length > 0)
+                ? inArray(post.id, subQueryPostTags.map(item => item.postId))
+                : undefined
+            ))
+
+          const postCount: number = postCountResult.reduce((accumulator, currentValue) => accumulator + currentValue.count, 0);
 
           return {
             ...tagItem,
-            postCount: count ?? 0,
+            postCount,
           }
         })
       )

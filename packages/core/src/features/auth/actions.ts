@@ -183,7 +183,7 @@ export const signUpAction = createAction(async ({ createSession }, { email, pass
     userId: newUser.id,
     sentTo: newUser.email,
     hashedToken: hashedToken,
-    expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24).toString(),
+    expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
   })
 
   const activateUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/activateAccount?token=${newToken}`
@@ -356,7 +356,7 @@ export const forgotPasswordAction = createAction(async ({ }, { email }) => {
       userId: userResult.id,
       sentTo: userResult.email,
       hashedToken: hashedToken,
-      expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24).toString()
+      expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24)
     })
 
     const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password?token=${newToken}`;

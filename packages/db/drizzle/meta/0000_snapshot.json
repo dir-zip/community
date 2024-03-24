@@ -1,5 +1,5 @@
 {
-  "id": "d5d0a195-40b9-48cd-a9bd-f801d3a1a572",
+  "id": "12db7d61-adfb-4b45-a706-235479867f01",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "5",
   "dialect": "pg",
@@ -1040,7 +1040,7 @@
         },
         "expiresAt": {
           "name": "expiresAt",
-          "type": "numeric",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": false
         },
@@ -1176,7 +1176,7 @@
         },
         "expiresAt": {
           "name": "expiresAt",
-          "type": "numeric",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": true
         },

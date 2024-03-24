@@ -114,21 +114,23 @@ export const getAllPosts = createAction(async ({ }, params) => {
   // });
 
   const categorySubquery = (categorySlug)
-    ? db.select().from(category).where(eq(category.slug, categorySlug)).as('subQuery')
+    ? await db.select().from(category).where(eq(category.slug, categorySlug))
     : undefined;
 
   const tagSubquery = (tags && tags.length > 0)
-    ? db.select().from(tag).where(and(inArray(tag.slug, tags), not(eq(tag.slug, 'feed')))).as('subQuery')
-    : db.select().from(tag).where(not(eq(tag.slug, 'feed'))).as('subQuery')
+    ? await db.select().from(tag).where(and(inArray(tag.slug, tags), not(eq(tag.slug, 'feed'))))
+    : await db.select().from(tag).where(not(eq(tag.slug, 'feed')))
 
-  const postTagSubQuery = db.select().from(postTags).where(inArray(postTags.tagId, tagSubquery.id)).as('subQuery')
+  const postTagSubQuery = (tagSubquery.length > 0)
+    ? await db.select().from(postTags).where(inArray(postTags.tagId, tagSubquery.map(item => item.id)))
+    : undefined
 
   const posts = await db.query.post.findMany({
     with: {
       user: userInventoryIncludes.user,
       broadcasts: true,
       category: {
-        columns: { title: true, slug: true }
+        columns: { title: true, slug: true },
       },
       comments: {
         with: {
@@ -143,8 +145,8 @@ export const getAllPosts = createAction(async ({ }, params) => {
     },
     where: (post, { and, like, inArray }) => and(
       title ? like(post.title, title) : undefined,
-      (categorySlug !== "all" && categorySubquery) ? inArray(post.categoryId, categorySubquery.id) : undefined,
-      inArray(post.id, postTagSubQuery.postId)
+      (categorySlug !== "all" && categorySubquery && categorySubquery.length > 0) ? inArray(post.categoryId, categorySubquery.map(item => item.id)) : undefined,
+      (postTagSubQuery && postTagSubQuery.length > 0) ? inArray(post.id, postTagSubQuery.map(item => item.id)) : undefined
     ),
     orderBy: (post, { desc }) => [desc(post.createdAt)],
     limit: take,
@@ -186,8 +188,8 @@ export const getAllPosts = createAction(async ({ }, params) => {
     .where(
       and(
         title ? like(post.title, title) : undefined,
-        (categorySlug !== "all" && categorySubquery) ? inArray(post.categoryId, categorySubquery.id) : undefined,
-        inArray(post.id, postTagSubQuery.postId)
+        (categorySlug !== "all" && categorySubquery && categorySubquery.length > 0) ? inArray(post.categoryId, categorySubquery.map(item => item.id)) : undefined,
+        (postTagSubQuery && postTagSubQuery.length > 0) ? inArray(post.id, postTagSubQuery.map(item => item.id)) : undefined
       )
     );
 
@@ -232,6 +234,10 @@ export const createPost = createAction(async ({ session }, data) => {
   const getCategory = await db.query.category.findFirst({
     where: (cate, { eq }) => eq(cate.slug, category)
   })
+
+  if (!getCategory) {
+    throw new Error('No category found !');
+  }
 
   const newTags = await Promise.all(
     tags.map(async (tagSlug) => {
@@ -304,7 +310,8 @@ export const createPost = createAction(async ({ session }, data) => {
   }
 
   if (mappedTags.create) {
-    const insertData = mappedTags.create.map((item) => ({ tagId: item.id, postId: createdPost.id }))
+    const newTagItems = await db.insert(tag).values(mappedTags.create).returning();
+    const insertData = newTagItems.map((item) => ({ tagId: item.id, postId: createdPost.id }))
     await db.insert(postTags).values(insertData)
   }
 
@@ -409,7 +416,6 @@ export const createPost = createAction(async ({ session }, data) => {
 
         }
       }
-
 
     }
   }
@@ -542,12 +548,14 @@ export const updatePost = createAction(async ({ validate, session }, { slug, dat
 
   const updatedPost = updatedPosts[0];
   if (mappedTags.create && updatedPost) {
-    const insertData = mappedTags.create.map((item) => ({ tagId: item.id, postId: updatedPost.id }))
+    const newTagItems = await db.insert(tag).values(mappedTags.create).returning();
+    const insertData = newTagItems.map((item) => ({ tagId: item.id, postId: updatedPost.id }))
     await db.insert(postTags).values(insertData)
   }
+
   if (mappedTags.update && updatedPost) {
     await Promise.all(mappedTags.update.map(async (item) => {
-      await db.update(postTags).set({ tagId: item.data.id }).where(eq(postTags.postId, updatedPost.id))
+      await db.update(tag).set(item.data).where(eq(tag.id, item.where.id))
     }))
   }
 
