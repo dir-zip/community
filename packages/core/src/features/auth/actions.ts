@@ -31,7 +31,7 @@ import authDriver from '../../authDriver';
 import { guards } from '../../guards';
 import { redirect } from 'next/navigation';
 import { userInventoryIncludes } from "~/lib/includes";
-import { inventory, list, token, user, userList } from "packages/db/drizzle/schema";
+import { inventory, list, session, token, user, userList } from "packages/db/drizzle/schema";
 
 export const loginAction = createAction(async ({ createSession }, { email, password }) => {
   // FIXME: Remove this block as needed
@@ -422,7 +422,7 @@ export const resetPasswordAction = createAction(
 
     // FIXME: Remove this block as needed
     // await prisma.session.deleteMany({ where: { userId: user.id } });
-    await db.delete(user).where(eq(user.id, updatedUser.id))
+    await db.delete(session).where(eq(user.id, updatedUser.id))
 
     await createSession({
       userId: updatedUser.id,
@@ -432,7 +432,7 @@ export const resetPasswordAction = createAction(
     })
 
 
-    return user;
+    return updatedUser;
   },
   ResetPasswordSchema,
   { authed: false }

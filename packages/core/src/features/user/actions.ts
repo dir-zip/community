@@ -10,21 +10,24 @@ import { inventoryItem, item, post, postTags, tag, token, user } from 'packages/
 export const updateUser = createAction(async ({ validate }, { avatar, userId, bannerImage }) => {
   await validate(['UPDATE', "user", userId])
 
-  const user = await db.update(schema.user).set({
+  const updatedUsers = await db.update(schema.user)
+  .set({
     avatar,
     bannerImage
-  }).where(eq(schema.user.id, userId))
+  })
+  .where(eq(schema.user.id, userId))
+  .returning()
 
   revalidatePath('/')
 
-  return user
+  const updatedUser = updatedUsers[0]
+  return updatedUser;
 
 }, z.object({
   avatar: z.string().optional(),
   bannerImage: z.string().optional(),
   userId: z.string()
 }), { authed: true })
-
 
 export const getUserInventory = createAction(async ({ validate }, { userId }) => {
   // await validate(['UPDATE', "user", userId])

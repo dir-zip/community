@@ -1,41 +1,72 @@
 'use server'
 
 import { createAction } from "~/lib/createAction"
-import {prisma} from '@dir/db'
-import {z} from 'zod'
+import { count, db, eq, or } from '@dir/db'
+import { z } from 'zod'
+import { broadcast } from "packages/db/drizzle/schema";
 
 export const getAllBroadcasts = createAction(
-  async ({}, params) => {
+  async ({ }, params) => {
     if (!params) {
       throw new Error('Parameters are undefined');
     }
-    const { skip, take, where } = params
-    const broadcasts = await prisma.broadcast.findMany({
-      take,
-      skip,
-      where,
-      include: {
+    const { skip, take, where } = params;
+
+    const whereIdCondition = where?.OR.find((condition: any) => condition?.id !== undefined)?.id;
+
+    // FIXME: Remove this block as needed
+    // const broadcasts = await prisma.broadcast.findMany({
+    //   take,
+    //   skip,
+    //   where,
+    //   include: {
+    //     users: true,
+    //     lists: true,
+    //     post: {
+    //       select: {
+    //         slug: true,
+    //         title: true
+    //       }
+    //     }
+    //   },
+    // });
+    const broadcasts = await db.query.broadcast.findMany({
+      where: (broadcast, { or, eq }) => or(
+        whereIdCondition ? eq(broadcast.id, whereIdCondition) : undefined
+      ),
+      with: {
         users: true,
         lists: true,
         post: {
-          select: {
+          columns: {
             slug: true,
             title: true
           }
         }
       },
-    });
+      limit: take,
+      offset: skip
+    })
 
-    const count = await prisma.broadcast.count({
-      where,
-    });
+    // FIXME: Remove this block as needed
+    // const count = await prisma.broadcast.count({
+    //   where,
+    // });
 
-    return { broadcasts, count };
+    const tokenCountResult = await db.select({ count: count() })
+      .from(broadcast)
+      .where(or(
+        whereIdCondition ? eq(broadcast.id, whereIdCondition) : undefined
+      ))
+
+    const tokenCount: number = tokenCountResult.reduce((accumulator, currentValue) => accumulator + currentValue.count, 0);
+
+    return { broadcasts, count: tokenCount };
   },
   z.object({
     skip: z.number().optional(),
     take: z.number().optional(),
     where: z.any(),
   }),
-  {authed: true}
+  { authed: true }
 );

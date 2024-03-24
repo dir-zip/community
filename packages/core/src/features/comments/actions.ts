@@ -213,14 +213,15 @@ export const updateComment = createAction(async ({ validate, session }, { id, da
   //     ...data,
   //   }
   // })
-  const createdComment = await db.update(comment)
+  const createdComments = await db.update(comment)
     .set(data)
     .where(eq(comment.id, id))
     .returning()
 
   revalidatePath('/posts/:slug')
 
-  return createdComment
+  const createComment = createdComments[0];
+  return createComment
 }, z.object({
   id: z.string(),
   data: z.object({

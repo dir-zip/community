@@ -314,6 +314,21 @@ export const badgeRelations = relations(badge, ({ many }) => ({
   conditions: many(condition)
 }))
 
+export const actionRelations = relations(action, ({ many }) => ({
+  conditions: many(condition)
+}))
+
+export const conditionRelations = relations(condition, ({ one }) => ({
+  badge: one(badge, {
+    fields: [condition.badgeId],
+    references: [badge.id],
+  }),
+  action: one(action, {
+    fields: [condition.actionId],
+    references: [action.id],
+  }),
+}))
+
 export const inventoryRelations = relations(inventory, ({ many }) => ({
   inventoryItems: many(inventoryItem),
 }));
