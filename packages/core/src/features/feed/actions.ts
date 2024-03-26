@@ -23,11 +23,27 @@ export const getFeed = createAction(async ({ }, params) => {
     offset: skip,
     limit: take,
     with: {
-      user: true,
+      user: {
+        with: {
+          inventory: {
+            with: {
+              inventoryItems: {
+                with: {
+                  item: true
+                }
+              }
+            }
+          }
+        }
+      },
       broadcasts: true,
       comments: true,
       category: true,
-      tags: true
+      tags: {
+        with: {
+          tag: true
+        }
+      }
     },
     orderBy: (posts, { desc }) => [desc(posts.createdAt)],
   })
@@ -38,9 +54,10 @@ export const getFeed = createAction(async ({ }, params) => {
     return bIsRecentBroadcast - aIsRecentBroadcast || new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 
-  const _count = await db.select({value: count()}).from(schema.post)
+  const _count = await db.select({ count: count() }).from(schema.post)
+  const feedCount: number = _count.reduce((accumulator, currentValue) => accumulator + currentValue.count, 0);
 
-  return { data: feed, count: _count }
+  return { data: feed, count: feedCount }
 
 }, z.object({
   skip: z.number().optional(),

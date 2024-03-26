@@ -2,7 +2,7 @@
 import React, { PropsWithoutRef } from "react"
 import { useFormContext, useFieldArray } from "react-hook-form"
 
-import { Action, Condition } from "@dir/db"
+import { Action, Condition } from "@dir/db/drizzle/types"
 
 import { Button } from "@dir/ui"
 import { X } from "lucide-react"

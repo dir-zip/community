@@ -8,9 +8,9 @@ import { findFreeSlug } from "@/utils";
 import { revalidatePath } from 'next/cache'
 import { prepareArrayField } from "@creatorsneverdie/prepare-array-for-prisma"
 import { triggerAction } from '../actions/actions';
-import { userInventoryIncludes } from "~/lib/includes";
 import { sendEmail } from "~/jobs";
 import { broadcast, category, comment, listBroadcast, post, postTags, tag, userBroadcast } from 'packages/db/drizzle/schema';
+import { UserWithInventory } from '~/lib/types';
 
 export const getCategories = createAction(async () => {
   const categories = await db.query.category.findMany()
@@ -127,17 +127,56 @@ export const getAllPosts = createAction(async ({ }, params) => {
 
   const posts = await db.query.post.findMany({
     with: {
-      user: userInventoryIncludes.user,
+      user: {
+        with: {
+          inventory: {
+            with: {
+              inventoryItems: {
+                where: (items, { eq }) => eq(items.equipped, true),
+                with: {
+                  item: true
+                }
+              }
+            }
+          }
+        }
+      },
       broadcasts: true,
       category: {
         columns: { title: true, slug: true },
       },
       comments: {
         with: {
-          user: userInventoryIncludes.user,
+          user: {
+            with: {
+              inventory: {
+                with: {
+                  inventoryItems: {
+                    where: (items, { eq }) => eq(items.equipped, true),
+                    with: {
+                      item: true
+                    }
+                  }
+                }
+              }
+            }
+          },
           replies: {
             with: {
-              user: userInventoryIncludes.user
+              user: {
+                with: {
+                  inventory: {
+                    with: {
+                      inventoryItems: {
+                        where: (items, { eq }) => eq(items.equipped, true),
+                        with: {
+                          item: true
+                        }
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
         }
@@ -162,14 +201,12 @@ export const getAllPosts = createAction(async ({ }, params) => {
   const postsWithCounts = await Promise.all(sortedPosts.map(async (post) => {
     const replyCount = post.comments.length + post.comments.reduce((total, comment) => total + comment.replies.length, 0);
     const allCommentsAndReplies = post.comments.concat(
-      post.comments.flatMap(comment => comment.replies.map(reply => {
-        const commentUser = comment.user as any;
-        return {
-          ...reply,
-          user: { ...commentUser, inventory: commentUser.inventory, },
-          replies: []
-        }
-      }))
+      post.comments.flatMap(comment => comment.replies.map(reply => ({
+        ...reply,
+        user: { ...comment.user, inventory: comment.user.inventory, },
+        replies: []
+      }
+      )))
     );
 
     const lastCommentOrReply = allCommentsAndReplies.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
@@ -441,9 +478,26 @@ export const getSinglePost = createAction(async ({ }, { slug }) => {
   const postResult = await db.query.post.findFirst({
     where: (post, { eq }) => eq(post.slug, slug),
     with: {
-      user: userInventoryIncludes.user,
+      user: {
+        with: {
+          inventory: {
+            with: {
+              inventoryItems: {
+                where: (items, { eq }) => eq(items.equipped, true),
+                with: {
+                  item: true
+                }
+              }
+            }
+          }
+        }
+      },
       category: true,
-      tags: true
+      tags: {
+        with: {
+          tag: true
+        }
+      }
     }
   })
 

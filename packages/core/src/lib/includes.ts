@@ -17,20 +17,3 @@
 //     }
 //   },
 // }
-
-export const userInventoryIncludes = {
-  user: {
-    with: {
-      inventory: {
-        with: {
-          inventoryItems: {
-            where: (items: any, { eq }: any) => eq(items.equipped, true),
-            with: {
-              item: true
-            }
-          }
-        }
-      }
-    }
-  }
-} as any

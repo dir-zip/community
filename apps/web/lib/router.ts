@@ -8,8 +8,6 @@ export const {
   LayoutInit,
   ApiRouteInit,
   generateMetadata,
-  auth,
-  global,
 } = InitDirZip({
   auth: {
     guards: async ({ sessionData }) => {

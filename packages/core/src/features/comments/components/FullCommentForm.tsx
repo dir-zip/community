@@ -1,12 +1,12 @@
 "use client"
 import { Form } from "~/components/Forms/Form"
-import {Comment} from '@dir/db'
+import { Comment } from '@dir/db/drizzle/types'
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { FancyEditorField } from "~/components/Forms/FancyEditorField"
 import { updateComment } from "../actions"
 
-export const FullCommentForm = ({comment, postSlug}: {comment: Comment, postSlug: string}) => {
+export const FullCommentForm = ({ comment, postSlug }: { comment: Comment, postSlug: string }) => {
   const router = useRouter()
   return (
     <div className="bg-primary-800 p-6 rounded-lg border border-border-subtle w-full">
@@ -19,7 +19,7 @@ export const FullCommentForm = ({comment, postSlug}: {comment: Comment, postSlug
         onSubmit={async (values) => {
           toast.promise(
             new Promise(async (resolve) => {
-              await updateComment({id: comment.id, data: {body: values.body}})
+              await updateComment({ id: comment.id, data: { body: values.body } })
 
               router.push(`/posts/${postSlug}/comments/${comment.id}`)
               resolve(null)

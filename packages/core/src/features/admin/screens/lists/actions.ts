@@ -40,7 +40,19 @@ export const getAllLists = createAction(
         whereSlugNotEqualCondition ? not(eq(list.slug, whereSlugNotEqualCondition)) : undefined
       ),
       limit: take,
-      offset: skip
+      offset: skip,
+      with: {
+        users: {
+          with: {
+            user: true
+          }
+        },
+        broadcasts: {
+          with: {
+            broadcast: true
+          }
+        }
+      }
     })
 
     // FIXME: Remove this block as needed
@@ -200,12 +212,15 @@ export const getUsersFromList = createAction(async ({ }, { slug, skip, take, whe
           (userSubquery && userSubquery.length > 0)
             ? inArray(user.userId, userSubquery.map(item => item.id))
             : undefined
-        )
+        ),
+        with: {
+          user: true
+        }
       }
     }
   })
 
-  const users = lists.flatMap(list => list.users)
+  const users = lists.flatMap(list => list.users.flatMap(users => users.user))
 
   // FIXME: Remove this block as needed
   // const usersCount = await prisma.user.count({

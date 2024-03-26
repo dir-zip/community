@@ -9,14 +9,14 @@ import { Divider } from "@dir/ui"
 import { RichTextField } from "~/components/Editor/RichTextField"
 import { PenSquare } from "lucide-react"
 import { applyEffects } from "~/itemEffects"
-import { Post, Tag } from "packages/db"
+import { Post, PostTag, Tag } from "packages/db/drizzle/types"
 import { UserWithInventory } from "~/lib/types"
 export const SinglePost = async ({
   loggedIn,
   post,
 }: {
   loggedIn: boolean
-  post: Post & { user: UserWithInventory; tags: Tag[] }
+  post: Post & { user: UserWithInventory; tags: (PostTag & { tag: Tag })[] }
 }) => {
   let can = false
   if (loggedIn) {

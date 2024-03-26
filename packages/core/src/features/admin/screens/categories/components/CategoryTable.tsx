@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { Table } from '@dir/ui'
 import { useSearchParams, usePathname, useRouter } from "next/navigation"
 import { getAllCategories } from "../actions"
-import { Category, Session } from "packages/db"
+import { Category, Session } from "packages/db/drizzle/types"
 
 
 export const CategoryTable = () => {

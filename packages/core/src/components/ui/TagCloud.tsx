@@ -1,8 +1,8 @@
 "use client"
 import React from 'react'
 import {Badge} from '@dir/ui'
-import { Tag } from 'packages/db'
 import Link from 'next/link'
+import { Tag } from 'packages/db/drizzle/types'
 
 export const TagCloud = ({tags}: {tags: (Tag & {postCount: number})[]}) => {
   const displayTags = tags.slice(0, 10);

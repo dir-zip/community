@@ -1,10 +1,7 @@
-import { schema, InferSelectModel } from '@dir/db'
+import { Inventory, InventoryItem, Item, User } from '@dir/db/drizzle/types'
 
-
-export type UserWithInventory = InferSelectModel<typeof schema.user> & {
-  inventory: (InferSelectModel<typeof schema.inventory> & {
-    collection: (InferSelectModel<typeof schema.inventoryItem> & {
-      item: InferSelectModel<typeof schema.item> | null;
-    })[];
-  }) | null;
+export type UserWithInventory = User & {
+  inventory: InventoryWithItem | null;
 };
+
+export type InventoryWithItem = (Inventory & { inventoryItems: (InventoryItem & { item: Item | null, quantity?: number })[] })

@@ -4,7 +4,7 @@ import { Table, Badge} from "@dir/ui"
 import Link from 'next/link'
 import { useSearchParams, usePathname, useRouter } from "next/navigation"
 import { getAllActions } from "../actions"
-import { type Action } from "packages/db"
+import { Action } from "packages/db/drizzle/types"
 
 
 

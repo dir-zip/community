@@ -4,7 +4,7 @@ import { Badge, Button, Table } from '@dir/ui'
 import Link from 'next/link'
 import { useSearchParams, usePathname, useRouter } from "next/navigation"
 import { getAllLists } from "../actions"
-import { List, User, Broadcast } from "packages/db"
+import { List, User, Broadcast, UserList, ListBroadcast } from "packages/db/drizzle/types"
 
 
 export const ListTable = () => {
@@ -19,7 +19,7 @@ export const ListTable = () => {
   const startPage = tablePage * ITEMS_PER_PAGE + 1
   let endPage = startPage - 1 + ITEMS_PER_PAGE
 
-  const [data, setData] = useState<(List & {users: User[], broadcasts: Broadcast[]})[]>([])
+  const [data, setData] = useState<(List & { users: (UserList & { user: User })[], broadcasts: (ListBroadcast & { broadcast: Broadcast })[] })[]>([])
   const [count, setCount] = useState(0)
 
   if (endPage > count) {
@@ -61,11 +61,11 @@ export const ListTable = () => {
       cell: (info: any) => {
         return (
           <Link
-          href={`/admin/lists/${info.getValue()}`}
-          className="text-link"
-        >
-          {info.row.original.title}
-        </Link>
+            href={`/admin/lists/${info.getValue()}`}
+            className="text-link"
+          >
+            {info.row.original.title}
+          </Link>
         )
       }
     },
@@ -103,7 +103,7 @@ export const ListTable = () => {
         pathname: '/admin/lists',
         searchParams: JSON.parse(searchQuery as string)
       }}
-      onNavigate={(url) => {  router.push(url) }}
+      onNavigate={(url) => { router.push(url) }}
     />
   )
 }

@@ -30,7 +30,7 @@ import { authInit } from '../../lib/auth';
 import authDriver from '../../authDriver';
 import { guards } from '../../guards';
 import { redirect } from 'next/navigation';
-import { userInventoryIncludes } from "~/lib/includes";
+
 import { inventory, list, session, token, user, userList } from "packages/db/drizzle/schema";
 
 export const loginAction = createAction(async ({ createSession }, { email, password }) => {
@@ -129,22 +129,21 @@ export const signUpAction = createAction(async ({ createSession }, { email, pass
   //   },
   // });
 
-  const newLists = await db.insert(list)
-    .values({ slug: 'general', title: '' })
-    .returning()
+  const listResult = await db.query.list.findFirst({
+    where: (list, { eq }) => eq(list.slug, 'general')
+  })
 
   const newUsers = await db.insert(user)
     .values({ email, username, hashedPassword })
     .returning()
 
-  const newList = newLists[0];
   const newUser = newUsers[0];
-  if (!newList || !newUser) {
+  if (!listResult || !newUser) {
     throw new Error('Create new record error');
   }
 
   await db.insert(userList)
-    .values({ listId: newList.id, userId: newUser.id })
+    .values({ listId: listResult.id, userId: newUser.id })
     .returning()
 
   // FIXME: Remove this block as needed
@@ -291,7 +290,15 @@ export const getCurrentUser = cache(createAction(async ({ session }) => {
   const userResult = await db.query.user.findFirst({
     where: (u, { eq }) => eq(u.id, userId),
     with: {
-      inventory: true
+      inventory: {
+        with: {
+          inventoryItems: {
+            with: {
+              item: true
+            }
+          }
+        }
+      }
     }
   })
 
@@ -481,9 +488,9 @@ export const handleOauth = async ({ email, auth }: { email: string, auth: AuthIn
     //   },
     // });
 
-    const newLists = await db.insert(list)
-      .values({ slug: 'general', title: '' })
-      .returning()
+    const listResult = await db.query.list.findFirst({
+      where: (list, { eq }) => eq(list.slug, 'general')
+    })
 
     const newUsers = await db.insert(user)
       .values({
@@ -494,14 +501,13 @@ export const handleOauth = async ({ email, auth }: { email: string, auth: AuthIn
       .returning()
 
     const newUser = newUsers[0];
-    const newList = newLists[0];
 
-    if (!newUser || !newList) {
+    if (!newUser || !listResult) {
       throw new Error('Create new user or list failed')
     }
 
     await db.insert(userList)
-      .values({ listId: newList.id, userId: newUser.id })
+      .values({ listId: listResult.id, userId: newUser.id })
       .returning()
 
     await auth.createSession({

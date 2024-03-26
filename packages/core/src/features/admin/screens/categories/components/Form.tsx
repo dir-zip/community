@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation"
 
 import { CategorySchema } from "~/features/posts/schemas"
 import { createCategory, updateCategory } from "../actions"
-import { Category } from "packages/db"
+import { Category } from "packages/db/drizzle/types"
 
 const CategoryForm = ({ category }: { category?: Category }) => {
   const router = useRouter()

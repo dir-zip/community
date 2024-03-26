@@ -3,7 +3,6 @@ import { createAction } from "~/lib/createAction"
 import { count, db, eq } from "packages/db"
 import { z } from 'zod'
 import { revalidatePath } from "next/cache"
-import { userInventoryIncludes } from "~/lib/includes"
 import { comment } from "packages/db/drizzle/schema"
 
 export const getComment = createAction(async ({ }, { commentId }) => {
@@ -40,19 +39,71 @@ export const getComment = createAction(async ({ }, { commentId }) => {
     with: {
       replies: {
         with: {
-          user: userInventoryIncludes.user
+          user: {
+            with: {
+              inventory: {
+                with: {
+                  inventoryItems: {
+                    where: (items, { eq }) => eq(items.equipped, true),
+                    with: {
+                      item: true
+                    }
+                  }
+                }
+              }
+            }
+          }
         },
         orderBy: (reps, { desc }) => [desc(reps.id)]
       },
       parent: {
         with: {
-          user: userInventoryIncludes.user
+          user: {
+            with: {
+              inventory: {
+                with: {
+                  inventoryItems: {
+                    where: (items, { eq }) => eq(items.equipped, true),
+                    with: {
+                      item: true
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       },
-      user: userInventoryIncludes.user,
+      user: {
+        with: {
+          inventory: {
+            with: {
+              inventoryItems: {
+                where: (items, { eq }) => eq(items.equipped, true),
+                with: {
+                  item: true
+                }
+              }
+            }
+          }
+        }
+      },
       post: {
         with: {
-          user: userInventoryIncludes.user
+          user: {
+            with: {
+              inventory: {
+                with: {
+                  inventoryItems: {
+                    where: (items, { eq }) => eq(items.equipped, true),
+                    with: {
+                      item: true
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -156,7 +207,22 @@ export const getCommentsForPost = createAction(async ({ }, { postSlug }) => {
       eq(cmts.postId, postId!),
       isNull(cmts.parentId)
     ),
-    with: { user: userInventoryIncludes.user },
+    with: {
+      user: {
+        with: {
+          inventory: {
+            with: {
+              inventoryItems: {
+                where: (items, { eq }) => eq(items.equipped, true),
+                with: {
+                  item: true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     orderBy: (cmts, { desc }) => [desc(cmts.createdAt)]
   })
 
@@ -188,7 +254,22 @@ export const getCommentsForPost = createAction(async ({ }, { postSlug }) => {
     // });
     const replies = await db.query.comment.findMany({
       where: (reps, { eq }) => eq(reps.parentId, cmt.id),
-      with: { user: userInventoryIncludes.user },
+      with: {
+        user: {
+          with: {
+            inventory: {
+              with: {
+                inventoryItems: {
+                  where: (items, { eq }) => eq(items.equipped, true),
+                  with: {
+                    item: true
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       orderBy: (reps, { desc }) => [desc(reps.createdAt)]
     })
 

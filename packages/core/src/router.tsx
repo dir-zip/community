@@ -213,12 +213,12 @@ export async function PageInit<T>({
     })
 
     const user = await getCurrentUser()
-    let inventory: Inventory | null = null
-    if (user) {
-      inventory = await getUserInventory({
-        userId: user.id,
-      })
-    }
+    // let inventory: Inventory | null = null
+    // if (user) {
+    //   inventory = await getUserInventory({
+    //     userId: user.id,
+    //   })
+    // }
 
     // FIXME: Remove this block as needed
     // const memberCount = await prisma?.user.findMany()
@@ -491,9 +491,12 @@ export async function PageInit<T>({
     "page",
     async (params) => {
       const post = await getSinglePost({ slug: params.slug })
+      const pageTitle = post?.title;
+      const postUserName = post?.user as any;
+
       return preFilledMetadata({
         pageTitle: post?.title as string,
-        author: post?.user.username,
+        author: postUserName.username as string,
       })
     }
   )

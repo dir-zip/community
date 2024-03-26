@@ -106,7 +106,7 @@ export const getSingleBadge = createAction(async ({ }, { id }) => {
   //     }
   //   }
   // })
-  const badgeResult = await db.query.badge.findMany({
+  const badgeResult = await db.query.badge.findFirst({
     where: (badge, { eq }) => eq(badge.id, id),
     with: {
       conditions: {
