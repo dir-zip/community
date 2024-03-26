@@ -156,7 +156,11 @@ export const signUpAction = createAction(async ({ createSession }, { email, pass
   //     }
   //   }
   // })
-  await db.insert(inventory).values({ userId: newUser.id })
+  const newInventories = await db.insert(inventory).values({ userId: newUser.id }).returning();
+  const newInventory = newInventories[0];
+  if (newInventory) {
+    await db.update(user).set({ inventoryId: newInventory.id }).where(eq(user.id, newUser.id))
+  }
 
   // FIXME: Remove this block as needed
   // await prisma.token.deleteMany({

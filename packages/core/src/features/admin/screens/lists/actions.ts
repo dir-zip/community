@@ -17,7 +17,7 @@ export const getAllLists = createAction(
 
     const whereOrSlugCondition = where?.OR?.find((condition: any) => condition?.slug !== undefined)?.slug;
     const whereOrTitleCondition = where?.OR?.find((condition: any) => condition?.title !== undefined)?.title;
-    const whereSlugNotEqualCondition = where?.slug.not.equals;
+    const whereSlugNotEqualCondition = where?.slug?.not.equals;
 
     // FIXME: Remove this block as needed
     // const lists = await prisma.list.findMany({

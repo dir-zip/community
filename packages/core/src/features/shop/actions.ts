@@ -45,7 +45,7 @@ export const buyItem = createAction(async ({ session }, { itemId }) => {
   //   where: { id: user?.id },
   //   data: { points: user?.points! - item?.price! }
   // });
-  
+
   if (userResult && item) {
     await db.update(user)
       .set({ points: (userResult.points - item.price) })
