@@ -595,9 +595,10 @@ export const updatePost = createAction(async ({ validate, session }, { slug, dat
     .set({
       title: updateData.title,
       body: updateData.body,
-      slug: newSlug,
-      categoryId: categoryResult?.id
+      categoryId: categoryResult?.id,
+      slug: newSlug 
     })
+    .where(eq(post.slug, slug))
     .returning();
 
   const updatedPost = updatedPosts[0];

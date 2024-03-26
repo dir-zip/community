@@ -277,9 +277,9 @@ export const getAllUsers = createAction(
     }
     const { skip, take, where } = params
 
-    const whereUsernameCondition = where?.username;
+    const whereUsernameCondition = where?.username?.contains;
     const whereIdCondition = where?.OR?.find((condition: any) => condition?.id !== undefined)?.id;
-    const whereEmailCondition = where?.OR?.find((condition: any) => condition?.email !== undefined)?.email;
+    const whereEmailCondition = where?.OR?.find((condition: any) => condition?.email !== undefined)?.email?.contains;
 
 
     // FIXME: Remove this block as needed
@@ -291,10 +291,10 @@ export const getAllUsers = createAction(
     const users = await db.select()
       .from(user)
       .where(and(
-        whereUsernameCondition ? like(user.username, whereUsernameCondition.contains) : undefined,
+        whereUsernameCondition ? like(user.username, whereUsernameCondition) : undefined,
         or(
           (whereIdCondition) ? eq(user.id, whereIdCondition) : undefined,
-          (whereEmailCondition) ? like(user.email, whereEmailCondition.contains) : undefined,
+          (whereEmailCondition) ? like(user.email, whereEmailCondition) : undefined,
         )
       ))
       .limit(take || 1000)
