@@ -207,6 +207,13 @@ export const tagRelations = relations(tag, ({ many }) => ({
   posts: many(postTags),
 }));
 
+export const tokenRelations = relations(token, ({ one }) => ({
+  user: one(user, {
+    fields: [token.userId],
+    references: [user.id],
+  }),
+}));
+
 export const broadcastRelations = relations(broadcast, ({ many, one }) => ({
   post: one(post, { fields: [broadcast.postId], references: [post.id] }),
   users: many(userBroadcast),
@@ -258,6 +265,7 @@ export const listRelations = relations(list, ({ many }) => ({
 
 export const userRelations = relations(user, ({ many, one }) => ({
   broadcasts: many(userBroadcast),
+  tokens: many(token),
   lists: many(userList),
   posts: many(post),
   comments: many(comment),
