@@ -10,7 +10,6 @@ import { prepareArrayField } from "@creatorsneverdie/prepare-array-for-prisma"
 import { triggerAction } from '../actions/actions';
 import { sendEmail } from "~/jobs";
 import { broadcast, category, comment, listBroadcast, post, postTags, tag, userBroadcast } from 'packages/db/drizzle/schema';
-import { UserWithInventory } from '~/lib/types';
 
 export const getCategories = createAction(async () => {
   const categories = await db.query.category.findMany()
@@ -125,52 +124,54 @@ export const getAllPosts = createAction(async ({ }, params) => {
     ? await db.select().from(postTags).where(inArray(postTags.tagId, tagSubquery.map(item => item.id)))
     : undefined
 
-  const posts = await db.query.post.findMany({
-    with: {
-      user: {
-        with: {
-          inventory: {
-            with: {
-              inventoryItems: {
-                where: (items, { eq }) => eq(items.equipped, true),
-                with: {
-                  item: true
-                }
-              }
-            }
-          }
-        }
-      },
-      broadcasts: true,
-      category: {
-        columns: { title: true, slug: true },
-      },
-      comments: {
-        with: {
-          user: {
-            with: {
-              inventory: {
-                with: {
-                  inventoryItems: {
-                    where: (items, { eq }) => eq(items.equipped, true),
-                    with: {
-                      item: true
-                    }
+  const posts = (postTagSubQuery && postTagSubQuery.length > 0)
+    ? await db.query.post.findMany({
+      with: {
+        user: {
+          with: {
+            inventory: {
+              with: {
+                inventoryItems: {
+                  where: (items, { eq }) => eq(items.equipped, true),
+                  with: {
+                    item: true
                   }
                 }
               }
             }
-          },
-          replies: {
-            with: {
-              user: {
-                with: {
-                  inventory: {
-                    with: {
-                      inventoryItems: {
-                        where: (items, { eq }) => eq(items.equipped, true),
-                        with: {
-                          item: true
+          }
+        },
+        broadcasts: true,
+        category: {
+          columns: { title: true, slug: true },
+        },
+        comments: {
+          with: {
+            user: {
+              with: {
+                inventory: {
+                  with: {
+                    inventoryItems: {
+                      where: (items, { eq }) => eq(items.equipped, true),
+                      with: {
+                        item: true
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            replies: {
+              with: {
+                user: {
+                  with: {
+                    inventory: {
+                      with: {
+                        inventoryItems: {
+                          where: (items, { eq }) => eq(items.equipped, true),
+                          with: {
+                            item: true
+                          }
                         }
                       }
                     }
@@ -180,17 +181,17 @@ export const getAllPosts = createAction(async ({ }, params) => {
             }
           }
         }
-      }
-    },
-    where: (post, { and, like, inArray }) => and(
-      title ? like(post.title, title) : undefined,
-      (categorySlug !== "all" && categorySubquery && categorySubquery.length > 0) ? inArray(post.categoryId, categorySubquery.map(item => item.id)) : undefined,
-      (postTagSubQuery && postTagSubQuery.length > 0) ? inArray(post.id, postTagSubQuery.map(item => item.id)) : undefined
-    ),
-    orderBy: (post, { desc }) => [desc(post.createdAt)],
-    limit: take,
-    offset: skip
-  })
+      },
+      where: (post, { and, like, inArray }) => and(
+        title ? like(post.title, title) : undefined,
+        (categorySlug !== "all" && categorySubquery && categorySubquery.length > 0) ? inArray(post.categoryId, categorySubquery.map(item => item.id)) : undefined,
+        inArray(post.id, postTagSubQuery.map(item => item.postId))
+      ),
+      orderBy: (post, { desc }) => [desc(post.createdAt)],
+      limit: take,
+      offset: skip
+    })
+    : []
 
   const sortedPosts = posts.sort((a, b) => {
     const aIsRecentBroadcast = a.broadcasts.length > 0 && a.createdAt > priorityDate ? 1 : 0;
@@ -220,15 +221,17 @@ export const getAllPosts = createAction(async ({ }, params) => {
   //   where: whereClause,
   // });
 
-  const postCountResult = await db.select({ count: count() })
-    .from(post)
-    .where(
-      and(
-        title ? like(post.title, title) : undefined,
-        (categorySlug !== "all" && categorySubquery && categorySubquery.length > 0) ? inArray(post.categoryId, categorySubquery.map(item => item.id)) : undefined,
-        (postTagSubQuery && postTagSubQuery.length > 0) ? inArray(post.id, postTagSubQuery.map(item => item.id)) : undefined
+  const postCountResult = (postTagSubQuery && postTagSubQuery.length > 0)
+    ? await db.select({ count: count() })
+      .from(post)
+      .where(
+        and(
+          title ? like(post.title, title) : undefined,
+          (categorySlug !== "all" && categorySubquery && categorySubquery.length > 0) ? inArray(post.categoryId, categorySubquery.map(item => item.id)) : undefined,
+          inArray(post.id, postTagSubQuery.map(item => item.id))
+        )
       )
-    );
+    : []
 
   const postsCount: number = postCountResult.reduce((accumulator, currentValue) => accumulator + currentValue.count, 0);
 
@@ -370,7 +373,7 @@ export const createPost = createAction(async ({ session }, data) => {
     })
 
     // Extract user IDs from the unsubscribed list
-    const unsubscribedUserIds = unsubscribedList ? unsubscribedList.users.map(user => user.id) : [];
+    const unsubscribedUserIds = unsubscribedList ? unsubscribedList.users.map(user => user.userId) : [];
 
     // FIXME: Remove this block as needed
     // const targetLists = await prisma.list.findMany({
@@ -596,7 +599,7 @@ export const updatePost = createAction(async ({ validate, session }, { slug, dat
       title: updateData.title,
       body: updateData.body,
       categoryId: categoryResult?.id,
-      slug: newSlug 
+      slug: newSlug
     })
     .where(eq(post.slug, slug))
     .returning();
