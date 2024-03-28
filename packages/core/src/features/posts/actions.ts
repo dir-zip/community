@@ -415,45 +415,45 @@ export const createPost = createAction(async ({ session }, data) => {
             }
           );
 
-          // Create a broadcast and connect it to the current list
-          // FIXME: Remove this block as needed
-          // await prisma.broadcast.create({
-          //   data: {
-          //     lists: {
-          //       connect: {
-          //         id: list.id
-          //       }
-          //     },
-          //     users: {
-          //       connect: {
-          //         id: user.id
-          //       }
-          //     },
-          //     post: {
-          //       connect: {
-          //         id: post.id
-          //       }
-          //     },
-          //     status: "SENT"
-          //   }
-          // });
-
-          const newBroadcasts = await db.insert(broadcast)
-            .values({
-              status: "SENT",
-              postId: createdPost.id,
-            })
-            .returning();
-
-          const newBroadcast = newBroadcasts[0];
-          if (newBroadcast) {
-            await db.insert(listBroadcast).values({ listId: list.id, broadcastId: newBroadcast.id });
-            await db.insert(userBroadcast).values({ userId: user.id, broadcastId: newBroadcast.id });
-          }
-
           // Mark the user as processed
           processedUserIds.add(user.id);
 
+        }
+
+        // Create a broadcast and connect it to the current list
+        // FIXME: Remove this block as needed
+        // await prisma.broadcast.create({
+        //   data: {
+        //     lists: {
+        //       connect: {
+        //         id: list.id
+        //       }
+        //     },
+        //     users: {
+        //       connect: {
+        //         id: user.id
+        //       }
+        //     },
+        //     post: {
+        //       connect: {
+        //         id: post.id
+        //       }
+        //     },
+        //     status: "SENT"
+        //   }
+        // });
+
+        const newBroadcasts = await db.insert(broadcast)
+          .values({
+            status: "SENT",
+            postId: createdPost.id,
+          })
+          .returning();
+
+        const newBroadcast = newBroadcasts[0];
+        if (newBroadcast) {
+          await db.insert(listBroadcast).values({ listId: list.id, broadcastId: newBroadcast.id });
+          await db.insert(userBroadcast).values({ userId: user.id, broadcastId: newBroadcast.id });
         }
       }
 
