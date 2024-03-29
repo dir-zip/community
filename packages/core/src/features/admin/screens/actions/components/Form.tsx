@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation"
 
 
 import { createAction, updateAction } from "../actions"
-import type { Action } from "packages/db"
+import { Action } from "packages/db/drizzle/types"
 import { CreateActionSchema } from "../schema"
 
 

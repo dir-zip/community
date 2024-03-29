@@ -7,7 +7,8 @@ const config = {
   ],
   experimental: {
     serverActions: true,
-    serverActionsBodySizeLimit: process.env.S3_MAX_SIZE
+    serverActionsBodySizeLimit: process.env.S3_MAX_SIZE,
+    serverComponentsExternalPackages: ["better-sqlite3"],
   },
 };
 

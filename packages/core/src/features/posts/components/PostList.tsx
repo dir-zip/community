@@ -20,7 +20,7 @@ import {
   PlusCircle,
   Megaphone,
 } from "lucide-react";
-import { Category, Post, Comment, Broadcast } from "@dir/db";
+import { Category, Post, Comment, Broadcast } from "@dir/db/drizzle/types";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { getAllPosts } from "../actions";
 import { applyEffects } from "~/itemEffects";

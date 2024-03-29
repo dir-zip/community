@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation"
 
 
 import { createItem, updateItem } from "../actions"
-import type { Item } from "packages/db"
+import type { Item } from "packages/db/drizzle/types"
 import { CreateItemSchema } from "../schema"
 import { SingleFileUploadField } from "~/features/files/components/SingleFileUpload"
 

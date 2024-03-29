@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation"
 
 
 import { createBadge, deleteBadge, updateBadge } from "../actions"
-import type { Action, Badge, Condition } from "packages/db"
+import type { Action, Badge, Condition } from "packages/db/drizzle/types"
 import { CreateBadgeSchema } from "../schema"
 import { ConditionInputField } from "./ConditionInputField"
 import SingleFileUploadField from "~/features/files/components/SingleFileUpload"

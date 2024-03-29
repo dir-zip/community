@@ -1,47 +1,18 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Client } from "pg";
+import * as schema from './drizzle/schema';
 
-type UserWithInventory = Prisma.UserGetPayload<{
-  include: { inventory: { include: { collection: true } } };
-}>;
+export const client = new Client({
+    connectionString: process.env.DATABASE_URL
+});
 
-type PostWithUserAndInventory = Prisma.PostGetPayload<{
-  include: {
-    user: {
-      include: {
-        inventory: {
-          include: {
-            collection: true
-          }
-        }
-      }
-    }
-  }
-}>
+client.connect()
+    .then(() => console.log("Connect to database successfully"))
+    .catch((err) => console.log("Failed to establish database connection !", err));
 
+export const db = drizzle(client, { schema });
 
-const prismaClient = new PrismaClient({
-  log:
-    process.env.NODE_ENV === "development"
-      ? ["query", "error", "warn"]
-      : ["error"],
-})
+export * as schema from './drizzle/schema'
+export * as types from './drizzle/types'
 
-type ExtendedPrismaClient = typeof prismaClient
-
-declare global {
-  // allow global `var` declarations
-  // eslint-disable-next-line no-var
-  var prisma: ExtendedPrismaClient | undefined;
-}
-
-export const prisma = prismaClient
-
-
-
-export * from "@prisma/client";
-
-if (process.env.NODE_ENV !== "production") {
-  global.prisma = prisma;
-}
-
-
+export * from 'drizzle-orm'

@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation"
 
 
 import { createList, updateList } from "../actions"
-import type { List } from "packages/db"
+import type { List } from "packages/db/drizzle/types"
 
 
 

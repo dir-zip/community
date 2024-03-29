@@ -6,7 +6,7 @@ import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 
 
-import { GlobalSetting, FeatureToggle } from "packages/db"
+import { GlobalSetting, FeatureToggle } from "packages/db/drizzle/types"
 import { updateSiteSettings } from "~/features/admin/actions"
 import TextFieldWithAddon from "~/components/Forms/TextFieldWithAddon"
 import ButtonSelectField from "~/components/Forms/ButtonSelectField"

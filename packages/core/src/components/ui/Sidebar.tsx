@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { Layers, Settings, LogOut, Store, FileText } from 'lucide-react'
 import { logoutAction } from "../../features/auth/actions"
 import { TagCloud } from "./TagCloud"
-import { Inventory, InventoryItem, Item, Tag } from "@dir/db"
+import { Tag } from "@dir/db/drizzle/types"
 import { applyEffects } from "~/itemEffects"
 import { UserWithInventory } from "~/lib/types"
 

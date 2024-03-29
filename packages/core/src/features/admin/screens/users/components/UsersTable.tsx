@@ -1,5 +1,5 @@
 "use client"
-import { User } from "packages/db"
+import { User } from "packages/db/drizzle/types"
 import { Badge, Table } from "@dir/ui"
 import Link from 'next/link'
 import { getAllUsers } from "../../../actions"

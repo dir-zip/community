@@ -69,7 +69,7 @@ export const ProfileScreen = async ({ username }: { username: string }) => {
           <div className="flex flex-col gap-4">
             <h3 className="text-lg font-bold px-4 md:px-0">Badges</h3>
             <div className="flex gap-2 py-6 px-4 bg-primary-800 border rounded border-border-subtle">
-              {badges?.collection.map((i) => {
+              {badges?.inventoryItems.map((i) => {
                 return (
                   <HoverCard
                     trigger={

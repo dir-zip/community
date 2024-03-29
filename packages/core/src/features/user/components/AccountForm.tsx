@@ -1,6 +1,5 @@
 "use client"
 
-import { User } from "@dir/db"
 import { toast } from "sonner"
 import { Form } from "~/components/Forms"
 import SingleFileUploadField from "~/features/files/components/SingleFileUpload"

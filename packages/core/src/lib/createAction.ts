@@ -14,7 +14,8 @@ import { authInit } from "./auth";
 import authDriver from "../authDriver";
 import { BaseSessionData } from "..";
 import { guards } from "../guards";
-import {prisma} from '@dir/db'
+import { db } from '@dir/db'
+
 
 
 type TCtx<S> = {
@@ -36,12 +37,12 @@ export const createAction = <T, P extends z.ZodType<any, any>, S>(
   schema?: P,
   options: {
     authed: boolean
-  } = {authed: true},
+  } = { authed: true },
   auth?: {
     guards: TCreateGuard<S & BaseSessionData>,
     oauth: {
       providers: {
-        [key in Provider]: {clientId: string, clientSecret: string}
+        [key in Provider]: { clientId: string, clientSecret: string }
       },
       baseUrl: string
     }
@@ -49,17 +50,16 @@ export const createAction = <T, P extends z.ZodType<any, any>, S>(
 ): ((input?: z.infer<P>) => Promise<T>) => {
   return async (input?: z.infer<P>) => {
 
-    const authed = options.authed === false ? false : options.authed === true ? true : 
-      (await prisma.globalSetting.findFirst({
-        where: {
-          id: 1
-        },
-        include: {
+    const authed = options.authed === false ? false : options.authed === true ? true :
+      (await db.query.globalSetting.findFirst({
+        where: (setting, { eq }) => eq(setting.id, 1),
+        with: {
           features: true
         }
-      }))?.features.find(f => f.feature === 'private')?.isActive!;
+      }))?.features.find(f => f.feature === 'private')?.isActive!
 
-    const _auth = authInit<S & BaseSessionData>({driver: authDriver, guards: auth ? auth.guards : guards, oauth: auth ? auth.oauth : undefined});
+
+    const _auth = authInit<S & BaseSessionData>({ driver: authDriver, guards: auth ? auth.guards : guards, oauth: auth ? auth.oauth : undefined });
 
 
     let ctx: Partial<TCtx<S>> = {
@@ -67,12 +67,13 @@ export const createAction = <T, P extends z.ZodType<any, any>, S>(
       auth: _auth
     }
 
-    if(authed) {
+    if (authed) {
       const session = await _auth.getSession();
 
-      if(!session) {
-        const isPrivate = await prisma.globalSetting.findFirst({
-          include: {
+      if (!session) {
+        const isPrivate = await db.query.globalSetting.findFirst({
+          where: (setting, { eq }) => eq(setting.id, 1),
+          with: {
             features: true
           }
         })
@@ -85,7 +86,7 @@ export const createAction = <T, P extends z.ZodType<any, any>, S>(
           createSession: _auth.createSession,
           deleteSession: _auth.deleteSession,
           validate: async (rule) => {
-            await _auth.validate(rule, {throw: true})
+            await _auth.validate(rule, { throw: true })
           },
           auth: _auth
         }
@@ -93,7 +94,7 @@ export const createAction = <T, P extends z.ZodType<any, any>, S>(
 
 
     }
-    
+
 
     try {
       const parsedInput = schema ? schema.parse(input) as z.infer<P> : input as z.infer<P>;
@@ -106,5 +107,3 @@ export const createAction = <T, P extends z.ZodType<any, any>, S>(
     }
   }
 };
-
-

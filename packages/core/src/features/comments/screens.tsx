@@ -10,7 +10,7 @@ import { RichTextField } from "~/components/Editor/RichTextField"
 import { ChevronLeftSquare, PenSquare, SeparatorHorizontal } from 'lucide-react'
 import { FullCommentForm } from "./components/FullCommentForm"
 import { applyEffects } from "~/itemEffects"
-import { Post, User, Comment } from "packages/db"
+import { Post, User, Comment } from "packages/db/drizzle/types"
 import { UserWithInventory } from "~/lib/types";
 
 

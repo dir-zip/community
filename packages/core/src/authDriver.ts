@@ -1,5 +1,5 @@
 import type { SessionModel } from "@dir/auth";
-import { prisma } from "@dir/db";
+import { db, schema, eq } from "@dir/db";
 import { BaseSessionData } from ".";
 
 export const storeSession = async (session: SessionModel<BaseSessionData>) => {
@@ -9,41 +9,34 @@ export const storeSession = async (session: SessionModel<BaseSessionData>) => {
     session.data.userId &&
     typeof session.data.userId === "string"
   ) {
-    user = { connect: { id: session.data.userId } };
+    user = { id: session.data.userId };
   }
 
-  return await prisma.session.create({
-    data: {
-      ...session,
-      data: JSON.stringify(session.data),
-      user,
-    },
+
+  return await db.insert(schema.session).values({
+    ...session,
+    expiresAt: session.expiresAt,
+    data: JSON.stringify(session.data),
+    userId: user?.id
   });
 };
 
 export const updateSessionStorage = async (id: string, data: any) => {
   try {
-    return await prisma.session.update({
-      where: {
-        id,
-      },
-      data,
-    });
+    return await db.update(schema.session).set({ ...data }).where(eq(schema.session.id, id))
   } catch (error) {
     throw error;
   }
 };
 
 export const getSessionFromStorage = async (id: string) => {
-  return await prisma.session.findUnique({
-    where: {
-      id,
-    },
-  });
+  return await db.query.session.findFirst({
+    where: (session, { eq }) => eq(session.id, id)
+  })
 };
 
 export const deleteSessionFromStorage = async (id: string) => {
-  return await prisma.session.delete({ where: { id } });
+  return await db.delete(schema.session).where(eq(schema.session.id, id))
 };
 
 export default {

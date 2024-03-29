@@ -1,11 +1,7 @@
-import {User, Inventory, Item, InventoryItem, Post, Category} from '@dir/db'
-
-
+import { Inventory, InventoryItem, Item, User } from '@dir/db/drizzle/types'
 
 export type UserWithInventory = User & {
-  inventory: (Inventory & {
-    collection: (InventoryItem & {
-      item: Item | null;
-    })[];
-  }) | null;
+  inventory: InventoryWithItem | null;
 };
+
+export type InventoryWithItem = (Inventory & { inventoryItems: (InventoryItem & { item: Item | null, quantity?: number })[] })

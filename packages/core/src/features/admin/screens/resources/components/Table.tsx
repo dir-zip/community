@@ -12,11 +12,8 @@ const ResourceTable = ({ resource, schema }: { resource: string, schema: Resourc
   const searchParams = useSearchParams()
   const pathname = usePathname();
 
-
-
-
-  const [data, setData] = useState([])
-  const [count, setCount] = useState(0)
+  const [data, setData] = useState<any>([])
+  const [count, setCount] = useState<number>(0)
 
   const page = searchParams.get('page')
   const searchQuery = searchParams.get('search')

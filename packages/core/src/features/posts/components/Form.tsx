@@ -1,20 +1,20 @@
 "use client"
 
 import { Form, SelectField, SwitchField, TextField } from "~/components/Forms"
-import {useEffect, useState} from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 
 import { PostSchema } from "~/features/posts/schemas"
 import { createPost, updatePost } from "../actions"
-import { Category, Tag, type Post, List } from "packages/db"
+import { Category, Tag, type Post, List, PostTag } from "packages/db/drizzle/types"
 import { FancyEditorField } from "~/components/Forms/FancyEditorField"
 import { TagField } from "~/components/Forms/TagField"
 import { Megaphone } from 'lucide-react'
 import { getAllLists } from "~/features/admin/screens/lists/actions"
 import CheckboxArrayField from "~/components/Forms/CheckboxArrayField"
 
-const PostForm = ({ post, categories, canCreateBroadcast }: { post?: Post & { tags: Tag[], category: Category }, categories: Category[], canCreateBroadcast?: boolean }) => {
+const PostForm = ({ post, categories, canCreateBroadcast }: { post?: Post & { tags: (PostTag & { tag: Tag })[], category: Category }, categories: Category[], canCreateBroadcast?: boolean }) => {
   const router = useRouter()
   const can = canCreateBroadcast || false
   const [lists, setLists] = useState<List[]>([]);
@@ -22,13 +22,15 @@ const PostForm = ({ post, categories, canCreateBroadcast }: { post?: Post & { ta
 
   useEffect(() => {
     const getLists = async () => {
-      const lists = await getAllLists({skip: 0, take: 40, where: {
-        slug: {
-          not: {
-            equals: 'unsubscribed'
+      const lists = await getAllLists({
+        skip: 0, take: 40, where: {
+          slug: {
+            not: {
+              equals: 'unsubscribed'
+            }
           }
         }
-      }})
+      })
       setLists(lists.lists)
     }
     getLists()
@@ -44,7 +46,7 @@ const PostForm = ({ post, categories, canCreateBroadcast }: { post?: Post & { ta
           title: post.title,
           body: post.body,
           category: post.category.slug,
-          tags: post.tags.map(p => p.slug)
+          tags: post.tags.map(p => p.tag.slug)
         }}
         onSubmit={async (values) => {
           toast.promise(
@@ -64,7 +66,7 @@ const PostForm = ({ post, categories, canCreateBroadcast }: { post?: Post & { ta
                   }
                 })
 
-                router.push(`/posts/${updatedPost.slug}`)
+                router.push(`/posts/${updatedPost?.slug}`)
               }
 
               router.refresh()
@@ -91,7 +93,7 @@ const PostForm = ({ post, categories, canCreateBroadcast }: { post?: Post & { ta
               setToggle(value)
             }} />
             {toggle ? <div className="flex flex-col gap-4 py-4">
-              <CheckboxArrayField name="broadcastToList" label="Select a list" data={lists.map(list => ({value: list.slug, key: list.title}))}/>
+              <CheckboxArrayField name="broadcastToList" label="Select a list" data={lists.map(list => ({ value: list.slug, key: list.title }))} />
             </div> : null}
           </div>
         </div> : null}
