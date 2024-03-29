@@ -355,6 +355,11 @@ export const createPost = createAction(async ({ session }, data) => {
     await db.insert(postTags).values(insertData)
   }
 
+  if (mappedTags.connect) {
+    const insertData = mappedTags.connect.map((item) => ({ tagId: item.id, postId: createdPost.id }))
+    await db.insert(postTags).values(insertData)
+  }
+
   if (data.broadcast) {
     // FIXME: Remove this block as needed
     // const unsubscribedList = await prisma.list.findUnique({
@@ -516,7 +521,7 @@ export const updatePost = createAction(async ({ validate, session }, { slug, dat
   // const currentPost = await prisma.post.findUnique({ where: { slug }, include: { tags: true } });
   const currentPost = await db.query.post.findFirst({
     where: (post, { eq }) => eq(post.slug, slug),
-    with: { tags: true }
+    with: { tags: { with: { tag: true } } }
   })
 
   let newSlug;
@@ -564,11 +569,11 @@ export const updatePost = createAction(async ({ validate, session }, { slug, dat
   );
 
   const filteredTags = newTags.filter(Boolean);
-
+  const currentPostTags = currentPost?.tags.flatMap(tgs => tgs.tag) || [];
 
   const mappedTags = prepareArrayField(
     filteredTags,
-    currentPost?.tags,
+    currentPostTags,
     (item) => ({
       ...item,
     }),
@@ -611,9 +616,18 @@ export const updatePost = createAction(async ({ validate, session }, { slug, dat
     await db.insert(postTags).values(insertData)
   }
 
-  if (mappedTags.update && updatedPost) {
-    await Promise.all(mappedTags.update.map(async (item) => {
-      await db.update(tag).set(item.data).where(eq(tag.id, item.where.id))
+  if (mappedTags.connect && updatedPost) {
+    const insertData = mappedTags.connect.map((item) => ({ tagId: item.id, postId: updatedPost.id }))
+    await db.insert(postTags).values(insertData)
+  }
+
+  if (mappedTags.disconnect && updatedPost) {
+    const removeData = mappedTags.disconnect.map((item) => ({ tagId: item.id, postId: updatedPost.id }))
+    await Promise.all(removeData.map(async (item) => {
+      await db.delete(postTags).where(and(
+        eq(postTags.postId, item.postId),
+        eq(postTags.tagId, item.tagId)
+      ))
     }))
   }
 
