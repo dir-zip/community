@@ -4,7 +4,7 @@ import { Badge, Button, Table } from '@dir/ui'
 import Link from 'next/link'
 import { useSearchParams, usePathname, useRouter } from "next/navigation"
 import { getUsersFromList, removeUserFromList } from "../actions"
-import { User } from "packages/db"
+import { User } from "packages/db/drizzle/types"
 import { AddUserModal } from "./AddUserModal"
 
 

@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, InputField } from '@dir/ui'
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { User } from "packages/db"
+import { User } from "packages/db/drizzle/types"
 import { Search } from 'lucide-react'
 import { getAllUsers } from "~/features/admin/actions"
 import { addUserToList } from "../actions"

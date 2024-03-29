@@ -4,7 +4,7 @@ import { Table, Badge } from '@dir/ui'
 import Link from 'next/link'
 import { useSearchParams, usePathname, useRouter } from "next/navigation"
 import { getAllItems } from "../actions"
-import { type Item } from "packages/db"
+import { type Item } from "packages/db/drizzle/types"
 
 
 export const ItemsTable = () => {

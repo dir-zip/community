@@ -1,8 +1,8 @@
 "use client"
 import { buttonVariants } from "@/components/Button";
 import { cn } from "@/utils";
-import { Badge, Inventory, Item, type InventoryItem } from "packages/db";
-import { equipAndUnequipItem } from "../actions";
+import { Badge, Inventory, Item, type InventoryItem } from "packages/db/drizzle/types";
+// import { equipAndUnequipItem } from "../actions";
 import { toast } from "sonner";
 
 type InventoryItemWithDetails = InventoryItem & { badge: Badge | null, item: Item | null };
@@ -34,7 +34,7 @@ export const InventoryProfile = ({inventory}: {inventory: Inventory & {collectio
                 toast.promise(
                   new Promise(async (resolve, reject) => {
                     try {
-                      await equipAndUnequipItem({itemId: item.id})
+                      // await equipAndUnequipItem({itemId: item.id})
                       resolve(null)
                     } catch (err) {
                       reject(err)

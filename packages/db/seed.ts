@@ -1,4 +1,4 @@
-import { db } from './index'
+import { db, client } from './index'
 import * as schema from './drizzle/schema'
 
 const load = async () => {
@@ -51,6 +51,7 @@ const load = async () => {
     }
   ])
 
+  await client.end();
 }
 
 load()

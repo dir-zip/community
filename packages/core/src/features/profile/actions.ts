@@ -1,20 +1,27 @@
 "use server"
 
 import { createAction } from "~/lib/createAction"
-import { prisma } from '@dir/db'
+import { db } from '@dir/db'
 import { z } from 'zod'
 
 export const getUser = createAction(async ({ }, { username }) => {
-  const user = await prisma.user.findFirst({
-    where: {
-      username
-    },
-    include: {
+  // FIXME: Remove this block as needed
+  // const user = await prisma.user.findFirst({
+  //   where: {
+  //     username
+  //   },
+  //   include: {
+  //     posts: true
+  //   }
+  // })
+  const userResult = await db.query.user.findFirst({
+    where: (user, { eq }) => eq(user.username, username),
+    with: {
       posts: true
     }
   })
 
-  return user
+  return userResult
 }, z.object({
   username: z.string()
 }))

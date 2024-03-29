@@ -1,5 +1,5 @@
 import { cn } from "@/utils";
-import { Inventory, InventoryItem, Item } from "@dir/db";
+import { Inventory, InventoryItem, Item } from "@dir/db/drizzle/types";
 import { Avatar } from "@dir/ui";
 
 type RenderFunction<P> = (props: P) => React.ReactNode;
@@ -23,10 +23,10 @@ class EffectClass {
 export const applyEffects = <T extends modifiers>(
   property: T,
   value: Partial<Record<modifiers, string>> & {className?: string},
-  inventory: (Inventory & { collection: (InventoryItem & { item: Item | null, quantity?: number })[] }) | null
+  inventory: (Inventory & { inventoryItems: (InventoryItem & { item: Item | null, quantity?: number })[] }) | null
 ): React.ReactNode => {
 
-  const effect = inventory?.collection
+  const effect = inventory?.inventoryItems
     .filter(inventoryItem => inventoryItem.equipped)
     .map(item => effects.find(effect => effect.name === item.item?.effect))
     .find(effect => effect && effect.modifies === property);

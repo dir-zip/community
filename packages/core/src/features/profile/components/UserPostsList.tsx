@@ -5,7 +5,7 @@ import { Button } from '@dir/ui'
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { Post } from '@dir/db';
+import { Post } from '@dir/db/drizzle/types';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { getUsersPosts } from '~/features/user/actions';
 

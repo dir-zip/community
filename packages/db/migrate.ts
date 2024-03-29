@@ -1,8 +1,9 @@
-import { drizzle } from "drizzle-orm/better-sqlite3";
-import { migrate } from "drizzle-orm/better-sqlite3/migrator";
-import Database from "better-sqlite3";
+import { migrate } from 'drizzle-orm/postgres-js/migrator';
+import { client, db } from '.'
 
-const sqlite = new Database("sqlite.db");
-const db = drizzle(sqlite);
+const migrateDatabase = async () => {
+    await migrate(db, { migrationsFolder: "./drizzle" });
+    await client.end();
+}
 
-migrate(db, { migrationsFolder: "./drizzle" });
+migrateDatabase()

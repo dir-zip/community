@@ -4,14 +4,21 @@ import { AccountForm } from "./components/AccountForm"
 import { InventoryList } from "./components/InventoryList"
 import { getCurrentUser } from "../auth/actions"
 import { InviteList } from "./components/InviteList"
+import { db } from "packages/db"
 
 export const UserSettingsScreen = async () => {
   const currentUser = await getCurrentUser()
-  const inviteOnly = await prisma?.featureToggle.findFirst({
-    where: {
-      feature: "signupFlow",
-    },
+
+  // FIXME: Remove this block as needed
+  // const inviteOnly = await prisma?.featureToggle.findFirst({
+  //   where: {
+  //     feature: "signupFlow",
+  //   },
+  // })
+  const inviteOnly = await db.query.featureToggle.findFirst({
+    where: (toggle, { eq }) => eq(toggle.feature, "signupFlow")
   })
+
   const isInviteOnly = inviteOnly?.value === "invite"
 
   return (
@@ -38,11 +45,17 @@ export const UserSettingsScreen = async () => {
 
 export const UserInventoryScreen = async () => {
   const currentUser = await getCurrentUser()
-  const inviteOnly = await prisma?.featureToggle.findFirst({
-    where: {
-      feature: "signupFlow",
-    },
+
+  // FIXME: Remove this block as needed
+  // const inviteOnly = await prisma?.featureToggle.findFirst({
+  //   where: {
+  //     feature: "signupFlow",
+  //   },
+  // })
+  const inviteOnly = await db.query.featureToggle.findFirst({
+    where: (toggle, { eq }) => eq(toggle.feature, "signupFlow")
   })
+
   const isInviteOnly = inviteOnly?.value === "invite"
 
   return (
@@ -69,11 +82,17 @@ export const UserInventoryScreen = async () => {
 
 export const UserInviteSettings = async () => {
   const currentUser = await getCurrentUser()
-  const inviteOnly = await prisma?.featureToggle.findFirst({
-    where: {
-      feature: "signupFlow",
-    },
+
+  // FIXME: Remove this block as needed
+  // const inviteOnly = await prisma?.featureToggle.findFirst({
+  //   where: {
+  //     feature: "signupFlow",
+  //   },
+  // })
+  const inviteOnly = await db.query.featureToggle.findFirst({
+    where: (toggle, { eq }) => eq(toggle.feature, "signupFlow")
   })
+
   const isInviteOnly = inviteOnly?.value === "invite"
 
   return (

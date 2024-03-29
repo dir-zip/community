@@ -1,6 +1,6 @@
 "use client"
 import React from 'react'
-import { Comment } from "packages/db"
+import { Comment } from "packages/db/drizzle/types"
 import Link from 'next/link'
 import { CommentPreview } from "./CommentPreview"
 import { applyEffects } from '~/itemEffects'

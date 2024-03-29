@@ -1,6 +1,6 @@
 "use client"
 import { Button } from "@dir/ui";
-import { Badge, Inventory, InventoryItem, Item, User } from "@dir/db"
+import { Badge, Inventory, InventoryItem, Item, User } from "@dir/db/drizzle/types"
 import { useEffect, useState } from "react"
 import { toast } from "sonner";
 import { equipAndUnequipItem, getUserInventory } from "~/features/user/actions"

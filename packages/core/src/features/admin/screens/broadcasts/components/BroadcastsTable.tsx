@@ -4,7 +4,7 @@ import Link from "next/link"
 import { Badge, Table } from "@dir/ui"
 import { useSearchParams, usePathname, useRouter } from "next/navigation"
 import { getAllBroadcasts } from "../actions"
-import { type Broadcast } from "@dir/db"
+import { Broadcast } from "@dir/db/drizzle/types"
 import { cn } from "@/utils"
 
 

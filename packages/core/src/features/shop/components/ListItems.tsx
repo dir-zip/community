@@ -2,7 +2,7 @@
 
 import { Button, buttonVariants } from "@/components/Button";
 import { cn } from "@/utils";
-import { Item } from "packages/db";
+import { Item } from "packages/db/drizzle/types";
 import { buyItem } from "../actions";
 import { toast } from "sonner";
 import React, { useState, useEffect } from "react";

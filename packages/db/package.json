@@ -5,21 +5,23 @@
   "types": "./index.ts",
   "scripts": {
     "clean": "rm -rf .turbo node_modules",
-    "db:generate": "pnpm with-env drizzle-kit generate:sqlite",
+    "db:generate": "pnpm with-env drizzle-kit generate:pg",
     "db:migrate": "pnpm with-env tsx migrate.ts",
-    "db:push": "pnpm with-env drizzle-kit push:sqlite",
+    "db:push": "pnpm with-env drizzle-kit push:pg",
     "db:seed": "pnpm with-env tsx seed.ts",
-    "dev": "drizzle-kit studio",
+    "dev": "pnpm with-env drizzle-kit studio",
     "with-env": "dotenv -e ../../.env --"
   },
   "dependencies": {
     "better-sqlite3": "^9.4.1",
-    "drizzle-orm": "^0.29.3"
+    "drizzle-orm": "^0.29.3",
+    "pg": "^8.11.3"
   },
   "devDependencies": {
     "@paralleldrive/cuid2": "^2.2.2",
     "@types/better-sqlite3": "^7.6.9",
     "@types/node": "^20.9.2",
+    "@types/pg": "^8.11.4",
     "dotenv-cli": "^6.0.0",
     "drizzle-kit": "^0.20.14",
     "tsx": "^4.7.1",
