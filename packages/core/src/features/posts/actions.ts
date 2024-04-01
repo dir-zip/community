@@ -22,55 +22,6 @@ export const getAllPosts = createAction(async ({ }, params) => {
   }
   const { skip, take, tags, categorySlug, title } = params;
 
-  // FIXME: Remove this block as needed
-  // let whereClause: {
-  //   tags?: {
-  //     some?: { slug: { in: string[], not?: string } },
-  //     none?: { slug: string }
-  //   },
-  //   category?: {
-  //     slug?: string
-  //   },
-  //   title?: {
-  //     contains: string
-  //   }
-  // } = {};
-
-  // if (tags && tags.length > 0) {
-  //   whereClause.tags = {
-  //     some: {
-  //       slug: {
-  //         in: tags,
-  //         not: 'feed'
-  //       }
-  //     }
-  //   };
-  // } else {
-  //   whereClause.tags = {
-  //     none: {
-  //       slug: 'feed'
-  //     }
-  //   };
-  // }
-
-  // if (categorySlug && categorySlug !== "all") {
-  //   whereClause.category = {
-  //     slug: categorySlug
-  //   };
-  // }
-
-  // if (title) { // Add this block
-  //   whereClause.title = {
-  //     contains: title
-  //   };
-  // }
-
-  // FIXME: Remove this block as needed
-  // const broadcastPinFeature = await prisma.featureToggle.findUnique({
-  //   where: {
-  //     feature: 'broadcastPin'
-  //   },
-  // });
   const broadcastPinFeature = await db.query.featureToggle.findFirst({
     where: (broadcast, { eq }) => eq(broadcast.feature, 'broadcastPin')
   })
@@ -79,38 +30,6 @@ export const getAllPosts = createAction(async ({ }, params) => {
   const priorityDate = new Date();
   priorityDate.setDate(priorityDate.getDate() - PRIORITY_DAYS);
 
-  // FIXME: Remove this block as needed
-  // const posts = await prisma.post.findMany({
-  //   skip,
-  //   take,
-  //   where: whereClause,
-  //   include: {
-  //     user: userInventoryIncludes.user,
-  //     broadcasts: true,
-  //     category: {
-  //       select: {
-  //         title: true,
-  //         slug: true
-  //       }
-  //     },
-  //     comments: {
-  //       include: {
-  //         user: userInventoryIncludes.user,
-  //         replies: {
-  //           include: {
-  //             user: userInventoryIncludes.user
-  //           }
-  //         }
-  //       },
-  //       orderBy: {
-  //         createdAt: 'desc'
-  //       }
-  //     }
-  //   },
-  //   orderBy: {
-  //     createdAt: 'desc'
-  //   }
-  // });
 
   const categorySubquery = (categorySlug)
     ? await db.select().from(category).where(eq(category.slug, categorySlug))
@@ -216,10 +135,6 @@ export const getAllPosts = createAction(async ({ }, params) => {
     return { ...post, replyCount, lastCommentOrReply, replies };
   }));
 
-  // FIXME: Remove this block as needed
-  // const postsCount = await prisma.post.count({
-  //   where: whereClause,
-  // });
 
   const postCountResult = (postTagSubQuery && postTagSubQuery.length > 0)
     ? await db.select({ count: count() })
@@ -260,17 +175,10 @@ export const createPost = createAction(async ({ session }, data) => {
   const createSlug = await findFreeSlug(
     title !== "" ? title.toLowerCase().replace(/[^a-z0-9]/g, "-") : generatedTitle.toLowerCase().replace(/[^a-z0-9]/g, "-"),
     async (slug: string) =>
-      // FIXME: Remove this block as needed
-      // await prisma.post.findUnique({ where: { slug } })
       await db.query.post.findFirst({ where: (post, { eq }) => eq(post.slug, slug) })
   );
 
-  // FIXME: Remove this block as needed
-  // const getCategory = await prisma.category.findFirst({
-  //   where: {
-  //     slug: category
-  //   }
-  // })
+
   const getCategory = await db.query.category.findFirst({
     where: (cate, { eq }) => eq(cate.slug, category)
   })
@@ -286,8 +194,7 @@ export const createPost = createAction(async ({ session }, data) => {
       if (!tagSlug) return null; // Skip empty strings
 
       // Check if the tag already exists
-      // FIXME: Remove this block as needed
-      // const existingTag = await prisma.tag.findUnique({ where: { slug: tagSlug } });
+
       const existingTag = await db.query.tag.findFirst({
         where: (tag, { eq }) => eq(tag.slug, tagSlug)
       });
@@ -300,8 +207,6 @@ export const createPost = createAction(async ({ session }, data) => {
         const updatedTagSlug = await findFreeSlug(
           tagSlug.toLowerCase().replace(/[^a-z0-9]/g, "-"),
           async (slug: string) =>
-            // FIXME: Remove this block as needed
-            // await prisma.tag.findUnique({ where: { slug } }),
             await db.query.tag.findFirst({ where: (tag, { eq }) => eq(tag.slug, slug) })
         );
 
@@ -318,21 +223,6 @@ export const createPost = createAction(async ({ session }, data) => {
     })
   )
 
-  // FIXME: Remove this block as needed
-  // const post = await prisma.post.create({
-  //   data: {
-  //     title: generatedTitle,
-  //     body,
-  //     slug: createSlug,
-  //     categoryId: getCategory?.id!,
-  //     userId: session?.data.userId!,
-  //     tags: prepareArrayField(
-  //       filteredTags.map((c) => {
-  //         return c
-  //       })
-  //     )
-  //   }
-  // })
 
   const createdPosts = await db.insert(post)
     .values({
@@ -361,15 +251,7 @@ export const createPost = createAction(async ({ session }, data) => {
   }
 
   if (data.broadcast) {
-    // FIXME: Remove this block as needed
-    // const unsubscribedList = await prisma.list.findUnique({
-    //   where: {
-    //     slug: 'unsubscribed'
-    //   },
-    //   include: {
-    //     users: true
-    //   }
-    // });
+    
     const unsubscribedList = await db.query.list.findFirst({
       where: (ls, { eq }) => eq(ls.slug, 'unsubscribed'),
       with: {
@@ -380,17 +262,7 @@ export const createPost = createAction(async ({ session }, data) => {
     // Extract user IDs from the unsubscribed list
     const unsubscribedUserIds = unsubscribedList ? unsubscribedList.users.map(user => user.userId) : [];
 
-    // FIXME: Remove this block as needed
-    // const targetLists = await prisma.list.findMany({
-    //   where: {
-    //     slug: {
-    //       in: broadcastToList
-    //     }
-    //   },
-    //   include: {
-    //     users: true
-    //   }
-    // });
+
     const targetLists = await db.query.list.findMany({
       where: (ls, { inArray }) => inArray(ls.slug, broadcastToList || []),
       with: {
@@ -426,27 +298,7 @@ export const createPost = createAction(async ({ session }, data) => {
         }
 
         // Create a broadcast and connect it to the current list
-        // FIXME: Remove this block as needed
-        // await prisma.broadcast.create({
-        //   data: {
-        //     lists: {
-        //       connect: {
-        //         id: list.id
-        //       }
-        //     },
-        //     users: {
-        //       connect: {
-        //         id: user.id
-        //       }
-        //     },
-        //     post: {
-        //       connect: {
-        //         id: post.id
-        //       }
-        //     },
-        //     status: "SENT"
-        //   }
-        // });
+
 
         const newBroadcasts = await db.insert(broadcast)
           .values({
@@ -472,17 +324,7 @@ export const createPost = createAction(async ({ session }, data) => {
 }, PostSchema, { authed: true })
 
 export const getSinglePost = createAction(async ({ }, { slug }) => {
-  // FIXME: Remove this block as needed
-  // const post = await prisma.post.findFirst({
-  //   where: {
-  //     slug: slug
-  //   },
-  //   include: {
-  //     user: userInventoryIncludes.user,
-  //     category: true,
-  //     tags: true
-  //   }
-  // })
+
   const postResult = await db.query.post.findFirst({
     where: (post, { eq }) => eq(post.slug, slug),
     with: {
@@ -517,8 +359,6 @@ export const getSinglePost = createAction(async ({ }, { slug }) => {
 export const updatePost = createAction(async ({ validate, session }, { slug, data }) => {
   await validate(['UPDATE', "post", slug]);
 
-  // FIXME: Remove this block as needed
-  // const currentPost = await prisma.post.findUnique({ where: { slug }, include: { tags: true } });
   const currentPost = await db.query.post.findFirst({
     where: (post, { eq }) => eq(post.slug, slug),
     with: { tags: { with: { tag: true } } }
@@ -529,8 +369,6 @@ export const updatePost = createAction(async ({ validate, session }, { slug, dat
     newSlug = await findFreeSlug(
       data.title.toLowerCase().replace(/[^a-z0-9]/g, "-"),
       async (slug: string) =>
-        // FIXME: Remove this block as needed
-        // await prisma.post.findUnique({ where: { slug } }),
         await db.query.post.findFirst({ where: (post, { eq }) => eq(post.slug, slug) })
     );
   } else {
@@ -544,8 +382,6 @@ export const updatePost = createAction(async ({ validate, session }, { slug, dat
       if (!tagSlug) return null; // Skip empty strings
 
       // Check if the tag already exists
-      // FIXME: Remove this block as needed
-      // const existingTag = await prisma.tag.findUnique({ where: { slug: tagSlug } });
       const existingTag = await db.query.tag.findFirst({
         where: (tag, { eq }) => eq(tag.slug, tagSlug)
       });
@@ -558,8 +394,6 @@ export const updatePost = createAction(async ({ validate, session }, { slug, dat
         const updatedTagSlug = await findFreeSlug(
           tagSlug.toLowerCase().replace(/[^a-z0-9]/g, "-"),
           async (slug: string) =>
-            // FIXME: Remove this block as needed
-            // await prisma.tag.findUnique({ where: { slug } }),
             await db.query.tag.findFirst({ where: (tag, { eq }) => eq(tag.slug, slug) })
         );
 
@@ -581,22 +415,6 @@ export const updatePost = createAction(async ({ validate, session }, { slug, dat
   )
   const { broadcast, ...updateData } = data;
 
-  // FIXME: Remove this block as needed
-  // const post = await prisma.post.update({
-  //   where: {
-  //     slug
-  //   },
-  //   data: {
-  //     ...updateData,
-  //     slug: newSlug,
-  //     category: {
-  //       connect: {
-  //         slug: data.category
-  //       }
-  //     },
-  //     tags: mappedTags
-  //   }
-  // })
 
   const categoryResult = await db.query.category.findFirst({ where: (cate, { eq }) => eq(cate.slug, data.category) });
   const updatedPosts = await db.update(post)
@@ -641,25 +459,11 @@ export const updatePost = createAction(async ({ validate, session }, { slug, dat
 }), { authed: true })
 
 export const createComment = createAction(async ({ session }, { postSlug, body, parentId }) => {
-  // FIXME: Remove this block as needed
-  // const post = await prisma.post.findFirst({
-  //   where: {
-  //     slug: postSlug
-  //   }
-  // })
+
   const postResult = await db.query.post.findFirst({
     where: (post, { eq }) => eq(post.slug, postSlug)
   });
 
-  // FIXME: Remove this block as needed
-  // const comment = await prisma.comment.create({
-  //   data: {
-  //     postId: post!.id,
-  //     userId: session?.data.userId!,
-  //     body,
-  //     parentId: parentId || null
-  //   }
-  // })
   const createdComments = await db.insert(comment)
     .values({
       postId: postResult!.id,

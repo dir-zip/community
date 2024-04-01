@@ -10,26 +10,13 @@ export const getAllItems = createAction(async ({ }, params) => {
   }
   const { skip, take } = params;
 
-  // FIXME: Remove this block as needed
-  // const items = await prisma.item.findMany({
-  //   skip,
-  //   take,
-  //   orderBy: {
-  //     createdAt: 'desc'
-  //   }
-  // })
+
   const items = await db.query.item.findMany({
     orderBy: (item, { desc }) => [desc(item.createdAt)],
     limit: take,
     offset: skip
   })
 
-  // FIXME: Remove this block as needed
-  // const count = await prisma.post.count({
-  //   where: {
-  //     title: undefined
-  //   },
-  // });
   const postCountResult = await db.select({ count: count() })
     .from(post)
     .where(eq(post.title, ''))

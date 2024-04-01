@@ -8,7 +8,7 @@ dir.zip is an open source community platform inspired by the 90's and early 2000
 
 ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/dir-zip/community/main)
 ![Next JS](https://img.shields.io/badge/Next-black?style=for-the-badge&logo=next.js&logoColor=white)
-![Prisma](https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white)
+![Drizzle](https://img.shields.io/badge/Drizzle-black?style=for-the-badge&logo=Drizzle&logoColor=white)
 
 ## Features
 - Community wide feed

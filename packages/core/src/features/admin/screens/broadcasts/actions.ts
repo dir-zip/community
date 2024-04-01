@@ -14,22 +14,6 @@ export const getAllBroadcasts = createAction(
 
     const whereIdCondition = where?.OR?.find((condition: any) => condition?.id !== undefined)?.id;
 
-    // FIXME: Remove this block as needed
-    // const broadcasts = await prisma.broadcast.findMany({
-    //   take,
-    //   skip,
-    //   where,
-    //   include: {
-    //     users: true,
-    //     lists: true,
-    //     post: {
-    //       select: {
-    //         slug: true,
-    //         title: true
-    //       }
-    //     }
-    //   },
-    // });
     const broadcasts = await db.query.broadcast.findMany({
       where: (broadcast, { or, eq }) => or(
         whereIdCondition ? eq(broadcast.id, whereIdCondition) : undefined
@@ -47,11 +31,6 @@ export const getAllBroadcasts = createAction(
       limit: take,
       offset: skip
     })
-
-    // FIXME: Remove this block as needed
-    // const count = await prisma.broadcast.count({
-    //   where,
-    // });
 
     const tokenCountResult = await db.select({ count: count() })
       .from(broadcast)

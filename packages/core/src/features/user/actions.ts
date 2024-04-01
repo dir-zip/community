@@ -83,15 +83,6 @@ export const getUserInventory = createAction(async ({ validate }, { userId }) =>
 export const equipAndUnequipItem = createAction(async ({ session, validate }, { itemId }) => {
   await validate(['UPDATE', "user", session?.data.userId])
 
-  // FIXME: Remove this block as needed
-  // const findItem = await prisma.inventoryItem.findFirst({
-  //   where: {
-  //     id: itemId
-  //   },
-  //   include: {
-  //     item: true
-  //   }
-  // })
   const findItem = await db.query.inventoryItem.findFirst({
     where: (item, { eq }) => eq(item.id, itemId),
     with: {
@@ -107,27 +98,13 @@ export const equipAndUnequipItem = createAction(async ({ session, validate }, { 
   const effectModifier = effects.find(effect => effect.name === itemEffect)?.modifies;
 
   if (findItem.equipped) {
-    // FIXME: Remove this block as needed
-    // await prisma.inventoryItem.update({
-    //   where: {
-    //     id: itemId
-    //   },
-    //   data: {
-    //     equipped: false
-    //   }
-    // });
+
     await db.update(inventoryItem)
       .set({ equipped: false })
       .where(eq(inventoryItem.id, itemId))
 
   } else {
-    // FIXME: Remove this block as needed
-    // const sameItemEquipped = await prisma.inventoryItem.findFirst({
-    //   where: {
-    //     itemId: findItem.itemId,
-    //     equipped: true
-    //   }
-    // });
+
     const findItemId = findItem.itemId
     const sameItemEquipped = findItemId
       ? await db.query.inventoryItem.findFirst({
@@ -146,20 +123,6 @@ export const equipAndUnequipItem = createAction(async ({ session, validate }, { 
       .filter(effect => effect.modifies === effectModifier)
       .map(effect => effect.name);
 
-    // FIXME: Remove this block as needed
-    // const sameModifierEquipped = await prisma.inventoryItem.findMany({
-    //   where: {
-    //     equipped: true,
-    //     item: {
-    //       effect: {
-    //         in: effectNamesWithSameModifier
-    //       }
-    //     }
-    //   },
-    //   include: {
-    //     item: true
-    //   }
-    // });
     const sameModifierEquipped = await db
       .select({
         id: inventoryItem.id
@@ -174,29 +137,13 @@ export const equipAndUnequipItem = createAction(async ({ session, validate }, { 
       )
 
     for (const itemToUnequip of sameModifierEquipped) { // Corrected variable name
-      // FIXME: Remove this block as needed
-      // await prisma.inventoryItem.update({
-      //   where: {
-      //     id: itemToUnequip.id // Corrected reference to the variable
-      //   },
-      //   data: {
-      //     equipped: false
-      //   }
-      // });
+
       await db.update(inventoryItem)
         .set({ equipped: false })
         .where(eq(inventoryItem.id, itemToUnequip.id))
     }
 
-    // FIXME: Remove this block as needed
-    // await prisma.inventoryItem.update({
-    //   where: {
-    //     id: itemId
-    //   },
-    //   data: {
-    //     equipped: true
-    //   }
-    // });
+
     await db.update(inventoryItem)
       .set({ equipped: true })
       .where(eq(inventoryItem.id, itemId))
@@ -209,21 +156,6 @@ export const equipAndUnequipItem = createAction(async ({ session, validate }, { 
 }), { authed: true })
 
 export const getUsersPosts = createAction(async ({ }, { username, skip, take }) => {
-  // FIXME: Remove this block as needed
-  // const posts = await prisma.post.findMany({
-  //   skip,
-  //   take,
-  //   where: {
-  //     user: {
-  //       username: username
-  //     },
-  //     tags: {
-  //       none: {
-  //         slug: 'feed'
-  //       }
-  //     }
-  //   }
-  // })
 
   const subQueryUsers = await db.select({ id: user.id }).from(user).where(eq(user.username, username));
   const subQueryTags = await db.select({ id: tag.id }).from(tag).where(eq(tag.slug, 'feed'));
@@ -243,19 +175,6 @@ export const getUsersPosts = createAction(async ({ }, { username, skip, take }) 
     .limit(take || 1000)
     .offset(skip || 0)
 
-  // FIXME: Remove this block as needed
-  // const count = await prisma.post.count({
-  //   where: {
-  //     user: {
-  //       username: username
-  //     },
-  //     tags: {
-  //       none: {
-  //         slug: 'feed'
-  //       }
-  //     }
-  //   }
-  // })
 
   const postCountResult = await db.select({ count: count() })
     .from(post)
@@ -276,19 +195,6 @@ export const getUsersPosts = createAction(async ({ }, { username, skip, take }) 
 }), { authed: false })
 
 export const getUserBadges = createAction(async ({ }, { userId }) => {
-  // FIXME: Remove this block as needed
-  // const inventory = await prisma.inventory.findFirst({
-  //   where: {
-  //     userId,
-  //   },
-  //   include: {
-  //     collection: {
-  //       include: {
-  //         badge: true,
-  //       },
-  //     },
-  //   },
-  // })
 
   const inventoryResult = await db.query.inventory.findFirst({
     where: (inventory, { eq }) => eq(inventory.userId, userId),
@@ -307,8 +213,6 @@ export const getUserBadges = createAction(async ({ }, { userId }) => {
 }), { authed: false })
 
 export const getAllUserCount = createAction(async ({ }) => {
-  // FIXME: Remove this block as needed
-  // const users = await prisma.user.count()
 
   const userCountResult = await db.select({ count: count() }).from(user)
   const userCount: number = userCountResult.reduce((accumulator, currentValue) => accumulator + currentValue.count, 0);
@@ -321,15 +225,6 @@ export const createInvite = createAction(async ({ validate }, { userId }) => {
   const newToken = generateToken(16);
   const hashedToken = await PasswordHandler.hash(newToken);
 
-  // FIXME: Remove this block as needed
-  // await prisma.token.create({
-  //   data: {
-  //     type: "INVITE_TOKEN",
-  //     userId: userId,
-  //     hashedToken: hashedToken,
-  //     expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
-  //   },
-  // });
 
   await db.insert(token).values({
     type: "INVITE_TOKEN",

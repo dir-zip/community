@@ -17,22 +17,14 @@ export const getAllActions = _createAction(
 
     const whereIdCondition = where?.OR?.find((condition: any) => condition?.id !== undefined)?.id;
 
-    // FIXME: Remove this block as needed
-    // const actions = await prisma.action.findMany({
-    //   take,
-    //   skip,
-    //   where,
-    // });
+
     const actions = await db.query.action.findMany({
       where: (action, { or, eq }) => or(whereIdCondition ? eq(action.id, whereIdCondition) : undefined),
       limit: take,
       offset: skip
     })
 
-    // FIXME: Remove this block as needed
-    // const count = await prisma.action.count({
-    //   where,
-    // });
+
     const actionCountResult = await db.select({ count: count() })
       .from(action)
       .where(or(
@@ -53,13 +45,7 @@ export const getAllActions = _createAction(
 
 
 export const createAction = _createAction(async ({ }, { title, value }) => {
-  // FIXME: Remove this block as needed
-  // const item = await prisma.action.create({
-  //   data: {
-  //     title,
-  //     value: Number(value)
-  //   }
-  // })
+
 
   const createdItems = await db.insert(action)
     .values({
@@ -74,12 +60,7 @@ export const createAction = _createAction(async ({ }, { title, value }) => {
 }, CreateActionSchema)
 
 export const getSingleAction = _createAction(async ({ }, { id }) => {
-  // FIXME: Remove this block as needed
-  // const action = await prisma.action.findFirst({
-  //   where: {
-  //     id
-  //   }
-  // })
+
 
   const actionResult = await db.query.action.findFirst({
     where: (action, { eq }) => eq(action.id, id)
@@ -96,11 +77,6 @@ export const updateAction = _createAction(async ({ }, params) => {
     throw new Error('Parameters are undefined');
   }
 
-  // FIXME: Remove this block as needed
-  // const user = await prisma.action.update({
-  //   where: { id: params.id },
-  //   data: { ...params },
-  // });
 
   const updatedActions = await db.update(action)
     .set(params)

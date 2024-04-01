@@ -5,19 +5,6 @@ import { user, userList } from "packages/db/drizzle/schema";
 export async function Unsubscribe(request: NextRequest) {
   const email = request.nextUrl.searchParams.get('email') || ''
 
-  // FIXME: Remove this block as needed
-  // await prisma?.list.update({
-  //   where: {
-  //     slug: 'unsubscribed'
-  //   },
-  //   data: {
-  //     users: {
-  //       connect: {
-  //         email
-  //       }
-  //     }
-  //   }
-  // })
 
   const list = await db.query.list.findFirst({
     where: (ls, { eq }) => eq(ls.slug, 'unsubscribed')

@@ -4,29 +4,7 @@ import { inventory, inventoryItem } from "packages/db/drizzle/schema";
 
 export const assignBadge = createAction(async ({ session }) => {
 
-  // FIXME: Remove this block as needed
-  // const user = await prisma.user.findFirst({
-  //   where: {
-  //     id: session?.data.userId
-  //   },
-  //   include: {
-  //     inventory: {
-  //       include: {
-  //         collection: {
-  //           include: {
-  //             item: true,
-  //             badge: true
-  //           }
-  //         }
-  //       }
-  //     },
-  //     events: {
-  //       include: {
-  //         action: true
-  //       }
-  //     }
-  //   }
-  // })
+
   const user = session?.data.userId
     ? await db.query.user.findFirst({
       where: (users, { eq }) => eq(users.id, session.data.userId),
@@ -37,12 +15,7 @@ export const assignBadge = createAction(async ({ session }) => {
     })
     : undefined
 
-  // FIXME: Remove this block as needed
-  // const badges = await prisma.badge.findMany({
-  //   include: {
-  //     conditions: true,
-  //   },
-  // });
+
   const badges = await db.query.badge.findMany({
     with: {
       conditions: true
@@ -56,16 +29,7 @@ export const assignBadge = createAction(async ({ session }) => {
     });
 
     if (allConditionsMet) {
-      // FIXME: Remove this block as needed
-      // const existingItem = await prisma.inventoryItem.findFirst({
-      //   where: {
-      //     AND: [
-      //       { badgeId: badge?.id },
-      //       { type: "BADGE" },
-      //       { inventoryId: user?.inventory?.id },
-      //     ],
-      //   },
-      // });
+
       const inventoryId = user?.inventory?.id;
 
       const existingItem = (inventoryId !== undefined)
@@ -79,32 +43,6 @@ export const assignBadge = createAction(async ({ session }) => {
         : undefined
 
       if (!existingItem) {
-        // FIXME: Remove this block as needed
-        // await prisma.inventoryItem.create({
-        //   data: {
-        //     type: "BADGE",
-        //     badge: {
-        //       connect: {
-        //         id: badge?.id,
-        //       },
-        //     },
-        //     equipped: true,
-        //     inventory: {
-        //       connectOrCreate: {
-        //         where: {
-        //           id: user?.inventory?.id,
-        //         },
-        //         create: {
-        //           user: {
-        //             connect: {
-        //               id: user?.id
-        //             }
-        //           }
-        //         }
-        //       },
-        //     },
-        //   },
-        // })
         const existingInventory = (inventoryId !== undefined)
           ? await db.query.inventory.findFirst({
             where: (items, { eq }) => eq(items.id, inventoryId)

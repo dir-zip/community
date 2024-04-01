@@ -9,12 +9,6 @@ import { db } from "packages/db"
 export const UserSettingsScreen = async () => {
   const currentUser = await getCurrentUser()
 
-  // FIXME: Remove this block as needed
-  // const inviteOnly = await prisma?.featureToggle.findFirst({
-  //   where: {
-  //     feature: "signupFlow",
-  //   },
-  // })
   const inviteOnly = await db.query.featureToggle.findFirst({
     where: (toggle, { eq }) => eq(toggle.feature, "signupFlow")
   })
@@ -46,12 +40,6 @@ export const UserSettingsScreen = async () => {
 export const UserInventoryScreen = async () => {
   const currentUser = await getCurrentUser()
 
-  // FIXME: Remove this block as needed
-  // const inviteOnly = await prisma?.featureToggle.findFirst({
-  //   where: {
-  //     feature: "signupFlow",
-  //   },
-  // })
   const inviteOnly = await db.query.featureToggle.findFirst({
     where: (toggle, { eq }) => eq(toggle.feature, "signupFlow")
   })
@@ -83,12 +71,6 @@ export const UserInventoryScreen = async () => {
 export const UserInviteSettings = async () => {
   const currentUser = await getCurrentUser()
 
-  // FIXME: Remove this block as needed
-  // const inviteOnly = await prisma?.featureToggle.findFirst({
-  //   where: {
-  //     feature: "signupFlow",
-  //   },
-  // })
   const inviteOnly = await db.query.featureToggle.findFirst({
     where: (toggle, { eq }) => eq(toggle.feature, "signupFlow")
   })

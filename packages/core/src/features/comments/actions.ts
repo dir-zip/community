@@ -6,34 +6,7 @@ import { revalidatePath } from "next/cache"
 import { comment } from "packages/db/drizzle/schema"
 
 export const getComment = createAction(async ({ }, { commentId }) => {
-  // FIXME: Remove this block as needed
-  // const comment = await prisma.comment.findFirst({
-  //   where: {
-  //     id: commentId
-  //   },
-  //   include: {
-  //     replies: {
-  //       include: {
-  //         user: userInventoryIncludes.user
-  //       },
-  //       orderBy: {
-  //         createdAt: 'desc'
-  //       }
-  //     },
-  //     parent: {
-  //       include: {
-  //         user: userInventoryIncludes.user
-  //       }
-  //     },
-  //     user: userInventoryIncludes.user,
-  //     post: {
-  //       include: {
-  //         user: userInventoryIncludes.user
-  //       }
-  //     }
 
-  //   }
-  // })
   const cmt = await db.query.comment.findFirst({
     where: (cmts, { eq }) => eq(cmts.id, commentId),
     with: {
@@ -113,12 +86,6 @@ export const getComment = createAction(async ({ }, { commentId }) => {
     throw new Error('Comment not found');
   }
 
-  // FIXME: Remove this block as needed
-  // const replyCount = await prisma.comment.count({
-  //   where: {
-  //     parentId: cmt.id
-  //   }
-  // });
   const replyCountResult = await db.select({ count: count() })
     .from(comment)
     .where(eq(comment.parentId, cmt.id))
@@ -127,12 +94,7 @@ export const getComment = createAction(async ({ }, { commentId }) => {
 
   // Add user and replyCount to each reply
   const repliesWithUserAndReplyCount = await Promise.all(cmt.replies.map(async (reply) => {
-    // FIXME: Remove this block as needed
-    // const replyCount = await prisma.comment.count({
-    //   where: {
-    //     parentId: reply.id
-    //   }
-    // });
+
     const subReplyCountResult = await db.select({ count: count() })
       .from(comment)
       .where(eq(comment.parentId, reply.id))
@@ -151,12 +113,7 @@ export const getComment = createAction(async ({ }, { commentId }) => {
 export const getCommentsForPost = createAction(async ({ }, { postSlug }) => {
   let postId: string | null = null;
 
-  // FIXME: Remove this block as needed
-  // const getPost = await prisma.post.findFirst({
-  //   where: {
-  //     slug: postSlug
-  //   }
-  // })
+
   const getPost = await db.query.post.findFirst({
     where: (posts, { eq }) => eq(posts.slug, postSlug)
   })
@@ -167,12 +124,7 @@ export const getCommentsForPost = createAction(async ({ }, { postSlug }) => {
 
   // If no post was found, try to find a comment with the given id
   if (!postId) {
-    // FIXME: Remove this block as needed
-    // const comment = await prisma.comment.findFirst({
-    //   where: {
-    //     id: postSlug
-    //   }
-    // })
+
     const comment = await db.query.comment.findFirst({
       where: (comments, { eq }) => eq(comments.id, postSlug)
     })
@@ -187,21 +139,7 @@ export const getCommentsForPost = createAction(async ({ }, { postSlug }) => {
     throw new Error('Post or Comment not found');
   }
 
-  // FIXME: Remove this block as needed
-  // const comments = await prisma.comment.findMany({
-  //   where: {
-  //     AND: [
-  //       { parentId: null },
-  //       { postId: postId }
-  //     ]
-  //   },
-  //   include: {
-  //     user: userInventoryIncludes.user,
-  //   },
-  //   orderBy: {
-  //     createdAt: 'desc'
-  //   }
-  // })
+
   const comments = await db.query.comment.findMany({
     where: (cmts, { and, eq, isNull }) => and(
       eq(cmts.postId, postId!),
@@ -228,30 +166,14 @@ export const getCommentsForPost = createAction(async ({ }, { postSlug }) => {
 
   // Add count of replies and user to each comment
   const commentsWithReplyCountAndUser = await Promise.all(comments.map(async (cmt) => {
-    // FIXME: Remove this block as needed
-    // const replyCount = await prisma.comment.count({
-    //   where: {
-    //     parentId: comment.id
-    //   }
-    // });
+
     const replyCountResult = await db.select({ count: count() })
       .from(comment)
       .where(eq(comment.parentId, cmt.id))
 
     const replyCount: number = replyCountResult.reduce((accumulator, currentValue) => accumulator + currentValue.count, 0);
 
-    // FIXME: Remove this block as needed
-    // const replies = await prisma.comment.findMany({
-    //   where: {
-    //     parentId: comment.id
-    //   },
-    //   include: {
-    //     user: userInventoryIncludes.user
-    //   },
-    //   orderBy: {
-    //     createdAt: 'desc'
-    //   }
-    // });
+
     const replies = await db.query.comment.findMany({
       where: (reps, { eq }) => eq(reps.parentId, cmt.id),
       with: {
@@ -285,15 +207,6 @@ export const getCommentsForPost = createAction(async ({ }, { postSlug }) => {
 export const updateComment = createAction(async ({ validate, session }, { id, data }) => {
   await validate(['UPDATE', "comment", id])
 
-  // FIXME: Remove this block as needed
-  // const comment = await prisma.comment.update({
-  //   where: {
-  //     id: id
-  //   },
-  //   data: {
-  //     ...data,
-  //   }
-  // })
   const createdComments = await db.update(comment)
     .set(data)
     .where(eq(comment.id, id))

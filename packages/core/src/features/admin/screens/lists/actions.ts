@@ -19,16 +19,6 @@ export const getAllLists = createAction(
     const whereOrTitleCondition = where?.OR?.find((condition: any) => condition?.title !== undefined)?.title;
     const whereSlugNotEqualCondition = where?.slug?.not.equals;
 
-    // FIXME: Remove this block as needed
-    // const lists = await prisma.list.findMany({
-    //   take,
-    //   skip,
-    //   where,
-    //   include: {
-    //     users: true,
-    //     broadcasts: true
-    //   }
-    // });
     const lists = await db.query.list.findMany({
       where: (list, { and, or, eq, not }) => and(
         (whereOrSlugCondition || whereOrTitleCondition)
@@ -55,10 +45,6 @@ export const getAllLists = createAction(
       }
     })
 
-    // FIXME: Remove this block as needed
-    // const count = await prisma.list.count({
-    //   where,
-    // });
     const listCountResult = await db.select({ count: count() })
       .from(list)
       .where(
@@ -86,16 +72,7 @@ export const getAllLists = createAction(
 );
 
 export const getSingleList = createAction(async ({ }, { slug }) => {
-  // FIXME: Remove this block as needed
-  // const list = await prisma.list.findFirst({
-  //   where: {
-  //     slug
-  //   },
-  //   include: {
-  //     users: true,
-  //     broadcasts: true
-  //   }
-  // })
+
   const listResult = await db.query.list.findFirst({
     where: (list, { eq }) => eq(list.slug, slug),
     with: {
@@ -113,18 +90,10 @@ export const createList = createAction(async ({ }, { title }) => {
   const createSlug = await findFreeSlug(
     title.toLowerCase().replace(/[^a-z0-9]/g, "-"),
     async (slug: string) =>
-      // FIXME: Remove this block as needed
-      // await prisma.list.findUnique({ where: { slug } }),
       await db.query.list.findFirst({ where: (list, { eq }) => eq(list.slug, slug) })
   );
 
-  // FIXME: Remove this block as needed
-  // const list = await prisma.list.create({
-  //   data: {
-  //     title,
-  //     slug: createSlug
-  //   }
-  // })
+
   const createdLists = await db.insert(list)
     .values({ title, slug: createSlug })
     .returning();
@@ -136,8 +105,6 @@ export const createList = createAction(async ({ }, { title }) => {
 }))
 
 export const updateList = createAction(async ({ }, { slug, data }) => {
-  // FIXME: Remove this block as needed
-  // const currentList = await prisma.list.findUnique({ where: { slug } });
   const currentList = await db.query.list.findFirst({ where: (list, { eq }) => eq(list.slug, slug) })
 
   let newSlug;
@@ -145,24 +112,12 @@ export const updateList = createAction(async ({ }, { slug, data }) => {
     newSlug = await findFreeSlug(
       data.title.toLowerCase().replace(/[^a-z0-9]/g, "-"),
       async (slug: string) =>
-        // FIXME: Remove this block as needed
-        // await prisma.list.findUnique({ where: { slug } }),
         await db.query.list.findFirst({ where: (list, { eq }) => eq(list.slug, slug) })
     );
   } else {
     newSlug = currentList.slug;
   }
 
-  // FIXME: Remove this block as needed
-  // const list = await prisma.list.update({
-  //   where: {
-  //     slug
-  //   },
-  //   data: {
-  //     ...data,
-  //     slug: newSlug
-  //   }
-  // })
   const updatedLists = await db.update(list)
     .set({ ...data, slug: newSlug })
     .where(eq(list.slug, slug))
@@ -179,18 +134,6 @@ export const updateList = createAction(async ({ }, { slug, data }) => {
 }))
 
 export const getUsersFromList = createAction(async ({ }, { slug, skip, take, where }) => {
-  // FIXME: Remove this block as needed
-  // const users = await prisma.list.findFirst({
-  //   take,
-  //   skip,
-  //   where: {
-  //     slug,
-  //     ...where
-  //   },
-  //   include: {
-  //     users: true
-  //   }
-  // })
 
   const whereOrUsernameCondition = where?.OR?.find((condition: any) => condition?.username !== undefined)?.username.contains;
   const whereOrEmailCondition = where?.OR?.find((condition: any) => condition?.email !== undefined)?.email.contains;
@@ -222,16 +165,6 @@ export const getUsersFromList = createAction(async ({ }, { slug, skip, take, whe
 
   const users = lists.flatMap(list => list.users.flatMap(users => users.user))
 
-  // FIXME: Remove this block as needed
-  // const usersCount = await prisma.user.count({
-  //   where: {
-  //     lists: {
-  //       some: {
-  //         slug: slug
-  //       }
-  //     }
-  //   }
-  // });
 
   const userCountResult = await db.select({ count: count() })
     .from(user)
@@ -250,12 +183,7 @@ export const getUsersFromList = createAction(async ({ }, { slug, skip, take, whe
 }))
 
 export const removeUserFromList = createAction(async ({ }, { slug, userId }) => {
-  // FIXME: Remove this block as needed
-  // const list = await prisma.list.findFirst({
-  //   where: {
-  //     slug
-  //   }
-  // })
+
   const listResult = await db.query.list.findFirst({
     where: (list, { eq }) => eq(list.slug, slug)
   })
@@ -264,12 +192,6 @@ export const removeUserFromList = createAction(async ({ }, { slug, userId }) => 
     throw new Error('List not found')
   }
 
-  // FIXME: Remove this block as needed
-  // const user = await prisma.user.findFirst({
-  //   where: {
-  //     id: userId
-  //   }
-  // })
   const userResult = await db.query.user.findFirst({
     where: (user, { eq }) => eq(user.id, userId)
   })
@@ -278,19 +200,6 @@ export const removeUserFromList = createAction(async ({ }, { slug, userId }) => 
     throw new Error('User not found')
   }
 
-  // FIXME: Remove this block as needed
-  // const updatedList = await prisma.list.update({
-  //   where: {
-  //     slug
-  //   },
-  //   data: {
-  //     users: {
-  //       disconnect: {
-  //         id: userId
-  //       }
-  //     }
-  //   }
-  // })
   const deletedLists = await db.delete(userList)
     .where(and(
       eq(userList.listId, listResult.id),
@@ -308,12 +217,7 @@ export const removeUserFromList = createAction(async ({ }, { slug, userId }) => 
 }))
 
 export const addUserToList = createAction(async ({ }, { slug, userId }) => {
-  // FIXME: Remove this block as needed
-  // const list = await prisma.list.findFirst({
-  //   where: {
-  //     slug
-  //   }
-  // })
+  
   const listResult = await db.query.list.findFirst({
     where: (list, { eq }) => eq(list.slug, slug)
   })
@@ -322,12 +226,6 @@ export const addUserToList = createAction(async ({ }, { slug, userId }) => {
     throw new Error('List not found')
   }
 
-  // FIXME: Remove this block as needed
-  // const user = await prisma.user.findFirst({
-  //   where: {
-  //     id: userId
-  //   }
-  // })
   const userResult = await db.query.user.findFirst({
     where: (user, { eq }) => eq(user.id, userId)
   })
@@ -336,19 +234,6 @@ export const addUserToList = createAction(async ({ }, { slug, userId }) => {
     throw new Error('User not found')
   }
 
-  // FIXME: Remove this block as needed
-  // const updatedList = await prisma.list.update({
-  //   where: {
-  //     slug
-  //   },
-  //   data: {
-  //     users: {
-  //       connect: {
-  //         id: userId
-  //       }
-  //     }
-  //   }
-  // })
   const updatedLists = await db.insert(userList)
     .values({
       userId,

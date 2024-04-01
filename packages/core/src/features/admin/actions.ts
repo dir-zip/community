@@ -24,15 +24,7 @@ import {
 
 export const getSiteSettings = createAction(
   async ({ }, params) => {
-    // FIXME: Remove this block as needed
-    // const site = await prisma.globalSetting.findFirst({
-    //   where: {
-    //     id: 1
-    //   },
-    //   include: {
-    //     features: true
-    //   }
-    // })
+
     const site = await db.query.globalSetting.findFirst({
       where: (setting, { eq }) => eq(setting.id, 1),
       with: { features: true }
@@ -76,46 +68,6 @@ export const updateSiteSettings = createAction(
       }
     ]
 
-    // FIXME: Remove this block as needed
-    // const site = await prisma.globalSetting.update({
-    //   where: {
-    //     id: 1
-    //   },
-    //   data: {
-    //     siteTitle: params.siteTitle,
-    //     siteDescription: params.siteDescription,
-    //     features: {
-    //       updateMany: [
-    //         {
-    //           where: {
-    //             feature: 'private'
-    //           },
-    //           data: {
-    //             isActive: params.isPrivate
-    //           }
-    //         },
-    //         {
-    //           where: {
-    //             feature: 'broadcastPin'
-    //           },
-    //           data: {
-    //             isActive: true,
-    //             value: params.broadcastPin.toString()
-    //           }
-    //         },
-    //         {
-    //           where: {
-    //             feature: 'signupFlow'
-    //           },
-    //           data: {
-    //             isActive: true,
-    //             value: params.signupFlow
-    //           }
-    //         }
-    //       ]
-    //     }
-    //   }
-    // })
     const updatedSites = await db.update(globalSetting)
       .set({
         siteTitle: params.siteTitle,
@@ -173,15 +125,6 @@ export const getAllResource = createAction(
     }
     const { resource, skip, take, where } = params;
 
-    // FIXME: Remove this block as needed
-    // const findResource = await (prisma as any)[resource.slice(0, -1)].findMany({
-    //   take,
-    //   skip,
-    //   where,
-    //   include: {
-    //     workspace: true
-    //   }
-    // })
 
     const table = getDbTable(resource.slice(0, -1));
 
@@ -197,10 +140,6 @@ export const getAllResource = createAction(
       .limit(take || 1000)
       .offset(skip || 0)
 
-    // FIXME: Remove this block as needed
-    // const count = await (prisma as any)[resource.slice(0, -1)].count({
-    //   where
-    // })
 
     const resourceCountResult = await db.select({ count: count() })
       .from(table)
@@ -254,11 +193,6 @@ export const updateResource = createAction(
       throw new Error(`Can't find ${resource.slice(0, -1)}`)
     }
 
-    // FIXME: Remove this block as needed
-    // const updatedResource = await (prisma as any)[resource.slice(0, -1)].update({
-    //   where: { id },
-    //   data,
-    // });
     const table = getDbTable(resource.slice(0, -1));
     const updatedResource = await db.update(table)
       .set(data)
@@ -282,12 +216,6 @@ export const getAllUsers = createAction(
     const whereEmailCondition = where?.OR?.find((condition: any) => condition?.email !== undefined)?.email?.contains;
 
 
-    // FIXME: Remove this block as needed
-    // const users = await prisma.user.findMany({
-    //   take,
-    //   skip,
-    //   where,
-    // });
     const users = await db.select()
       .from(user)
       .where(and(
@@ -300,10 +228,6 @@ export const getAllUsers = createAction(
       .limit(take || 1000)
       .offset(skip || 0)
 
-    // FIXME: Remove this block as needed
-    // const count = await prisma.user.count({
-    //   where,
-    // });
     const userCountResult = await db.select({ count: count() })
       .from(user)
       .where(and(
@@ -333,10 +257,6 @@ export const getSingleUser = createAction(
     }
     const { id } = params
 
-    // FIXME: Remove this block as needed
-    // const user = await prisma.user.findUnique({
-    //   where: { id },
-    // });
     const userResult = await db.query.user.findFirst({
       where: (user, { eq }) => eq(user.id, id)
     })
@@ -355,11 +275,6 @@ export const updateUser = createAction(async ({ }, params) => {
   }
   const { id, email, role } = params
 
-  // FIXME: Remove this block as needed
-  // const user = await prisma.user.update({
-  //   where: { id },
-  //   data: { email, role },
-  // });
 
   const updatedUsers = await db.update(user)
     .set({ email, role })
@@ -377,12 +292,6 @@ export const getAllTokens = createAction(
     }
     const { skip, take, where } = params;
 
-    // FIXME: Remove this block as needed
-    // const tokens = await prisma.token.findMany({
-    //   take,
-    //   skip,
-    //   where,
-    // });
 
     const tokens = await db.select()
       .from(token)
@@ -390,10 +299,6 @@ export const getAllTokens = createAction(
       .limit(take || 1000)
       .offset(skip || 0)
 
-    // FIXME: Remove this block as needed
-    // const count = await prisma.token.count({
-    //   where,
-    // });
 
     const tokenCountResult = await db.select({ count: count() })
       .from(token)
@@ -418,10 +323,6 @@ export const getSingleToken = createAction(
     }
     const { id } = params
 
-    // FIXME: Remove this block as needed
-    // const token = await prisma.token.findUnique({
-    //   where: { id },
-    // });
 
     const tokenResult = await db.query.token.findFirst({
       where: (tok, { eq }) => eq(tok.id, id)
@@ -442,22 +343,12 @@ export const getAllSessions = createAction(
     }
     const { skip, take, where } = params
 
-    // FIXME: Remove this block as needed
-    // const sessions = await prisma.session.findMany({
-    //   take,
-    //   skip,
-    //   where,
-    // });
     const sessions = await db.select()
       .from(session)
       .where(and())
       .limit(take || 1000)
       .offset(skip || 0)
 
-    // FIXME: Remove this block as needed
-    // const count = await prisma.session.count({
-    //   where,
-    // });
     const sessionCountResult = await db.select({ count: count() })
     .from(session)
     .where(and())
@@ -481,10 +372,6 @@ export const getSingleSession = createAction(
     }
     const { id } = params
 
-    // FIXME: Remove this block as needed
-    // const session = await prisma.session.findUnique({
-    //   where: { id },
-    // });
     const sessionResult = await db.query.session.findFirst({
       where: (sess, { eq }) => eq(sess.id, id)
     })

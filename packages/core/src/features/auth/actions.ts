@@ -34,10 +34,7 @@ import { redirect } from 'next/navigation';
 import { inventory, list, session, token, user, userList } from "packages/db/drizzle/schema";
 
 export const loginAction = createAction(async ({ createSession }, { email, password }) => {
-  // FIXME: Remove this block as needed
-  // const user = await prisma.user.findUnique({
-  //   where: { email },
-  // });
+
   const user = await db.query.user.findFirst({
     where: (u, { eq }) => eq(u.email, email)
   })
@@ -66,12 +63,7 @@ export const loginAction = createAction(async ({ createSession }, { email, passw
 }, LoginSchema, { authed: false })
 
 export const signUpAction = createAction(async ({ createSession }, { email, password, username, inviteToken }) => {
-  // FIXME: Remove this block as needed
-  // const signupFlow = await prisma.featureToggle.findFirst({
-  //   where: {
-  //     feature: 'signupFlow'
-  //   }
-  // })
+
   const signupFlow = await db.query.featureToggle.findFirst({
     where: (toggle, { eq }) => eq(toggle.feature, "signupFlow")
   })
@@ -87,10 +79,7 @@ export const signUpAction = createAction(async ({ createSession }, { email, pass
   if (isInviteOnly) {
     const hashedToken = await PasswordHandler.hash(inviteToken as string);
 
-    // FIXME: Remove this block as needed
-    // const foundToken = await prisma.token.findFirst({
-    //   where: { hashedToken, type: "INVITE_TOKEN" }
-    // });
+
     const foundToken = await db.query.token.findFirst({
       where: (tok, { and, eq }) => and(
         eq(tok.hashedToken, hashedToken),
@@ -102,8 +91,7 @@ export const signUpAction = createAction(async ({ createSession }, { email, pass
       throw new Error("Invalid token");
     }
 
-    // FIXME: Remove this block as needed
-    // await prisma.token.delete({ where: { id: foundToken.id } });
+
     await db.delete(token).where(eq(token.id, foundToken.id))
 
     if (new Date(foundToken.expiresAt) < new Date()) {
@@ -115,19 +103,7 @@ export const signUpAction = createAction(async ({ createSession }, { email, pass
 
   const hashedPassword = await PasswordHandler.hash(password);
 
-  // FIXME: Remove this block as needed
-  // const user = await prisma.user.create({
-  //   data: {
-  //     email,
-  //     username,
-  //     hashedPassword: hashedPassword,
-  //     lists: {
-  //       connect: {
-  //         slug: 'general'
-  //       }
-  //     }
-  //   },
-  // });
+
 
   const listResult = await db.query.list.findFirst({
     where: (list, { eq }) => eq(list.slug, 'general')
@@ -146,41 +122,20 @@ export const signUpAction = createAction(async ({ createSession }, { email, pass
     .values({ listId: listResult.id, userId: newUser.id })
     .returning()
 
-  // FIXME: Remove this block as needed
-  // await prisma.inventory.create({
-  //   data: {
-  //     user: {
-  //       connect: {
-  //         id: user.id
-  //       }
-  //     }
-  //   }
-  // })
+
   const newInventories = await db.insert(inventory).values({ userId: newUser.id }).returning();
   const newInventory = newInventories[0];
   if (newInventory) {
     await db.update(user).set({ inventoryId: newInventory.id }).where(eq(user.id, newUser.id))
   }
 
-  // FIXME: Remove this block as needed
-  // await prisma.token.deleteMany({
-  //   where: { type: "ACTIVATE_TOKEN", userId: newUser.id },
-  // });
+
   await db.delete(token).where(and(eq(token.type, "ACTIVATE_TOKEN"), eq(token.userId, newUser.id)))
 
   const newToken = generateToken(32);
   const hashedToken = await PasswordHandler.hash(newToken);
 
-  // FIXME: Remove this block as needed
-  // await prisma.token.create({
-  //   data: {
-  //     type: "ACTIVATE_TOKEN",
-  //     userId: newUser.id,
-  //     sentTo: newUser.email,
-  //     hashedToken: hashedToken,
-  //     expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
-  //   },
-  // });
+
   await db.insert(token).values({
     type: "ACTIVATE_TOKEN",
     userId: newUser.id,
@@ -202,10 +157,7 @@ export const signUpAction = createAction(async ({ createSession }, { email, pass
 }, SignupSchema, { authed: false })
 
 export const verifyUser = createAction(async ({ session, updateSession }, data: { token: string }) => {
-  // FIXME: Remove this block as needed
-  // const userResult = await prisma.user.findUnique({
-  //   where: { id: session?.data.userId },
-  // });
+
   const userResult = session?.data.userId
     ? await db.query.user.findFirst({
       where: (u, { eq }) => eq(u.id, session.data.userId)
@@ -219,11 +171,6 @@ export const verifyUser = createAction(async ({ session, updateSession }, data: 
   const userToken = data.token;
   const hashedToken = await PasswordHandler.hash(userToken);
 
-  // FIXME: Remove this block as needed
-  // const foundToken = await prisma.token.findFirst({
-  //   where: { hashedToken, type: "ACTIVATE_TOKEN" },
-  //   include: { user: true },
-  // });
   const foundToken = await db.query.token.findFirst({
     where: (tok, { eq, and }) => and(
       eq(tok.hashedToken, hashedToken),
@@ -238,19 +185,13 @@ export const verifyUser = createAction(async ({ session, updateSession }, data: 
     throw new Error("Invalid token");
   }
 
-  // FIXME: Remove this block as needed
-  // await prisma.token.delete({ where: { id: foundToken.id } });
   await db.delete(token).where(eq(token.id, foundToken.id))
 
   if (new Date(foundToken.expiresAt) < new Date()) {
     throw new Error("Token expired");
   }
 
-  // FIXME: Remove this block as needed
-  // await prisma.user.update({
-  //   where: { id: userResult.id },
-  //   data: { verified: true },
-  // });
+
   await db.update(user).set({ verified: true }).where(eq(user.id, userResult.id))
 
   await updateSession({
@@ -264,12 +205,7 @@ export const verifyUser = createAction(async ({ session, updateSession }, data: 
 export const getCurrentUser = cache(createAction(async ({ session }) => {
   const userId = session?.data.userId;
 
-  // FIXME: Remove this block as needed
-  // const globalSettings = await prisma.globalSetting.findFirst({
-  //   include: {
-  //     features: true
-  //   }
-  // });
+
   const globalSettings = await db.query.globalSetting.findFirst({
     with: { features: true }
   })
@@ -284,13 +220,6 @@ export const getCurrentUser = cache(createAction(async ({ session }) => {
     throw new Error("No user id");
   }
 
-  // FIXME: Remove this block as needed
-  // const user = await prisma.user.findUnique({
-  //   where: { id: userId },
-  //   include: {
-  //     inventory: userInventoryIncludes.user.include.inventory
-  //   }
-  // });
   const userResult = await db.query.user.findFirst({
     where: (u, { eq }) => eq(u.id, userId),
     with: {
@@ -334,34 +263,18 @@ export const checkGuard = createAction(
 );
 
 export const forgotPasswordAction = createAction(async ({ }, { email }) => {
-  // FIXME: Remove this block as needed
-  // const user = await prisma.user.findUnique({
-  //   where: { email },
-  // });
+
   const userResult = await db.query.user.findFirst({
     where: (u, { eq }) => eq(u.email, email)
   })
 
   if (userResult) {
-    // FIXME: Remove this block as needed
-    // await prisma.token.deleteMany({
-    //   where: { type: "RESET_PASSWORD", userId: userResult.id },
-    // });
+
     await db.delete(token).where(and(eq(token.type, "RESET_PASSWORD"), eq(token.userId, userResult.id)))
 
     const newToken = generateToken(32);
     const hashedToken = await PasswordHandler.hash(newToken);
 
-    // FIXME: Remove this block as needed
-    // await prisma.token.create({
-    //   data: {
-    //     type: "RESET_PASSWORD",
-    //     userId: userResult.id,
-    //     sentTo: userResult.email,
-    //     hashedToken: hashedToken,
-    //     expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
-    //   },
-    // });
     await db.insert(token).values({
       type: "RESET_PASSWORD",
       userId: userResult.id,
@@ -388,11 +301,7 @@ export const resetPasswordAction = createAction(
     }
 
     const hashedToken = await PasswordHandler.hash(userToken);
-    // FIXME: Remove this block as needed
-    // const foundToken = await prisma.token.findFirst({
-    //   where: { hashedToken, type: "RESET_PASSWORD" },
-    //   include: { user: true },
-    // });
+
     const foundToken = await db.query.token.findFirst({
       where: (tok, { and, eq }) => and(
         eq(tok.type, "RESET_PASSWORD"),
@@ -405,8 +314,7 @@ export const resetPasswordAction = createAction(
       throw new Error("Invalid token");
     }
 
-    // FIXME: Remove this block as needed
-    // await prisma.token.delete({ where: { id: foundToken.id } });
+
     await db.delete(token).where(eq(token.id, foundToken.id));
 
     if (new Date(foundToken.expiresAt) < new Date()) {
@@ -416,11 +324,6 @@ export const resetPasswordAction = createAction(
     const userPassword = data.password;
     const hashedPassword = await PasswordHandler.hash(userPassword);
 
-    // FIXME: Remove this block as needed
-    // const user = await prisma.user.update({
-    //   where: { id: foundToken.userId },
-    //   data: { hashedPassword }
-    // });
     const updatedUsers = await db.update(user)
       .set({ hashedPassword })
       .where(eq(user.id, foundToken.userId))
@@ -431,8 +334,6 @@ export const resetPasswordAction = createAction(
       throw new Error('Update user failed !');
     }
 
-    // FIXME: Remove this block as needed
-    // await prisma.session.deleteMany({ where: { userId: user.id } });
     await db.delete(session).where(eq(user.id, updatedUser.id))
 
     await createSession({
@@ -453,12 +354,7 @@ export const resetPasswordAction = createAction(
 // OAUTH STUFF
 
 export const handleOauth = async ({ email, auth }: { email: string, auth: AuthInit<BaseSessionData> }) => {
-  // FIXME: Remove this block as needed
-  // const foundUser = await prisma.user.findFirst({
-  //   where: {
-  //     email,
-  //   }
-  // });
+
   const foundUser = await db.query.user.findFirst({
     where: (u, { eq }) => eq(u.email, email)
   });
@@ -478,19 +374,7 @@ export const handleOauth = async ({ email, auth }: { email: string, auth: AuthIn
   }
 
   if (!foundUser) {
-    // FIXME: Remove this block as needed
-    // const user = await prisma.user.create({
-    //   data: {
-    //     email,
-    //     username: email,
-    //     role: "USER",
-    //     lists: {
-    //       connect: {
-    //         slug: 'general'
-    //       }
-    //     }
-    //   },
-    // });
+
 
     const listResult = await db.query.list.findFirst({
       where: (list, { eq }) => eq(list.slug, 'general')
@@ -525,10 +409,7 @@ export const handleOauth = async ({ email, auth }: { email: string, auth: AuthIn
      * The original user "const" doesn't have any workspace on it yet.
      * So we make a db call to get the updated version.  */
 
-    // FIXME: Remove this block as needed
-    // const getNewUser = await prisma.user.findUnique({
-    //   where: { id: user.id },
-    // });
+
     const getNewUser = await db.query.user.findFirst({
       where: (u, { eq }) => eq(u.id, newUser.id)
     })

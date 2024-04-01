@@ -17,22 +17,12 @@ export const getAllBadges = createAction(
 
     const whereIdCondition = where?.OR?.find((condition: any) => condition?.id !== undefined)?.id;
 
-    // FIXME: Remove this block as needed
-    // const badges = await prisma.badge.findMany({
-    //   take,
-    //   skip,
-    //   where,
-    // });
     const badges = await db.query.badge.findMany({
       where: (badge, { or, eq }) => or(whereIdCondition ? eq(badge.id, whereIdCondition) : undefined),
       limit: take,
       offset: skip
     })
 
-    // FIXME: Remove this block as needed
-    // const count = await prisma.badge.count({
-    //   where,
-    // });
     const badgeCountResult = await db.select({ count: count() })
       .from(badge)
       .where(or(whereIdCondition ? eq(badge.id, whereIdCondition) : undefined))
@@ -50,31 +40,7 @@ export const getAllBadges = createAction(
 );
 
 export const createBadge = createAction(async ({ }, { title, description, image, conditions }) => {
-  // FIXME: Remove this block as needed
-  // const preparedConditions = prepareArrayField(
-  //   conditions,
-  //   [], // The initial array is empty for a new badge
-  //   (item) => ({
 
-  //     action: {
-  //       connect: {
-  //         id: item.action
-  //       }
-  //     },
-  //     quantity: item.quantity
-
-  //   })
-  // );
-
-  // FIXME: Remove this block as needed
-  // const badge = await prisma.badge.create({
-  //   data: {
-  //     title,
-  //     description,
-  //     image,
-  //     conditions: preparedConditions
-  //   }
-  // })
   const createdBadges = await db.insert(badge)
     .values({ title, description, image })
     .returning();
@@ -90,22 +56,7 @@ export const createBadge = createAction(async ({ }, { title, description, image,
 }, CreateBadgeSchema)
 
 export const getSingleBadge = createAction(async ({ }, { id }) => {
-  // FIXME: Remove this block as needed
-  // const badge = await prisma.badge.findFirst({
-  //   where: {
-  //     id
-  //   },
-  //   include: {
-  //     conditions: {
-  //       include: {
-  //         action: true
-  //       },
-  //       orderBy: {
-  //         id: 'asc'
-  //       }
-  //     }
-  //   }
-  // })
+
   const badgeResult = await db.query.badge.findFirst({
     where: (badge, { eq }) => eq(badge.id, id),
     with: {
@@ -129,22 +80,7 @@ export const updateBadge = createAction(async ({ }, params) => {
     throw new Error('Parameters are undefined');
   }
 
-  // FIXME: Remove this block as needed
-  // const findBadge = await prisma.badge.findFirst({
-  //   where: {
-  //     id: params.id
-  //   },
-  //   include: {
-  //     conditions: {
-  //       include: {
-  //         action: true
-  //       },
-  //       orderBy: {
-  //         id: 'asc'
-  //       }
-  //     }
-  //   }
-  // })
+
   const findBadge = await db.query.badge.findFirst({
     where: (badge, { eq }) => eq(badge.id, params.id),
     with: {
@@ -171,14 +107,7 @@ export const updateBadge = createAction(async ({ }, params) => {
     { removedItemsMethod: 'delete' }
   );
 
-  // FIXME: Remove this block as needed
-  // const badge = await prisma.badge.update({
-  //   where: { id: params.id },
-  //   data: {
-  //     ...params,
-  //     conditions: preparedConditions
-  //   }
-  // });
+
   const updatedBadges = await db.update(badge)
     .set({
       title: params.title,
@@ -211,21 +140,9 @@ export const updateBadge = createAction(async ({ }, params) => {
 
 export const deleteBadge = createAction(async ({ }, params) => {
   // Delete all conditions associated with the badge
-
-  // FIXME: Remove this block as needed
-  // await prisma.condition.deleteMany({
-  //   where: {
-  //     badgeId: params.id,
-  //   }
-  // });
   await db.delete(condition).where(eq(condition.badgeId, params.id))
 
   // Then delete the badge itself
-  // const badge = await prisma.badge.delete({
-  //   where: {
-  //     id: params.id
-  //   }
-  // });
   const deletedBadges = await db.delete(badge)
     .where(eq(badge.id, params.id))
     .returning();

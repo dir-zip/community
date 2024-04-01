@@ -14,18 +14,10 @@ export const createCategory = createAction(async ({ }, { title }) => {
   const createSlug = await findFreeSlug(
     title.toLowerCase().replace(/[^a-z0-9]/g, "-"),
     async (slug: string) =>
-      // FIXME: Remove this block as needed
-      // await prisma.category.findUnique({ where: { slug } }),
       await db.query.category.findFirst({ where: (cate, { eq }) => eq(cate.slug, slug) })
   );
 
-  // FIXME: Remove this block as needed
-  // const category = await prisma.category.create({
-  //   data: {
-  //     title,
-  //     slug: createSlug
-  //   }
-  // })
+
   const createdCategories = await db.insert(category)
     .values({
       title,
@@ -39,12 +31,6 @@ export const createCategory = createAction(async ({ }, { title }) => {
 }, CategorySchema)
 
 export const getSingleCategory = createAction(async ({ }, { id }) => {
-  // FIXME: Remove this block as needed
-  // const category = await prisma.category.findFirst({
-  //   where: {
-  //     id
-  //   }
-  // })
   const categoryResult = await db.query.category.findFirst({
     where: (cate, { eq }) => eq(cate.id, id)
   })
@@ -56,8 +42,6 @@ export const getSingleCategory = createAction(async ({ }, { id }) => {
 
 export const updateCategory = createAction(async ({ }, { id, data }) => {
   // Fetch the current category
-  // FIXME: Remove this block as needed
-  // const currentCategory = await prisma.category.findUnique({ where: { id } });
   const currentCategory = await db.query.category.findFirst({ where: (cate, { eq }) => eq(cate.id, id) });
 
   let slug;
@@ -66,8 +50,6 @@ export const updateCategory = createAction(async ({ }, { id, data }) => {
     slug = await findFreeSlug(
       data.title.toLowerCase().replace(/[^a-z0-9]/g, "-"),
       async (slug: string) =>
-        // FIXME: Remove this block as needed
-        // await prisma.category.findUnique({ where: { slug } }),
         await db.query.category.findFirst({ where: (cate, { eq }) => eq(cate.slug, slug) })
     );
   } else {
@@ -75,16 +57,6 @@ export const updateCategory = createAction(async ({ }, { id, data }) => {
     slug = currentCategory.slug;
   }
 
-  // FIXME: Remove this block as needed
-  // const category = await prisma.category.update({
-  //   where: {
-  //     id
-  //   },
-  //   data: {
-  //     ...data,
-  //     slug
-  //   }
-  // })
   const updatedCategories = await db.update(category)
     .set({
       ...data,
@@ -109,12 +81,6 @@ export const getAllCategories = createAction(
 
     const whereIdCondition = where?.OR?.find((condition: any) => condition?.id !== undefined)?.id;
 
-    // FIXME: Remove this block as needed
-    // const findCategories = await prisma.category.findMany({
-    //   take,
-    //   skip,
-    //   where
-    // })
 
     const findCategories = await db.query.category.findMany({
       where: (item, { or, eq }) => or(whereIdCondition ? eq(item.id, whereIdCondition) : undefined),
@@ -122,10 +88,6 @@ export const getAllCategories = createAction(
       offset: skip
     })
 
-    // FIXME: Remove this block as needed
-    // const count = await prisma.category.count({
-    //   where
-    // })
     const categoryCountResult = await db.select({ count: count() })
       .from(category)
       .where(or(whereIdCondition ? eq(category.id, whereIdCondition) : undefined))
