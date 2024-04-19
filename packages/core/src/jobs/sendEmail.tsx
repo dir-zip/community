@@ -1,7 +1,7 @@
 import { createJob } from '../lib/jobs'
-import {createMailer} from '@dir/mailer'
+import { createMailer } from '@dir/mailer'
 import ActivateAccount from "../mail_templates/activate-account"
-import {renderAsync} from "@react-email/render"
+import { renderAsync } from "@react-email/render"
 import * as React from 'react'
 import ForgotPassword from '../mail_templates/forgot-password'
 import BroadcastTemplate from '~/mail_templates/broadcast'

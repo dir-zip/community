@@ -3,7 +3,7 @@ import nodemailer from 'nodemailer'
 export const createMailer = ({to, data, template}: {to: string, data: Partial<{[key: string]: string}>, template: string}) => {
   
   const msg = {
-    from: process.env.APP_EMAIL || "admin@1upsaas.com",
+    from: process.env.APP_EMAIL || "admin@dir.zip",
     to,
     subject: data.subject,
     html: template

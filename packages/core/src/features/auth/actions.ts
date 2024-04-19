@@ -12,7 +12,7 @@ import {
 } from "@dir/auth";
 
 import { and, db, eq } from "@dir/db";
-import sendEmail from '../../jobs/sendEmail'
+import sendEmail from '~/jobs/sendEmail'
 import { cookies } from "next/headers";
 
 import { z } from "zod";
@@ -31,7 +31,7 @@ import authDriver from '../../authDriver';
 import { guards } from '../../guards';
 import { redirect } from 'next/navigation';
 
-import { inventory, list, session, token, user, userList } from "packages/db/drizzle/schema";
+import { inventory, session, token, user, userList } from "packages/db/drizzle/schema";
 
 export const loginAction = createAction(async ({ createSession }, { email, password }) => {
 

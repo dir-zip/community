@@ -68,11 +68,13 @@ export const PostList = ({ categories }: { categories: Category[] }) => {
   if (endPage > count) {
     endPage = count;
   }
+  
+  useEffect(() => {
+    if (searchTags) {
+      setTags([searchTags]);
+    }
+  }, [searchTags]);
 
-
-  if (searchTags) {
-    setTags([searchTags]);
-  }
 
 
   // TODO: Use react-query. duh.
