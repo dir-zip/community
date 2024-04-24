@@ -7,7 +7,6 @@ export const client = new Client({
 });
 
 client.connect()
-    .then(() => console.log("Connect to database successfully"))
     .catch((err) => console.log("Failed to establish database connection !", err));
 
 export const db = drizzle(client, { schema });

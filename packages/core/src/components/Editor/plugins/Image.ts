@@ -107,7 +107,7 @@ export const EditorImageUpload = Node.create(({
                   body: formData // Send the FormData object
                 });
                 const res = await uploadResponse.json();
-              
+
 
                 const { tr } = view.state;
         
@@ -119,6 +119,8 @@ export const EditorImageUpload = Node.create(({
                 const imageNode = imageNodeType.create({ src: res.location });
                 tr.replaceSelectionWith(imageNode);
                 view.dispatch(tr);
+
+
               } catch (error) {
                 console.error('Error uploading image:', error);
               }
@@ -150,7 +152,8 @@ export const EditorImageUpload = Node.create(({
           transaction.steps.forEach((step) => {
             if (step instanceof ReplaceStep || step instanceof ReplaceAroundStep) {
               step.getMap().forEach((oldStart, oldEnd) => {
-                oldState.doc.nodesBetween(oldStart, oldEnd, (node, pos) => {
+                const safeEnd = Math.min(oldEnd, newState.doc.content.size);
+                oldState.doc.nodesBetween(oldStart, safeEnd, (node, pos) => {
                   if (node.type.name === 'imageUpload') {
                     const newNode = newState.doc.nodeAt(pos);
                     if (!newNode || newNode.type.name !== 'imageUpload') {
