@@ -166,7 +166,10 @@ export const createPost = createAction(async ({ session }, data) => {
   let generatedTitle: string = title
 
   if (title === "") {
-    const dom = new JSDOM(body);
+    // Remove any <img> tags from the body so we don't need the bloat of polyfill canvas on node. We only need the p or h1.
+    const sanitizedBody = body.replace(/<img[^>]*>/g, '');
+
+    const dom = new JSDOM(sanitizedBody);
     const h1 = dom.window.document.querySelector('h1');
     const p = dom.window.document.querySelector('p');
     generatedTitle = h1 ? h1.textContent as string : (p ? p.textContent as string : 'Default Title');
